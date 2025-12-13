@@ -152,19 +152,26 @@ class WardBackendTester:
         return success
 
     def test_create_case(self):
-        """Test case creation"""
+        """Test case creation WITH MANDATORY disruption details"""
         self.log("\n=== Testing Case Management ===", "INFO")
         success, response = self.run_test(
-            "Create Disruption Case",
+            "Create Disruption Case (India Context)",
             "POST",
             "cases",
             200,
             data={
-                "description": "Critical disruption: Highway 101 closure due to accident. 15 shipments affected, need immediate rerouting decision. Time-sensitive: customer delivery windows closing in 4 hours.",
+                "description": "Container CMAU1234567 held at JNPT customs for document verification. Discovered via call from CHA at 14:30 IST. Original documents submitted but customs officer requesting additional import license copy. Shipment contains electronics for urgent customer order. CHA says resolution can take 2-4 days normally.",
+                "disruption_details": {
+                    "disruption_type": "customs_hold",
+                    "scope": "single container",
+                    "identifier": "CMAU1234567",
+                    "time_discovered_ist": "13/12/2024 14:30 IST",
+                    "source": "Call from CHA (Jagdish Customs)"
+                },
                 "shipment_identifiers": {
-                    "ids": ["SH-2024-001", "SH-2024-002", "SH-2024-003"],
-                    "routes": ["San Francisco → Los Angeles", "Oakland → San Diego"],
-                    "carriers": ["FastFreight Express", "QuickShip Logistics"]
+                    "ids": ["SH-IND-2024-789"],
+                    "routes": ["JNPT Port → Mumbai → Pune"],
+                    "carriers": ["Maersk Line", "VRL Logistics"]
                 }
             }
         )
