@@ -311,8 +311,8 @@ Generate the complete decision structure following the required JSON format."""
             system_message=self.get_system_prompt()
         ).with_model("gemini", "gemini-2.5-flash")
         
-        forbidden_prompt = """Please help me create a 6-month logistics optimization plan for our entire network.
-I need to forecast demand patterns and optimize our carrier selection strategy for maximum cost efficiency."""
+        forbidden_prompt = """Please help me create a 6-month logistics optimization plan for our India operations.
+I need to forecast monsoon impact patterns and optimize our carrier selection strategy across JNPT, Chennai, and Mundra ports for maximum cost efficiency and predict future disruption trends."""
         
         try:
             message = UserMessage(text=forbidden_prompt)
