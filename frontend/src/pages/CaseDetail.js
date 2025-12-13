@@ -312,6 +312,80 @@ export default function CaseDetail() {
               </CardContent>
             </Card>
 
+            {/* Root Cause Analysis */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Root Cause Analysis</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {caseData.rca ? (
+                  <div className="space-y-4">
+                    <div>
+                      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Root Cause</span>
+                      <p className="mt-1 text-sm font-medium text-foreground">{caseData.rca.root_cause}</p>
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div>
+                      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Recommended Actions</span>
+                      <div className="mt-2 space-y-2">
+                        {caseData.rca.recommended_actions?.map((action, idx) => (
+                          <div key={idx} className="flex items-start gap-2 text-sm">
+                            <span className="text-primary">•</span>
+                            <div>
+                              <p className="font-medium">{action.action}</p>
+                              <p className="text-xs text-muted-foreground">Owner: {action.owner} • {action.timeline}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div>
+                      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Preventive Measures</span>
+                      <ul className="mt-2 space-y-1">
+                        {caseData.rca.preventive_measures?.map((measure, idx) => (
+                          <li key={idx} className="text-sm text-muted-foreground">• {measure}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div className="pt-2">
+                      <span className="text-xs text-muted-foreground">
+                        Confidence: <span className="font-medium capitalize">{caseData.rca.confidence}</span>
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <AlertTriangle className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground mb-4">
+                      RCA not performed yet
+                    </p>
+                    <Button
+                      onClick={async () => {
+                        try {
+                          toast.info('Analyzing disruption...');
+                          const response = await api.post(`/cases/${caseId}/rca`);
+                          toast.success('RCA complete!');
+                          await loadCase();
+                        } catch (error) {
+                          toast.error(error.response?.data?.detail || 'RCA failed');
+                        }
+                      }}
+                      data-testid="perform-rca-button"
+                      className="w-full"
+                    >
+                      Perform RCA
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Properties */}
             <Card>
               <CardHeader>
