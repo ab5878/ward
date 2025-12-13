@@ -174,6 +174,149 @@ Extract structured disruption details as JSON."""
                 "error": f"Failed to extract disruption details: {str(e)}"
             }
     
+    def get_driver_response_prompt(self) -> str:
+        """System prompt for safe driver responses"""
+        return """You are Ward v0 speaking to a DRIVER (field operator).
+
+CRITICAL CONSTRAINTS:
+- Driver has NO decision authority
+- Driver may not read English well
+- Driver is under stress, noisy environment
+- Responses must be SHORT, CALM, SAFE
+
+YOU MAY ONLY:
+- Acknowledge receipt of information
+- Ask clarifying questions about what they SEE/HEAR
+- Provide coordination instructions (wait safely, don't move, expect callback)
+- Reassure that ops team is reviewing
+
+YOU MUST NEVER:
+- Tell them which route to take
+- Make ETA promises
+- Tell them to unload/load
+- Make ANY decision
+- Predict outcomes
+
+LANGUAGE:
+- Use simple Hindi-English mix (Hinglish) or match driver's language
+- Keep under 25 words
+- Be calm and trust-building
+
+SAFE PHRASES:
+"Message received. Ops team reviewing. Please stay parked safely."
+"Understood. Do not move container until confirmation."
+"Please wait at safe location. I'll update you."
+"Can you confirm: [specific detail about what they see]?"
+
+Generate ONLY safe responses."""
+
+    async def generate_driver_response(self, driver_input: str, conversation_history: List[Dict]) -> str:
+        """
+        Generate safe response for DRIVER role
+        Only acknowledgment, clarification, or safe coordination
+        """
+        try:
+            chat = LlmChat(
+                api_key=self.api_key,
+                session_id=f"driver-{id(driver_input)}",
+                system_message=self.get_driver_response_prompt()
+            ).with_model("gemini", "gemini-2.5-flash")
+            
+            # Build context
+            history_text = "\n".join([
+                f"{msg['speaker']}: {msg['text']}" 
+                for msg in conversation_history[-3:]  # Last 3 messages
+            ])
+            
+            prompt = f"""Previous conversation:
+{history_text}
+
+Driver just said: "{driver_input}"
+
+Generate a SHORT, SAFE response (under 25 words). No decisions. No predictions."""
+            
+            message = UserMessage(text=prompt)
+            response = await chat.send_message(message)
+            
+            return response.strip()
+        
+        except Exception as e:
+            print(f"Error generating driver response: {e}")
+            return "Message received. Ops team reviewing. Please stay safe."
+    
+    def get_helper_question_prompt(self) -> str:
+        """System prompt for context-harvesting questions for helpers"""
+        return """You are Ward v0 speaking to a HELPER (CHA, supervisor, senior ops).
+
+HELPER ROLE:
+- Provides domain context and expertise
+- NOT the decision owner
+- Has partial but important knowledge
+
+YOUR JOB:
+- Ask context-harvesting questions
+- Understand what usually works/fails
+- Learn domain patterns
+- Build institutional knowledge
+
+YOU MUST NEVER ASK:
+- "What should we do?" (that's manager's job)
+- "What's your decision?" (helper doesn't decide)
+
+YOU SHOULD ASK:
+- "Is this common?"
+- "What usually resolves this fastest?"
+- "What has failed before in similar cases?"
+- "What are the typical clearance times?"
+- "Are there any hidden dependencies?"
+
+LANGUAGE:
+- Professional but conversational
+- Respect their expertise
+- 2-3 questions max
+
+Generate context-harvesting questions, NOT advice requests."""
+
+    async def generate_helper_questions(self, context: str) -> List[str]:
+        """
+        Generate context-harvesting questions for HELPER role
+        Not asking for advice, asking for domain knowledge
+        """
+        try:
+            chat = LlmChat(
+                api_key=self.api_key,
+                session_id=f"helper-{id(context)}",
+                system_message=self.get_helper_question_prompt()
+            ).with_model("gemini", "gemini-2.5-flash")
+            
+            prompt = f"""Context: {context}
+
+Generate 2-3 context-harvesting questions for a CHA or senior ops person.
+Focus on institutional knowledge, patterns, typical timelines.
+Do NOT ask what they think we should do."""
+            
+            message = UserMessage(text=prompt)
+            response = await chat.send_message(message)
+            
+            # Parse questions
+            questions = []
+            for line in response.strip().split('\n'):
+                line = line.strip()
+                if line and (line[0].isdigit() or line.startswith('-') or line.startswith('•')):
+                    question = line.split('.', 1)[-1].strip() if '.' in line else line.lstrip('- •')
+                    if question:
+                        questions.append(question)
+            
+            return questions[:3]
+        
+        except Exception as e:
+            print(f"Error generating helper questions: {e}")
+            return [
+                "Is this type of hold common at this port?",
+                "What typically resolves this fastest based on your experience?",
+                "Are there any dependencies we should be aware of?"
+            ]
+    
     async def generate_decision_guidance(self, disruption_summary: str) -> Dict[str, str]:
         """
         Generate voice guidance for the 6-step decision protocol
