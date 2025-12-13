@@ -44,10 +44,13 @@ db = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    global client, db
+    global client, db, coordination_manager
     client = AsyncIOMotorClient(MONGO_URL)
     db = client[DB_NAME]
     print(f"Connected to MongoDB: {DB_NAME}")
+
+    # Initialize Coordination Manager
+    coordination_manager = CoordinationManager(db)
     
     # Create indexes
     await db.users.create_index("email", unique=True)
