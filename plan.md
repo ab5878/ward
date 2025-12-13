@@ -147,6 +147,120 @@ All user stories implemented and tested. 100% test pass rate.
 - Backend: All voice endpoints functional (STT, TTS, extraction)
 - Frontend: Voice UI compiled successfully
 - Integration: Sarvam AI API key configured and ready
+
+### Phase 5 — Three-Role Voice Architecture ✅ COMPLETED
+
+**Complete Role-Based Voice Coordination System:**
+
+**1. Three Distinct Voice Roles Implemented:**
+
+**DRIVER (Field Reality Capture)**
+- Role: Reports what's happening on the ground
+- Context: May not read English, under stress, noisy environment
+- Authority: NO decision-making power
+- Ward Responses:
+  - ✓ Acknowledgment ("Message received. Ops team reviewing.")
+  - ✓ Safe coordination ("Please wait at safe parking area")
+  - ✓ Clarifying questions about what they SEE/HEAR
+  - ✗ Routing decisions
+  - ✗ ETA promises
+  - ✗ Load/unload instructions
+- API Endpoint: `/api/voice/driver-response`
+- Response Length: Max 25 words (short, calm, trust-building)
+- Language: Simple Hinglish or match driver's language
+
+**MANAGER (Decision Owner)**
+- Role: Makes the decision now
+- Context: Juggling calls, WhatsApp, dashboards — needs clarity fast
+- Authority: FULL decision-making power
+- Ward Provides:
+  - ✓ Structured reality (no advice, just facts)
+  - ✓ Explicit unknowns
+  - ✓ Alternatives with worst-case outcomes
+  - ✓ Decision framing protocol (6 steps)
+  - ✓ Audit trail with provenance
+- API Endpoint: `/api/voice/clarity-questions` (manager role)
+- Flow: Full 5-step voice protocol
+- Output: Written decision + full transcript
+
+**HELPER (Context Provider)**
+- Role: Provides domain knowledge (CHA, senior ops, supervisor)
+- Context: Has partial but important institutional knowledge
+- Authority: NO decision-making power
+- Ward Asks:
+  - ✓ "Is this common?"
+  - ✓ "What usually resolves this fastest?"
+  - ✓ "What has failed before?"
+  - ✓ "What are typical clearance times?"
+  - ✗ "What should we do?" (that's manager's job)
+  - ✗ "What's your decision?" (helper doesn't decide)
+- API Endpoint: `/api/voice/helper-questions`
+- Purpose: Context harvesting, NOT advice solicitation
+- Output: Domain knowledge stored as tagged input
+
+**2. Backend Implementation:**
+- **voice_assistant.py** updated with role-specific methods:
+  - `generate_driver_response()` - Safe coordination only
+  - `generate_helper_questions()` - Context harvesting
+  - `generate_clarity_questions()` - Manager protocol
+- **Role-specific AI prompts**:
+  - Driver prompt: Enforces NO decisions, NO predictions, only safety
+  - Helper prompt: Asks for patterns/knowledge, NOT advice
+  - Manager prompt: Full protocol, all alternatives
+- **3 New API Endpoints**:
+  - `/api/voice/driver-response` - Safe responses (role: driver, safe: true flag)
+  - `/api/voice/helper-questions` - Context questions (role: helper)
+  - Updated `/api/voice/clarity-questions` - Manager protocol (role: manager)
+
+**3. Landing Page - Three Role Section:**
+- New "The Three Voice Roles" section prominently displayed
+- Visual cards for Driver, Manager, Helper with:
+  - Role definition
+  - Authority boundaries
+  - What Ward provides/asks per role
+  - What Ward NEVER does per role
+- "Voice Does Not Collapse Authority" callout box
+- Updated philosophy: "Voice is a capture + guidance layer, not a command layer"
+- Mental model: "Ward is the calm person on the call who asks the right questions"
+
+**4. Key Architecture Principles:**
+
+**Authority Preservation:**
+- Driver: Reality input (no authority)
+- Helper: Context input (no authority)
+- Manager: Decision authority (full)
+- Ward: Structure + memory (no authority)
+
+**Safe vs Unsafe Instructions:**
+- SAFE (Coordination): "Please wait safely", "Do not move until confirmation", "Expect callback"
+- UNSAFE (Decisions): "Take route B", "Unload now", "This will take 2 hours"
+
+**Response Templates:**
+- Driver: Max 25 words, calm, acknowledgment-focused
+- Helper: 2-3 context-harvesting questions
+- Manager: Full structured protocol, alternatives with worst-cases
+
+**5. WhatsApp Integration Pattern:**
+- Driver WhatsApps voice note
+- Ward transcribes via Sarvam AI
+- Sends back SHORT acknowledgment (safe coordination)
+- Flags ops team (Manager)
+- Example: "Message received. Ops team reviewing. Please stay parked safely. I'll update you."
+
+**6. Philosophy Locks:**
+✅ Voice is capture + guidance, NOT command
+✅ Ward coordinates humans, doesn't decide
+✅ Authority hierarchy preserved (driver → helper → manager)
+✅ Safe coordination ≠ decision-making
+✅ Context harvesting ≠ advice solicitation
+✅ Written output preserves accountability across all roles
+
+**Testing Status:**
+- ✅ Backend: 3 role-specific endpoints implemented
+- ✅ Voice assistant: Role-aware AI prompts
+- ✅ Landing page: Three-role section live
+- ✅ Services: All running successfully
+- 🔄 Ready for role-based voice testing
 Goal: Complete app with auth, AI-assisted structuring, section approvals, override tracking, and audit trail.
 
 Backend (FastAPI) — Endpoints (all under /api):
