@@ -328,9 +328,31 @@ async def create_case(case_data: CreateCase, current_user: dict = Depends(get_cu
     return serialize_doc(case)
 
 @app.get("/api/cases")
-async def list_cases(current_user: dict = Depends(get_current_user)):
-    cursor = db.cases.find({"operator_id": current_user["user_id"]}).sort("created_at", -1).limit(50)
-    cases = await cursor.to_list(length=50)
+async def list_cases(
+    current_user: dict = Depends(get_current_user),
+    status: Optional[str] = None,
+    owner_email: Optional[str] = None,
+    source_type: Optional[str] = None
+):
+    query = {"operator_id": current_user["user_id"]}
+    
+    if status:
+        query["status"] = status
+    if owner_email:
+        query["decision_owner_email"] = owner_email
+    
+    cursor = db.cases.find(query).sort("updated_at", -1).limit(100)
+    cases = await cursor.to_list(length=100)
+    
+    # Get last timeline event for each case
+    for case in cases:
+        case_id = str(case["_id"])
+        last_event = await db.timeline_events.find_one(
+            {"case_id": case_id},
+            sort=[("timestamp", -1)]
+        )
+        case["last_event"] = serialize_doc(last_event) if last_event else None
+    
     return [serialize_doc(case) for case in cases]
 
 @app.get("/api/cases/{case_id}")
