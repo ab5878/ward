@@ -554,6 +554,7 @@ class WardBackendTester:
             ("User Registration", self.test_register),
             ("User Login", self.test_login),
             ("Get Current User", self.test_get_me),
+            ("DISRUPTION FIRST Validation", self.test_disruption_validation),
             ("Create Case", self.test_create_case),
             ("List Cases", self.test_list_cases),
             ("Get Case Details", self.test_get_case),
