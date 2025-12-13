@@ -470,7 +470,7 @@ async def list_historical(current_user: dict = Depends(get_current_user)):
     entries = await cursor.to_list(length=20)
     return [serialize_doc(entry) for entry in entries]
 
-@app.get("/api/historical/{historical_id}", data-testid="get-historical-endpoint")
+@app.get("/api/historical/{historical_id}")
 async def get_historical(historical_id: str, current_user: dict = Depends(get_current_user)):
     try:
         entry = await db.historical.find_one({"_id": ObjectId(historical_id)})
