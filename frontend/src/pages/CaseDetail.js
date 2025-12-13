@@ -251,6 +251,9 @@ export default function CaseDetail() {
               onUpdate={loadCase} 
             />
 
+            {/* Document Intelligence (New) */}
+            <DocumentManager caseId={caseId} />
+
             {/* State Transition */}
             <Card>
               <CardHeader>
