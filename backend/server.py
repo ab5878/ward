@@ -437,7 +437,7 @@ async def finalize_decision(case_id: str, finalize_data: FinalizeDecision, curre
 # AUDIT TRAIL ROUTES
 # ============================================================================
 
-@app.get("/api/audit", data-testid="list-audit-endpoint")
+@app.get("/api/audit")
 async def list_audit_trail(current_user: dict = Depends(get_current_user)):
     # Get all cases for this user
     cases_cursor = db.cases.find({"operator_id": current_user["user_id"]})
