@@ -187,7 +187,7 @@ async def log_audit(case_id: str, actor: str, action: str, payload: dict):
 # AUTH ROUTES
 # ============================================================================
 
-@app.post("/api/auth/register", response_model=Token, data-testid="register-endpoint")
+@app.post("/api/auth/register", response_model=Token)
 async def register(user_data: UserRegister):
     # Check if user exists
     existing = await db.users.find_one({"email": user_data.email})
