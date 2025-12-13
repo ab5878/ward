@@ -110,7 +110,7 @@ Do not generate a decision structure for out-of-scope requests.
 
 IMPORTANT: Your entire response must be valid JSON. No markdown, no code blocks, just the JSON object."""
 
-async def generate_decision_structure(description: str, shipment_data: dict) -> dict:
+async def generate_decision_structure(description: str, disruption_details: dict, shipment_data: dict) -> dict:
     """Generate AI decision structure for a disruption case"""
     
     # Initialize Gemini chat
@@ -120,12 +120,20 @@ async def generate_decision_structure(description: str, shipment_data: dict) -> 
         system_message=get_system_prompt()
     ).with_model("gemini", "gemini-2.5-flash")
     
-    # Construct prompt
+    # Construct prompt with India-first context
     ids_str = ", ".join(shipment_data.get("ids", []))
     routes_str = ", ".join(shipment_data.get("routes", []))
     carriers_str = ", ".join(shipment_data.get("carriers", []))
     
-    prompt = f"""Disruption Description:
+    prompt = f"""LIVE DISRUPTION (India Context):
+
+Disruption Type: {disruption_details.get('disruption_type')}
+Scope: {disruption_details.get('scope')}
+Identifier: {disruption_details.get('identifier')}
+Time Discovered (IST): {disruption_details.get('time_discovered_ist')}
+Source: {disruption_details.get('source')}
+
+Full Description:
 {description}
 
 Shipment Identifiers:
@@ -133,7 +141,9 @@ Shipment Identifiers:
 - Routes: {routes_str if routes_str else 'None provided'}
 - Carriers: {carriers_str if carriers_str else 'None provided'}
 
-Generate the complete decision structure following the required JSON format."""
+CONTEXT: This is an Indian logistics operation. Consider Indian ports (JNPT, Mundra, Chennai, etc.), customs processes (CHA involvement), typical Indian operational realities (monsoon, congestion, manual processes), and communication patterns (phone/WhatsApp).
+
+Generate the complete decision structure following the required JSON format with Indian logistics context."""
     
     # Send message to Gemini
     message = UserMessage(text=prompt)
