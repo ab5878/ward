@@ -221,7 +221,7 @@ async def login(credentials: UserLogin):
     
     return {"access_token": token, "token_type": "bearer"}
 
-@app.get("/api/auth/me", data-testid="me-endpoint")
+@app.get("/api/auth/me")
 async def get_me(current_user: dict = Depends(get_current_user)):
     user = await db.users.find_one({"_id": ObjectId(current_user["user_id"])})
     return serialize_doc({
