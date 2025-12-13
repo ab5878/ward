@@ -293,21 +293,36 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 
 @app.post("/api/cases")
 async def create_case(case_data: CreateCase, current_user: dict = Depends(get_current_user)):
+    now = datetime.now(timezone.utc)
     case = {
         "operator_id": current_user["user_id"],
         "operator_email": current_user["email"],
         "description": case_data.description,
         "disruption_details": case_data.disruption_details.dict(),
         "shipment_identifiers": case_data.shipment_identifiers.dict(),
-        "status": "draft",
-        "created_at": datetime.utcnow(),
-        "updated_at": datetime.utcnow()
+        "status": DisruptionStatus.REPORTED.value,
+        "decision_owner_id": None,
+        "decision_owner_email": None,
+        "created_at": now,
+        "updated_at": now
     }
     
     result = await db.cases.insert_one(case)
     case_id = str(result.inserted_id)
     
     await log_audit(case_id, current_user["email"], "CASE_CREATED", {"description": case_data.description})
+    
+    # Create initial timeline event
+    await db.timeline_events.insert_one({
+        "case_id": case_id,
+        "actor": current_user["email"],
+        "action": "DISRUPTION_REPORTED",
+        "content": case_data.description,
+        "source_type": SourceType.TEXT.value,
+        "reliability": ReliabilityLevel.HIGH.value,
+        "timestamp": now,
+        "metadata": case_data.disruption_details.dict()
+    })
     
     case["_id"] = result.inserted_id
     return serialize_doc(case)
