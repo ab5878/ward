@@ -243,6 +243,13 @@ export default function CaseDetail() {
 
           {/* Sidebar - Right column */}
           <div className="space-y-6">
+            {/* Active Coordination (New) */}
+            <ActiveCoordination 
+              caseId={caseId} 
+              caseData={caseData} 
+              onUpdate={loadCase} 
+            />
+
             {/* State Transition */}
             <Card>
               <CardHeader>
