@@ -947,17 +947,20 @@ async def extract_disruption_from_conversation(conversation: dict, current_user:
 async def synthesize_speech(voice_response: VoiceResponse, current_user: dict = Depends(get_current_user)):
     """
     Convert text to speech using Sarvam AI Bulbul v2
-    Returns base64 encoded audio for playback
+    Returns base64 encoded audio for playback in the user's chosen language
     """
     try:
         text = voice_response.response_text
         if not text:
             raise HTTPException(status_code=400, detail="Text is required")
         
-        # Use Anushka voice (clear, professional) in Hindi-English mix
+        # Use the language specified by the user (defaults to Hindi)
+        language_code = voice_response.language_code or "hi-IN"
+        
+        # Use Anushka voice (clear, professional)
         audio_bytes = await sarvam_service.text_to_speech(
             text=text,
-            language_code="hi-IN",
+            language_code=language_code,
             speaker="anushka"
         )
         
