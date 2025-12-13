@@ -88,3 +88,112 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary));
 }
+
+/* ============================================================================
+   LIFECYCLE STATE TOKENS (Phase 1)
+   ============================================================================ */
+
+@layer base {
+  :root {
+    /* Lifecycle state tokens */
+    --state-reported: 215 16% 85%;       /* neutral */
+    --state-clarified: 205 61% 45%;      /* blue */
+    --state-decision-required: 28 90% 54%; /* amber */
+    --state-decided: 184 65% 32%;        /* teal */
+    --state-in-progress: 201 96% 32%;    /* info blue */
+    --state-resolved: 146 46% 35%;       /* green */
+
+    /* Reliability tags */
+    --reliability-low: 215 16% 85%;
+    --reliability-medium: 28 90% 54%;
+    --reliability-high: 146 46% 35%;
+
+    /* Source type */
+    --source-text: 215 16% 35%;
+    --source-voice: 184 65% 32%;
+    --source-system: 201 96% 32%;
+  }
+
+  .dark {
+    --state-reported: 215 16% 85%;
+    --state-clarified: 205 61% 52%;
+    --state-decision-required: 28 90% 60%;
+    --state-decided: 184 65% 46%;
+    --state-in-progress: 201 96% 46%;
+    --state-resolved: 146 46% 42%;
+
+    --reliability-low: 215 16% 85%;
+    --reliability-medium: 28 90% 60%;
+    --reliability-high: 146 46% 42%;
+
+    --source-text: 215 16% 70%;
+    --source-voice: 184 65% 46%;
+    --source-system: 201 96% 46%;
+  }
+}
+
+/* ============================================================================
+   UTILITY CLASSES (Phase 1)
+   ============================================================================ */
+
+@layer components {
+  /* State badges */
+  .state-badge {
+    @apply px-2 py-0.5 rounded-md text-xs font-medium uppercase tracking-wide;
+  }
+  .state-badge[data-state='REPORTED'] {
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--state-reported));
+  }
+  .state-badge[data-state='CLARIFIED'] {
+    color: white;
+    background-color: hsl(var(--state-clarified));
+  }
+  .state-badge[data-state='DECISION_REQUIRED'] {
+    color: #141414;
+    background-color: hsl(var(--state-decision-required));
+  }
+  .state-badge[data-state='DECIDED'] {
+    color: white;
+    background-color: hsl(var(--state-decided));
+  }
+  .state-badge[data-state='IN_PROGRESS'] {
+    color: white;
+    background-color: hsl(var(--state-in-progress));
+  }
+  .state-badge[data-state='RESOLVED'] {
+    color: white;
+    background-color: hsl(var(--state-resolved));
+  }
+
+  /* Reliability chips */
+  .reliability-chip {
+    @apply px-1.5 py-0.5 rounded-sm text-[11px] font-medium uppercase tracking-wide;
+  }
+  .reliability-chip[data-level='low'] {
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--reliability-low));
+  }
+  .reliability-chip[data-level='medium'] {
+    color: #141414;
+    background-color: hsl(var(--reliability-medium));
+  }
+  .reliability-chip[data-level='high'] {
+    color: white;
+    background-color: hsl(var(--reliability-high));
+  }
+
+  /* Source dots */
+  .source-dot {
+    @apply inline-block w-2 h-2 rounded-full;
+  }
+  .source-dot[data-type='text'] {
+    background-color: hsl(var(--source-text));
+  }
+  .source-dot[data-type='voice'] {
+    background-color: hsl(var(--source-voice));
+  }
+  .source-dot[data-type='system'] {
+    background-color: hsl(var(--source-system));
+  }
+}
