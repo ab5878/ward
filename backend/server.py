@@ -126,6 +126,14 @@ class FinalizeDecision(BaseModel):
     selected_alternative: str
     override_rationale: Optional[str] = None
 
+class VoiceTranscript(BaseModel):
+    audio_base64: str
+    audio_format: str = \"wav\"
+
+class VoiceResponse(BaseModel):
+    response_text: str
+    context: str = \"clarity\"  # clarity, guidance, confirmation
+
 # ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
