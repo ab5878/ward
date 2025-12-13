@@ -252,6 +252,9 @@ export default function CaseDetail() {
               onUpdate={loadCase} 
             />
 
+            {/* Similar Cases (Institutional Memory) */}
+            <SimilarCases caseId={caseId} />
+
             {/* Document Intelligence (New) */}
             <DocumentManager caseId={caseId} />
 
