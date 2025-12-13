@@ -393,7 +393,7 @@ async def approve_section(case_id: str, section_key: str, current_user: dict = D
 # FINALIZE DECISION ROUTE
 # ============================================================================
 
-@app.post("/api/cases/{case_id}/finalize", data-testid="finalize-decision-endpoint")
+@app.post("/api/cases/{case_id}/finalize")
 async def finalize_decision(case_id: str, finalize_data: FinalizeDecision, current_user: dict = Depends(get_current_user)):
     try:
         draft = await db.drafts.find_one({"case_id": case_id})
