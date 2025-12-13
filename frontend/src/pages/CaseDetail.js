@@ -156,12 +156,14 @@ export default function CaseDetail() {
                 <span>Updated {toIST(caseData.updated_at)}</span>
               </div>
             </div>
-            <OwnershipAssigner
-              caseId={caseId}
-              currentOwner={caseData.decision_owner_email}
-            <CommunicationTool />
-              onAssigned={loadCase}
-            />
+            <div className="flex items-center gap-2">
+              <OwnershipAssigner
+                caseId={caseId}
+                currentOwner={caseData.decision_owner_email}
+                onAssigned={loadCase}
+              />
+              <CommunicationTool />
+            </div>
           </div>
         </div>
       </header>
