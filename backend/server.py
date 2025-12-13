@@ -83,8 +83,16 @@ class ShipmentIdentifiers(BaseModel):
     routes: List[str] = []
     carriers: List[str] = []
 
+class DisruptionDetails(BaseModel):
+    disruption_type: str = Field(min_length=3)  # e.g., "customs hold", "port congestion"
+    scope: str = Field(min_length=3)  # e.g., "shipment", "corridor", "container"
+    identifier: str = Field(min_length=1)  # shipment ID, container number, etc.
+    time_discovered_ist: str = Field(min_length=5)  # IST time
+    source: str = Field(min_length=3)  # call, WhatsApp, CHA, transporter, etc.
+
 class CreateCase(BaseModel):
     description: str = Field(min_length=10)
+    disruption_details: DisruptionDetails
     shipment_identifiers: ShipmentIdentifiers
 
 class EvidenceFact(BaseModel):
