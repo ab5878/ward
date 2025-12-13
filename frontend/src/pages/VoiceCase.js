@@ -195,18 +195,22 @@ export default function VoiceCase() {
     try {
       addToConversation('ward', text);
       
+      // Use detected language or selected language for TTS
+      const languageForTTS = detectedLanguage || selectedLanguage;
+      
       const ttsResponse = await api.post('/voice/text-to-speech', {
         response_text: text,
+        language_code: languageForTTS,
         context: 'clarity'
       });
       
       // Play audio
       const audio = new Audio(`data:audio/wav;base64,${ttsResponse.data.audio_base64}`);
       audioPlayerRef.current = audio;
-      audio.play();
+      await audio.play();
     } catch (error) {
       console.error('TTS error:', error);
-      // Fallback: just log the text
+      // Fallback: just log the text without audio
     }
   };
 
