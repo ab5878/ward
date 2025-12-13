@@ -314,6 +314,7 @@ async def generate_ai_draft(case_id: str, current_user: dict = Depends(get_curre
         # Generate decision structure using AI
         decision_structure = await generate_decision_structure(
             description=case["description"],
+            disruption_details=case["disruption_details"],
             shipment_data=case["shipment_identifiers"]
         )
         
