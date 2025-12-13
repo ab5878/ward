@@ -138,13 +138,14 @@ class SarvamService:
             print(f"Text-to-speech error: {e}")
             return b""  # Return empty bytes on error
     
-    async def translate_and_transcribe(self, audio_file_path: str) -> Dict[str, Any]:
+    async def translate_and_transcribe(self, audio_file_path: str, source_language_code: str = "hi-IN") -> Dict[str, Any]:
         """
         Transcribe and translate to English using Sarvam AI
         Uses Saaras model for English translation
         
         Args:
             audio_file_path: Path to audio file
+            source_language_code: Source language (default: hi-IN)
         
         Returns:
             Dictionary with English translation and original language
@@ -156,8 +157,10 @@ class SarvamService:
                         'file': (os.path.basename(audio_file_path), audio_file, 'audio/wav')
                     }
                     
+                    # Saaras model for translation to English
                     data = {
-                        'model': 'saaras:v1'  # Translation model
+                        'model': 'saaras:v1',
+                        'language_code': source_language_code  # Source language
                     }
                     
                     response = await client.post(
