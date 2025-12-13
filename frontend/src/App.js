@@ -46,6 +46,7 @@ function App() {
           <Route path="/cases/:caseId" element={<PrivateRoute><CaseDetail /></PrivateRoute>} />
           <Route path="/audit" element={<PrivateRoute><AuditTrail /></PrivateRoute>} />
         </Routes>
+        <Toaster />
       </Router>
     </AuthProvider>
   );
