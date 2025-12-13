@@ -35,13 +35,13 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/cases/new" element={<PrivateRoute><CreateCase /></PrivateRoute>} />
           <Route path="/cases/:caseId" element={<PrivateRoute><CaseDetail /></PrivateRoute>} />
           <Route path="/audit" element={<PrivateRoute><AuditTrail /></PrivateRoute>} />
-          <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
       </Router>
     </AuthProvider>
