@@ -1,4 +1,4 @@
-# Ward v0 — Build Plan (Concise)
+# Ward v0 — Phase 1: Disruption Lifecycle Engine
 
 ## 1) Objectives
 - Deliver Ward v0 as a decision support tool (not planning/prediction/optimization/execution)
