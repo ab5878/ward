@@ -539,10 +539,56 @@ async def transcribe_voice(voice_data: VoiceTranscript, current_user: dict = Dep
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Voice transcription failed: {str(e)}")
 
+@app.post("/api/voice/driver-response")
+async def generate_driver_response(request: dict, current_user: dict = Depends(get_current_user)):
+    """
+    Generate safe response for DRIVER role
+    Only acknowledgment, clarification, or safe coordination - NO DECISIONS
+    """
+    try:
+        driver_input = request.get("driver_input", "")
+        conversation_history = request.get("conversation_history", [])
+        
+        if not driver_input:
+            raise HTTPException(status_code=400, detail="Driver input is required")
+        
+        response = await voice_assistant.generate_driver_response(driver_input, conversation_history)
+        
+        return {
+            "response": response,
+            "role": "driver",
+            "safe": True  # Flag indicating this is a safe, non-decision response
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate driver response: {str(e)}")
+
+@app.post("/api/voice/helper-questions")
+async def generate_helper_questions(request: dict, current_user: dict = Depends(get_current_user)):
+    """
+    Generate context-harvesting questions for HELPER role (CHA, senior ops)
+    NOT asking for advice, asking for domain knowledge
+    """
+    try:
+        context = request.get("context", "")
+        if not context:
+            raise HTTPException(status_code=400, detail="Context is required")
+        
+        questions = await voice_assistant.generate_helper_questions(context)
+        
+        return {
+            "questions": questions,
+            "role": "helper",
+            "count": len(questions)
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate helper questions: {str(e)}")
+
 @app.post("/api/voice/clarity-questions")
 async def generate_clarity_questions(transcript: dict, current_user: dict = Depends(get_current_user)):
     """
-    Generate clarity-enforcing questions based on initial disruption
+    Generate clarity-enforcing questions for MANAGER role
     Ward clarifies - it does not decide
     """
     try:
@@ -554,6 +600,7 @@ async def generate_clarity_questions(transcript: dict, current_user: dict = Depe
         
         return {
             "questions": questions,
+            "role": "manager",
             "count": len(questions)
         }
     
