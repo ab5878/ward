@@ -91,7 +91,7 @@ Manager: {manager_answers[2]}"""
     print(f"\n{YELLOW}STEP 4: Helper Provides Context{RESET}")
     print(f"{BLUE}Helper (Senior Ops):{RESET} Available to provide domain knowledge")
     
-    context = f\"Truck breakdown near Nashik with reefer failure. Medicine shipment affected.\"
+    context = "Truck breakdown near Nashik with reefer failure. Medicine shipment affected."
     helper_questions = await voice_assistant.generate_helper_questions(context)
     
     print(f"\n{GREEN}Ward asks Helper (context harvesting, NOT advice):{RESET}")
