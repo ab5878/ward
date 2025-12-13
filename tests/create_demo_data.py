@@ -314,7 +314,7 @@ def main():
     print("      → Perfect for showing complete audit trail + outcome")
     
     print("\n🎬 READY FOR DEMO!")
-    print("   Open: https://logistics-ward.preview.emergentagent.com")
+    print("   Open: https://disruption-hub.preview.emergentagent.com")
     print("   Login: manager@logistics.com / demo123")
     print("   See: /app/DEMO_SCRIPT.md for full script")
     
