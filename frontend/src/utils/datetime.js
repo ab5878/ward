@@ -13,7 +13,7 @@ export const toIST = (date, formatStr = 'dd MMM, HH:mm') => {
   if (!date) return '';
   try {
     const utcDate = typeof date === 'string' ? new Date(date) : date;
-    const istDate = utcToZonedTime(utcDate, IST_TIMEZONE);
+    const istDate = toZonedTime(utcDate, IST_TIMEZONE);
     return `${format(istDate, formatStr)} IST`;
   } catch (error) {
     console.error('Date formatting error:', error);
