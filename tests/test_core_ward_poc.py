@@ -437,9 +437,22 @@ Options being communicated via WhatsApp with transporter:
     # Run scenario tests
     results = []
     for scenario in scenarios:
+        # Add disruption details to the prompt
+        disruption_context = ""
+        if "disruption_details" in scenario:
+            dd = scenario["disruption_details"]
+            disruption_context = f"""
+Disruption Type: {dd['disruption_type']}
+Scope: {dd['scope']}
+Identifier: {dd['identifier']}
+Time Discovered: {dd['time_discovered_ist']}
+Source: {dd['source']}
+
+"""
+        
         result = await validator.test_scenario(
             scenario["name"],
-            scenario["description"],
+            disruption_context + scenario["description"],
             scenario["shipment_data"]
         )
         results.append(result)
