@@ -1,391 +1,482 @@
 {
-  "meta": {
-    "product": "Ward v0 — Logistics Disruption Decision Support",
-    "purpose": "Crisis-time decision structuring (not planning). Enforce 6-step protocol with accountability and auditability.",
-    "audience": "Logistics operations managers under time pressure",
-    "brand_attributes": ["operational", "accountable", "clear", "evidence-driven", "calm-under-pressure"],
-    "design_style": "Functional Minimalism + Swiss/Operations Room aesthetic (solid surfaces, high-contrast UI, no visual noise)."
-  },
-  "color_system": {
-    "principles": [
-      "Neutral base for content surfaces",
-      "High-contrast text (WCAG AA minimum)",
-      "Alert colors reserved for risk, warnings, overrides",
-      "No transparent backgrounds; all surfaces solid",
-      "Use gradients only in section backgrounds if needed, never in content blocks"
+  "product_name": "Ward v0 — Disruption Lifecycle Management (India Logistics)",
+  "brand_attributes": ["manager-first", "operational", "decisive", "accountable", "India-first", "no-nonsense"],
+  "audience_and_goals": {
+    "primary_user": "Logistics operations managers and duty leads",
+    "key_tasks": [
+      "Scan and filter active disruptions by lifecycle state",
+      "Assign or reassign disruption ownership with audit trail",
+      "Advance lifecycle (only decision owner)",
+      "Add timeline context from voice/text/system events with reliability tags",
+      "Review multi-source timeline quickly and make decisions"
     ],
-    "tokens_hsl_for_index_css_root": {
-      "--background": "210 20% 99%",
-      "--foreground": "217 33% 12%",
-      "--card": "0 0% 100%",
-      "--card-foreground": "217 33% 12%",
-      "--popover": "0 0% 100%",
-      "--popover-foreground": "217 33% 12%",
-      "--primary": "205 61% 34%", 
-      "--primary-foreground": "0 0% 98%",
-      "--secondary": "210 16% 94%",
-      "--secondary-foreground": "217 33% 12%",
-      "--accent": "210 16% 94%",
-      "--accent-foreground": "217 33% 12%",
-      "--muted": "213 16% 92%",
-      "--muted-foreground": "215 16% 35%",
-      "--destructive": "4 74% 45%",
-      "--destructive-foreground": "0 0% 98%",
-      "--warning": "28 90% 54%",
-      "--warning-foreground": "20 16% 12%",
-      "--success": "146 46% 35%",
-      "--success-foreground": "0 0% 98%",
-      "--info": "201 96% 32%",
-      "--info-foreground": "0 0% 98%",
-      "--border": "210 16% 85%",
-      "--input": "210 16% 85%",
-      "--ring": "205 61% 34%",
-      "--radius": "0.5rem",
-      "--shadow-elev-1": "0 1px 2px rgba(16,24,40,0.06), 0 1px 3px rgba(16,24,40,0.10)",
-      "--shadow-elev-2": "0 4px 8px rgba(16,24,40,0.08), 0 2px 4px rgba(16,24,40,0.08)"
-    },
-    "dark_mode_overrides_hsl": {
-      "--background": "220 10% 7%",
-      "--foreground": "0 0% 98%",
-      "--card": "220 10% 10%",
-      "--card-foreground": "0 0% 98%",
-      "--primary": "205 61% 52%",
-      "--primary-foreground": "220 10% 10%",
-      "--secondary": "220 8% 16%",
-      "--secondary-foreground": "0 0% 98%",
-      "--muted": "220 8% 16%",
-      "--muted-foreground": "220 6% 70%",
-      "--destructive": "4 74% 52%",
-      "--warning": "28 90% 60%",
-      "--success": "146 46% 42%",
-      "--info": "201 96% 46%",
-      "--border": "220 8% 18%",
-      "--input": "220 8% 18%",
-      "--ring": "205 61% 52%"
-    },
-    "semantic_usage": {
-      "text_primary": "text-foreground",
-      "text_muted": "text-[hsl(var(--muted-foreground))]",
-      "surface": "bg-background",
-      "card_surface": "bg-card",
-      "border": "border-[hsl(var(--border))]",
-      "cta": "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]",
-      "success": "bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))]",
-      "warning": "bg-[hsl(var(--warning))] text-[hsl(var(--warning-foreground))]",
-      "danger": "bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))]",
-      "info": "bg-[hsl(var(--info))] text-[hsl(var(--info-foreground))]"
-    }
+    "success_criteria": [
+      "Rapid scan-ability of state and owner",
+      "Single-click ownership assignment",
+      "Clear, unambiguous state transition controls",
+      "Reliable, visually distinct timeline by source type and reliability",
+      "IST-first timestamps and India logistics vocabulary (ports, customs)"
+    ]
   },
+
+  "design_personality": {
+    "tone": "Control center — serious, crisp, high-contrast, low ornamentation",
+    "style_mix": "Swiss layout discipline + Control-tower dashboards (Grafana/ICEDASH) — no gradients for content, deep neutrals with decisive accents"
+  },
+
   "typography": {
     "fonts": {
-      "heading": "\"Space Grotesk\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial",
-      "body": "\"IBM Plex Sans\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial",
-      "mono": "\"Source Code Pro\", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas"
-    },
-    "import": {
-      "google_fonts_links": [
-        "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap",
-        "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-      ],
-      "apply": "body { font-family: var(--font-body); } h1,h2,h3,h4 { font-family: var(--font-heading); }"
-    },
-    "css_vars": {
-      "--font-heading": "Space Grotesk",
-      "--font-body": "IBM Plex Sans"
+      "heading": "Space Grotesk",
+      "body": "IBM Plex Sans",
+      "fallback": "system-ui, -apple-system, Segoe UI"
     },
     "scale": {
       "h1": "text-4xl sm:text-5xl lg:text-6xl",
       "h2": "text-base md:text-lg",
       "body": "text-base md:text-base",
       "small": "text-sm",
-      "mono": "font-mono text-sm"
+      "micro": "text-xs tracking-wide"
     },
     "usage": {
-      "critical_numbers": "tabular-nums tracking-tight text-[hsl(var(--foreground))]",
-      "labels": "text-xs uppercase tracking-wider text-[hsl(var(--muted-foreground))]"
+      "page_titles": "font-semibold tracking-tight",
+      "section_labels": "uppercase text-xs tracking-wider text-muted-foreground",
+      "numerics": "tabular-nums"
     }
   },
-  "layout": {
-    "container": "mx-auto px-4 sm:px-6 lg:px-8",
-    "grid": {
-      "dashboard": "grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6",
-      "editor_two_col": "grid grid-cols-1 lg:grid-cols-12 gap-4",
-      "col_main": "lg:col-span-8",
-      "col_side": "lg:col-span-4"
-    },
-    "cards": {
-      "padding": "p-4 sm:p-5 lg:p-6",
-      "radius": "rounded-md",
-      "shadow": "shadow-[var(--shadow-elev-1)]"
+
+  "color_system": {
+    "note": "Use deep, purposeful solids. No decorative gradients on content. Light/dark supported via CSS vars.",
+    "semantic_tokens_css_to_add": """
+    /* Add to /app/frontend/src/App.css after existing :root blocks */
+    :root {
+      /* Core neutrals */
+      --ink-900: 217 33% 12%; /* deep navy for text */
+      --slate-800: 215 25% 17%;
+      --slate-700: 215 19% 25%;
+      --steel-600: 215 16% 35%;
+      --steel-300: 210 16% 85%;
+
+      /* Brand/ops accents (India-first without gimmick) */
+      --accent-blue-600: 205 61% 34%; /* primary */
+      --accent-blue-500: 205 61% 45%;
+      --accent-teal-600: 184 65% 32%;
+      --accent-amber-600: 28 90% 54%;
+      --accent-green-600: 146 46% 35%;
+      --accent-red-600: 4 74% 45%;
+
+      /* Lifecycle state tokens */
+      --state-reported: 215 16% 85%;       /* neutral */
+      --state-clarified: 205 61% 45%;      /* blue */
+      --state-decision-required: 28 90% 54%; /* amber */
+      --state-decided: 184 65% 32%;        /* teal */
+      --state-in-progress: 201 96% 32%;    /* info blue */
+      --state-resolved: 146 46% 35%;       /* green */
+
+      /* Reliability tags */
+      --reliability-low: 215 16% 85%;
+      --reliability-medium: 28 90% 54%;
+      --reliability-high: 146 46% 35%;
+
+      /* Source type */
+      --source-text: 215 16% 35%;
+      --source-voice: 184 65% 32%;
+      --source-system: 201 96% 32%;
+
+      /* Radius tokens */
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+
+      /* Button tokens */
+      --btn-radius: 0.5rem;
+      --btn-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+      --focus-ring: 0 0 0 3px hsl(var(--accent-blue-500) / 0.25);
     }
-  },
-  "buttons": {
-    "style": "Professional / Corporate",
-    "shape": "rounded-md",
-    "variants": {
-      "primary": "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary))]/90 focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]",
-      "secondary": "bg-[hsl(var(--secondary))] text-foreground hover:bg-[hsl(var(--secondary))]/80",
-      "ghost": "bg-transparent text-foreground hover:bg-[hsl(var(--secondary))]",
-      "danger": "bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))] hover:bg-[hsl(var(--destructive))]/90",
-      "success": "bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] hover:bg-[hsl(var(--success))]/90"
-    },
-    "sizes": {
-      "sm": "h-9 px-3 text-sm",
-      "md": "h-10 px-4 text-sm",
-      "lg": "h-11 px-5 text-base"
-    },
-    "motion": "transition-colors duration-150"
-  },
-  "pages": {
-    "login_register": {
-      "layout": "single column centered form, no marketing; solid card with title, inputs, submit",
-      "components": ["./components/ui/card", "./components/ui/input", "./components/ui/label", "./components/ui/button", "./components/ui/alert"],
-      "states": ["loading: disable submit", "error: alert with data-testid=\"auth-error-alert\""]
-    },
-    "dashboard": {
-      "layout": "12-column grid; left: Active Disruptions list (lg:8), right: Recent Decisions/Audit highlights (lg:4)",
-      "modules": [
-        "KPI strip (Delayed Shipments, At-Risk Routes, Pending Approvals)",
-        "Active Disruptions table/cards",
-        "Recent Decisions timeline"
-      ],
-      "components": ["./components/ui/card", "./components/ui/badge", "./components/ui/table", "./components/ui/tooltip", "./components/ui/skeleton", "./components/ui/sonner"]
-    },
-    "create_disruption": {
-      "layout": "form in card; left meta fields, right evidence and shipment selector",
-      "components": ["./components/ui/form", "./components/ui/input", "./components/ui/textarea", "./components/ui/select", "./components/ui/badge", "./components/ui/button", "./components/ui/calendar"]
-    },
-    "decision_editor": {
-      "layout": "Two-column: left vertical 6-step sections; right sidebar with Evidence, Risk Meter, and Actions",
-      "sections": ["Decision Framing", "Known Inputs", "Assumptions", "Alternatives", "Risk Analysis", "Recommendation"],
-      "components": [
-        "./components/ui/accordion",
-        "./components/ui/textarea",
-        "./components/ui/badge",
-        "./components/ui/radio-group",
-        "./components/ui/card",
-        "./components/ui/alert",
-        "./components/ui/button",
-        "./components/ui/separator",
-        "./components/ui/skeleton",
-        "./components/ui/progress",
-        "./components/ui/tooltip"
-      ],
-      "critical_rules": [
-        "Max 3 alternatives visible",
-        "Worst-case shown first with destructive styling",
-        "Clear Locked vs Unlocked section states",
-        "Mandatory approval per section before lock"
-      ]
-    },
-    "audit_trail": {
-      "layout": "Full-width timeline with filters; table fallback",
-      "components": ["./components/ui/select", "./components/ui/calendar", "./components/ui/input", "./components/ui/table", "./components/ui/separator", "./components/ui/badge", "./components/ui/tooltip", "./components/ui/button"]
-    },
-    "historical_disruptions": {
-      "layout": "Read-only list/table with filters; link to details",
-      "components": ["./components/ui/table", "./components/ui/select", "./components/ui/badge", "./components/ui/input"]
+
+    .dark {
+      --ink-900: 0 0% 98%;
+      --slate-800: 220 10% 7%;
+      --slate-700: 220 8% 16%;
+      --steel-600: 220 6% 70%;
+      --steel-300: 220 8% 18%;
+
+      --accent-blue-600: 205 61% 52%;
+      --accent-blue-500: 205 61% 52%;
+      --accent-teal-600: 184 65% 46%;
+      --accent-amber-600: 28 90% 60%;
+      --accent-green-600: 146 46% 42%;
+      --accent-red-600: 4 74% 52%;
     }
+
+    /* Utility badges for states */
+    .state-badge { @apply px-2 py-0.5 rounded-md text-xs font-medium; }
+    .state-badge[data-state='REPORTED'] { color: hsl(var(--foreground)); background-color: hsl(var(--state-reported)); }
+    .state-badge[data-state='CLARIFIED'] { color: white; background-color: hsl(var(--state-clarified)); }
+    .state-badge[data-state='DECISION_REQUIRED'] { color: #141414; background-color: hsl(var(--state-decision-required)); }
+    .state-badge[data-state='DECIDED'] { color: white; background-color: hsl(var(--state-decided)); }
+    .state-badge[data-state='IN_PROGRESS'] { color: white; background-color: hsl(var(--state-in-progress)); }
+    .state-badge[data-state='RESOLVED'] { color: white; background-color: hsl(var(--state-resolved)); }
+
+    /* Reliability chips */
+    .reliability-chip { @apply px-1.5 py-0.5 rounded-sm text-[11px] font-medium; }
+    .reliability-chip[data-level='low'] { color: hsl(var(--foreground)); background-color: hsl(var(--reliability-low)); }
+    .reliability-chip[data-level='medium'] { color: #141414; background-color: hsl(var(--reliability-medium)); }
+    .reliability-chip[data-level='high'] { color: white; background-color: hsl(var(--reliability-high)); }
+
+    /* Source icons */
+    .source-dot { @apply inline-block w-2 h-2 rounded-full; }
+    .source-dot[data-type='text'] { background-color: hsl(var(--source-text)); }
+    .source-dot[data-type='voice'] { background-color: hsl(var(--source-voice)); }
+    .source-dot[data-type='system'] { background-color: hsl(var(--source-system)); }
+    """
   },
-  "key_components": {
-    "section_header": {
-      "purpose": "Display step number, title, status badge, lock icon, and Approve/Lock button",
-      "structure": "flex justify-between items-center py-3 border-b",
-      "states": [
-        "pending: neutral",
-        "approved: success badge + lock icon",
-        "locked: gray background, pointer-events-none on fields"
-      ],
-      "testids": [
-        "data-testid=\"section-<step>-approve-button\"",
-        "data-testid=\"section-<step>-lock-indicator\"",
-        "data-testid=\"section-<step>-status-badge\""
-      ]
-    },
-    "evidence_badge": {
-      "elements": ["source", "freshness (age)", "reliability"],
-      "style": "compact badges inline; muted background; tooltip with full metadata",
-      "badge_colors": {
-        "fresh": "success",
-        "stale": "warning",
-        "low_reliability": "destructive"
-      },
-      "testids": ["data-testid=\"evidence-badge\""]
-    },
-    "alternatives_card": {
-      "layout": "Card with radio at top-left, title, brief, worst-case prominently; risk chips",
-      "rules": ["show at most 3", "first line: worst-case in red/amber", "radio required"],
-      "testids": [
-        "data-testid=\"alternative-card\"",
-        "data-testid=\"alternative-select-radio\"",
-        "data-testid=\"alternative-worst-case\""
-      ]
-    },
-    "override_modal": {
-      "trigger": "If non-recommended alternative chosen or unlocking a locked section",
-      "fields": [
-        "Reason taxonomy (Select)",
-        "Free-text justification (Textarea, min 50 chars)",
-        "Evidence upload (future)",
-        "Compensating controls (Textarea)"
-      ],
-      "actions": ["Confirm Override", "Cancel"],
-      "testids": [
-        "data-testid=\"override-reason-select\"",
-        "data-testid=\"override-justification-textarea\"",
-        "data-testid=\"override-confirm-button\""
-      ]
-    },
-    "risk_alert": {
-      "usage": "Use Alert (destructive or warning) with bold title and concise copy",
-      "testids": ["data-testid=\"risk-alert\""]
-    }
-  },
+
   "component_path": {
     "button": "./components/ui/button",
     "badge": "./components/ui/badge",
     "card": "./components/ui/card",
-    "textarea": "./components/ui/textarea",
-    "select": "./components/ui/select",
-    "radio_group": "./components/ui/radio-group",
-    "accordion": "./components/ui/accordion",
-    "alert": "./components/ui/alert",
+    "tabs": "./components/ui/tabs",
     "table": "./components/ui/table",
+    "select": "./components/ui/select",
+    "dialog": "./components/ui/dialog",
+    "dropdown_menu": "./components/ui/dropdown-menu",
     "tooltip": "./components/ui/tooltip",
-    "skeleton": "./components/ui/skeleton",
-    "progress": "./components/ui/progress",
+    "separator": "./components/ui/separator",
+    "scroll_area": "./components/ui/scroll-area",
+    "sheet": "./components/ui/sheet",
     "calendar": "./components/ui/calendar",
     "sonner": "./components/ui/sonner"
   },
-  "micro_interactions": {
-    "rules": [
-      "Never use transition: all; use transition-colors, transition-opacity, etc.",
-      "Buttons: subtle shade shift and focus ring",
-      "Cards: hover:shadow-md only on non-critical lists",
-      "Lock/Unlock: animate lock icon scale-95 -> 100 with framer-motion",
-      "Editor save: toast via sonner with role and timestamp"
+
+  "pages_and_layouts": {
+    "app_shell": {
+      "header": "Sticky top bar with product name, global search, quick filters by state; right cluster: timezone switch (fixed IST default), user menu",
+      "nav": "Left rail 264px on desktop (collapsible to icons at 72px). Items: Dashboard, Disruptions, Owners, Audit",
+      "content_grid": "Max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6"
+    },
+    "disruption_list": {
+      "layout": "Two-pane optional. Primary: table of disruptions. Secondary (lg+): details preview panel when a row is selected",
+      "table_columns": [
+        "state_badge", "title", "owner", "last_event_source+reliability", "port/customs", "updated_at (IST)", "actions"
+      ],
+      "filters": "Tabs for 6 states using shadcn Tabs; additional Select for owner, source type, reliability >=; search input",
+      "row_density": "h-12 on desktop, h-14 for touch; hover:bg-secondary/60 focus-visible:ring-2 ring-primary",
+      "empty_state": "Crisp card with link to create or import; show image from image_urls.empty_state"
+    },
+    "disruption_detail": {
+      "header": "Title, state badge, owner Select, Assign/Reassign button, timestamp cluster",
+      "content_split": "grid grid-cols-1 lg:grid-cols-3 gap-6; timeline spans 2 cols; right rail has state transitions, properties, attachments",
+      "timeline": "Scrollable vertical timeline with source markers, reliability chips, and expandable payload; sticky day markers; group by day (IST)",
+      "actions_panel": "Visible only to decision owner: primary Transition button(s) + confirmation dialog; others see disabled with tooltip"
+    }
+  },
+
+  "component_specs": {
+    "DisruptionRow.js": {
+      "import_paths": ["button", "badge", "tooltip", "dropdown_menu"],
+      "snippet": """
+      import React from 'react'
+      import { Badge } from './components/ui/badge'
+      import { Button } from './components/ui/button'
+      import { Tooltip, TooltipTrigger, TooltipContent } from './components/ui/tooltip'
+      import { MoreHorizontal, Phone, MessageSquareText, Server } from 'lucide-react'
+
+      export const DisruptionRow = ({ item, onSelect, onAssign }) => {
+        const SourceIcon = item.lastSource === 'voice' ? Phone : item.lastSource === 'system' ? Server : MessageSquareText
+        return (
+          <tr data-testid={`disruption-row-${item.id}`} className="group hover:bg-secondary/60">
+            <td className="whitespace-nowrap"><span className="state-badge" data-state={item.state}>{item.state.replace('_',' ')}</span></td>
+            <td className="font-medium text-foreground/90">{item.title}</td>
+            <td><Badge variant="secondary" data-testid="owner-badge">{item.owner?.name || 'Unassigned'}</Badge></td>
+            <td className="flex items-center gap-2">
+              <SourceIcon className="w-4 h-4 text-muted-foreground" aria-hidden />
+              <span className="reliability-chip" data-level={item.reliability}>{item.reliability}</span>
+            </td>
+            <td className="text-muted-foreground tabular-nums">{item.location}</td>
+            <td className="text-muted-foreground tabular-nums">{item.updatedAtIST}</td>
+            <td className="text-right">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button data-testid="row-open-button" size="sm" variant="outline" onClick={() => onSelect(item.id)}>Open</Button>
+                </TooltipTrigger>
+                <TooltipContent>Open details</TooltipContent>
+              </Tooltip>
+            </td>
+          </tr>
+        )
+      }
+      """
+    },
+    "TimelineEvent.js": {
+      "import_paths": ["card", "badge", "tooltip", "separator"],
+      "snippet": """
+      import React from 'react'
+      import { Card } from './components/ui/card'
+      import { Separator } from './components/ui/separator'
+      import { Phone, MessageSquareText, Server } from 'lucide-react'
+
+      export const TimelineEvent = ({ evt }) => {
+        const Icon = evt.source === 'voice' ? Phone : evt.source === 'system' ? Server : MessageSquareText
+        return (
+          <div className="grid grid-cols-[20px_1fr] gap-3" data-testid={`timeline-event-${evt.id}`}>
+            <div className="relative flex justify-center">
+              <span className="source-dot" data-type={evt.source} />
+            </div>
+            <Card className="p-3 shadow-sm">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground tabular-nums">
+                <Icon className="w-3.5 h-3.5" aria-hidden />
+                <span>{evt.atIST}</span>
+                <span>•</span>
+                <span className="reliability-chip" data-level={evt.reliability}>{evt.reliability}</span>
+                {evt.author && <span>• by {evt.author}</span>}
+              </div>
+              <Separator className="my-2" />
+              <div className="text-sm leading-relaxed text-foreground/90">{evt.summary}</div>
+              {evt.payload && <pre className="mt-2 bg-secondary/60 p-2 rounded-md text-xs overflow-x-auto" data-testid="timeline-payload">{evt.payload}</pre>}
+            </Card>
+          </div>
+        )
+      }
+      """
+    },
+    "StateTransitionBar.js": {
+      "import_paths": ["button", "dialog", "sonner"],
+      "snippet": """
+      import React from 'react'
+      import { Button } from './components/ui/button'
+      import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './components/ui/dialog'
+      import { toast } from './components/ui/sonner'
+
+      export const StateTransitionBar = ({ currentState, nextStates, canAdvance, onAdvance }) => {
+        if (!canAdvance) {
+          return (
+            <div className="text-sm text-muted-foreground" data-testid="transition-guard">Only the decision owner can advance the state.</div>
+          )
+        }
+        return (
+          <div className="flex flex-wrap gap-2" data-testid="transition-actions">
+            {nextStates.map(ns => (
+              <Dialog key={ns}>
+                <DialogTrigger asChild>
+                  <Button data-testid={`advance-to-${ns}-button`} size="sm" className="font-medium">Advance to {ns.replace('_',' ')}</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Confirm transition</DialogTitle>
+                  </DialogHeader>
+                  <p className="text-sm">Move from {currentState.replace('_',' ')} to {ns.replace('_',' ')}?</p>
+                  <DialogFooter>
+                    <Button variant="outline">Cancel</Button>
+                    <Button
+                      data-testid="confirm-transition-button"
+                      onClick={() => { onAdvance(ns); toast.success(`State advanced to ${ns}`) }}
+                    >Confirm</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            ))}
+          </div>
+        )
+      }
+      """
+    },
+    "OwnershipAssigner.js": {
+      "import_paths": ["select", "button"],
+      "snippet": """
+      import React from 'react'
+      import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from './components/ui/select'
+      import { Button } from './components/ui/button'
+
+      export const OwnershipAssigner = ({ owners, value, onChange, onSubmit }) => (
+        <div className="flex gap-2 items-center" data-testid="ownership-assigner">
+          <Select value={value} onValueChange={onChange}>
+            <SelectTrigger className="w-56" data-testid="owner-select-trigger">
+              <SelectValue placeholder="Assign owner" />
+            </SelectTrigger>
+            <SelectContent>
+              {owners.map(o => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Button data-testid="assign-owner-button" onClick={onSubmit}>Assign</Button>
+        </div>
+      )
+      """
+    }
+  },
+
+  "motion_and_micro_interactions": {
+    "principles": [
+      "Functional first; micro-animations only for affordance",
+      "No transition: all; only specific properties (color, background-color, box-shadow, opacity, transform)"
     ],
     "examples_tailwind": {
-      "button": "transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]",
-      "card_hover": "hover:shadow-lg"
-    }
-  },
-  "data_testid": {
-    "convention": "kebab-case that defines role not appearance",
-    "examples": [
-      "data-testid=\"generate-structure-button\"",
-      "data-testid=\"section-1-approve-button\"",
-      "data-testid=\"final-decision-submit-button\"",
-      "data-testid=\"audit-filter-apply-button\"",
-      "data-testid=\"error-message\""
-    ]
-  },
-  "risk_and_states": {
-    "locked_state": {
-      "style": "bg-[hsl(var(--secondary))] border border-[hsl(var(--border))] opacity-90",
-      "affordance": "show lock icon + tooltip: 'Locked on <datetime> by <actor>'",
-      "inputs": "set readOnly and aria-readonly"
+      "buttons": "transition-colors duration-150 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-offset-background",
+      "rows": "transition-colors",
+      "cards": "transition-shadow hover:shadow-md"
     },
-    "warning_danger": {
-      "worst_case": "use destructive alert with leading icon; text-sm; bold label",
-      "badges": {
-        "critical": "bg-[hsl(var(--destructive))] text-white",
-        "high": "bg-[hsl(var(--warning))] text-[hsl(var(--warning-foreground))]",
-        "medium": "bg-[hsl(var(--info))] text-white",
-        "low": "bg-[hsl(var(--muted))] text-[hsl(var(--foreground))]"
+    "optional_lib": {
+      "framer_motion": {
+        "install": "npm i framer-motion",
+        "usage": "Use small motion.div for row entrance (opacity 0->1, y 4->0, 120ms, stagger 20ms)."
       }
-    },
-    "success_approved": {
-      "indicator": "small success badge + lock icon",
-      "section_border": "border-l-4 border-l-[hsl(var(--success))]"
     }
   },
-  "snippets_jsx": {
-    "decision_section_card": "import { Button } from \"./components/ui/button\"; import { Textarea } from \"./components/ui/textarea\"; import { Lock } from \"lucide-react\";\nexport const DecisionSection = ({ step, title, locked, value, onChange, onApprove }) => (\n  <div className={\`rounded-md border bg-card ${locked ? 'opacity-90' : ''}\`}>\n    <div className=\"flex items-center justify-between px-4 py-3 border-b\">\n      <div className=\"flex items-center gap-3\">\n        <span className=\"text-xs font-medium px-2 py-1 rounded bg-[hsl(var(--secondary))]\">Step {step}</span>\n        <h3 className=\"text-sm md:text-base font-semibold\">{title}</h3>\n        {locked && <Lock aria-label=\"locked\" className=\"h-4 w-4 text-[hsl(var(--success))]\" />}\n      </div>\n      <div className=\"flex items-center gap-2\">\n        <Button data-testid=\"section-approve-button\" onClick={onApprove} className=\"h-9 px-3\">Approve & Lock</Button>\n      </div>\n    </div>\n    <div className=\"p-4\">\n      <Textarea\n        data-testid=\"section-editor-textarea\"\n        className=\"min-h-[140px]\"\n        readOnly={locked}\n        value={value}\n        onChange={(e) => onChange?.(e.target.value)}\n      />\n      {locked && <p className=\"mt-2 text-xs text-[hsl(var(--muted-foreground))]\">This section is locked. Edits require an override.</p>}\n    </div>\n  </div>\n)\n",
-    "alternatives_group": "import { Card } from \"./components/ui/card\"; import { RadioGroup, RadioGroupItem } from \"./components/ui/radio-group\";\nexport const AlternativesGroup = ({ options, selected, onSelect }) => (\n  <RadioGroup value={selected} onValueChange={onSelect} className=\"grid gap-3\">\n    {options.slice(0,3).map((opt) => (\n      <Card key={opt.id} data-testid=\"alternative-card\" className=\"border p-4\">\n        <div className=\"flex items-start gap-3\">\n          <RadioGroupItem data-testid=\"alternative-select-radio\" value={opt.id} id={\`alt-${opt.id}\`} className=\"mt-1\" />\n          <div className=\"flex-1\">\n            <div className=\"flex items-center justify-between\">\n              <label htmlFor={\`alt-${opt.id}\`} className=\"font-medium cursor-pointer\">{opt.title}</label>\n              <span className=\"text-xs px-2 py-1 rounded bg-[hsl(var(--secondary))]\">Risk: {opt.risk}</span>\n            </div>\n            <p className=\"mt-1 text-sm text-[hsl(var(--muted-foreground))]\">{opt.summary}</p>\n            <div className=\"mt-3\">\n              <div data-testid=\"alternative-worst-case\" className=\"text-sm font-medium text-[hsl(var(--destructive))]\">Worst-case: {opt.worstCase}</div>\n            </div>\n          </div>\n        </div>\n      </Card>\n    ))}\n  </RadioGroup>\n)\n",
-    "override_modal_stub": "import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from \"./components/ui/dialog\"; import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from \"./components/ui/select\"; import { Textarea } from \"./components/ui/textarea\"; import { Button } from \"./components/ui/button\";\nexport const OverrideModal = ({ open, onClose, onConfirm }) => (\n  <Dialog open={open} onOpenChange={(v)=>!v && onClose?.()}>\n    <DialogContent>\n      <DialogHeader>\n        <DialogTitle>Provide override rationale</DialogTitle>\n      </DialogHeader>\n      <div className=\"mt-2 grid gap-3\">\n        <Select data-testid=\"override-reason-select\">\n          <SelectTrigger className=\"w-full\"><SelectValue placeholder=\"Select a reason\" /></SelectTrigger>\n          <SelectContent>\n            <SelectItem value=\"time\">Time-sensitive</SelectItem>\n            <SelectItem value=\"error\">Erroneous data</SelectItem>\n            <SelectItem value=\"business\">Exceptional business need</SelectItem>\n            <SelectItem value=\"regulatory\">Regulatory waiver</SelectItem>\n          </SelectContent>\n        </Select>\n        <Textarea data-testid=\"override-justification-textarea\" minLength={50} placeholder=\"Explain why this override is necessary...\" />\n      </div>\n      <DialogFooter>\n        <Button variant=\"secondary\" onClick={onClose}>Cancel</Button>\n        <Button data-testid=\"override-confirm-button\" onClick={onConfirm} className=\"bg-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/90\">Confirm Override</Button>\n      </DialogFooter>\n    </DialogContent>\n  </Dialog>\n)\n",
-    "generate_loading_block": "export const GenerateLoading = () => (\n  <div className=\"rounded-md border p-4\">\n    <div className=\"flex items-center gap-3\">\n      <div className=\"h-4 w-4 animate-spin rounded-full border-2 border-[hsl(var(--primary))] border-t-transparent\"/>\n      <p className=\"text-sm\">Generating decision structure (5–10s)…</p>\n    </div>\n    <div className=\"mt-3 h-2 w-full overflow-hidden rounded bg-[hsl(var(--secondary))]\">\n      <div className=\"h-full w-1/3 animate-pulse bg-[hsl(var(--primary))]\"/>\n    </div>\n  </div>\n)\n"
-  },
+
   "accessibility": {
-    "contrast": "Maintain AA at minimum; destructive/warning alerts must be readable on both themes",
-    "keyboard": [
-      "Tab order aligns with visual order",
-      "Space/Enter activates buttons and radios",
-      "Escape closes modals"
-    ],
-    "aria": [
-      "aria-readonly on locked sections",
-      "role=alert for risk alerts",
-      "aria-busy true on generation loading container"
+    "contrast": "Ensure WCAG AA (4.5:1) across all text on backgrounds — use the provided solid tokens",
+    "focus": "Visible focus rings using ring-primary with --focus-ring shadow fallback",
+    "keyboard": "All actions tab reachable; Enter/Space activates buttons; Esc closes dialogs",
+    "aria": "Use aria-hidden for purely decorative icons; label inputs and controls; add descriptive aria-labels on icon-only buttons"
+  },
+
+  "testing_attributes": {
+    "convention": "Use kebab-case data-testid values describing role and action",
+    "coverage": [
+      "All buttons, links, form inputs, menus, table rows",
+      "Critical info surfaces: state labels, owner badges, confirmation messages",
+      "Timeline payload blocks and filters"
     ]
   },
-  "libraries": {
-    "required": [
-      {"name": "framer-motion", "why": "micro-interactions (lock/unlock, subtle entrances)", "install": "npm i framer-motion"},
-      {"name": "recharts", "why": "risk meter, SLA sparklines", "install": "npm i recharts"},
-      {"name": "sonner", "why": "toasts already included", "install": "already in ./components/ui/sonner"}
+
+  "date_time_timezone": {
+    "timezone": "IST (+05:30) shown explicitly; all times normalized server-side or via client util",
+    "library": {
+      "name": "date-fns-tz",
+      "install": "npm i date-fns date-fns-tz",
+      "usage_js": """
+      import { format, utcToZonedTime } from 'date-fns-tz'
+      const toIST = (iso) => {
+        const zoned = utcToZonedTime(iso, 'Asia/Kolkata')
+        return format(zoned, 'dd MMM, HH:mm (IST)')
+      }
+      """
+    }
+  },
+
+  "states_and_permissions": {
+    "states": ["REPORTED", "CLARIFIED", "DECISION_REQUIRED", "DECIDED", "IN_PROGRESS", "RESOLVED"],
+    "rules": [
+      "Only decision owner can advance states",
+      "Anyone can add timeline context",
+      "Reassignments recorded with audit info (who/when)"
     ],
-    "usage_notes": [
-      "Use recharts RadialBarChart for risk score (color by threshold)",
-      "Keep motion durations 120–200ms; no bounce"
+    "ui_affordances": [
+      "If user is not decision owner, show disabled transition buttons with tooltip",
+      "OwnershipAssigner always visible with explicit labels"
     ]
   },
+
+  "grid_and_spacing": {
+    "container": "max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6",
+    "columns": {
+      "list_page": "grid grid-cols-1 lg:grid-cols-[1fr_480px] gap-6",
+      "detail_page": "grid grid-cols-1 lg:grid-cols-3 gap-6"
+    },
+    "timeline": "space-y-4 lg:space-y-5",
+    "density": "Prefer roomy spacing (1.5x standard). Avoid cramped layouts"
+  },
+
+  "icons": {
+    "library": "lucide-react",
+    "mapping": {
+      "text": "MessageSquareText",
+      "voice": "Phone",
+      "system": "Server",
+      "owner": "UserCircle",
+      "assign": "UserPlus",
+      "decision": "CheckCircle2"
+    }
+  },
+
   "image_urls": [
     {
-      "category": "login_hero",
-      "description": "Ops room screens backdrop (subtle, darkened overlay)",
-      "url": "https://images.unsplash.com/photo-1642775196125-38a9eb496568?crop=entropy&cs=srgb&fm=jpg&q=85"
-    },
-    {
-      "category": "dashboard_banner",
-      "description": "Aerial port containers (masked behind header with low opacity)",
-      "url": "https://images.unsplash.com/photo-1724364552281-dbed323c4633?crop=entropy&cs=srgb&fm=jpg&q=85"
-    },
-    {
       "category": "empty_state",
-      "description": "Warehouse loading docks/trucks",
-      "url": "https://images.pexels.com/photos/2231743/pexels-photo-2231743.jpeg"
+      "description": "Container port at night — conveys Indian logistics operations",
+      "url": "https://images.unsplash.com/photo-1639399688019-7c441d783782"
+    },
+    {
+      "category": "login_or_welcome_side",
+      "description": "Cargo ship docked at night (serious, operational)",
+      "url": "https://images.unsplash.com/photo-1621697944804-d0a393f7e01a"
+    },
+    {
+      "category": "dashboard_banner_small",
+      "description": "Industrial cranes panorama (muted)",
+      "url": "https://images.pexels.com/photos/27727861/pexels-photo-27727861.jpeg"
     }
   ],
-  "instructions_to_main_agent": [
-    "Update /app/frontend/src/index.css :root with tokens_hsl_for_index_css_root and .dark overrides",
-    "Import Google Fonts in public/index.html or root layout",
-    "Apply heading/body fonts across app",
-    "Use shadcn components only for UI primitives; do not use raw HTML for dropdowns, calendars, toasts",
-    "Ensure every interactive and key informational element includes a data-testid attribute (kebab-case role names)",
-    "Implement decision editor with 6 vertical sections, each card controls its own approve/lock state",
-    "Limit alternatives to max 3 and render Worst-case first using destructive styling",
-    "On override flow, open OverrideModal; block submit until min 50 chars typed",
-    "Use sonner for saved/approved toasts with role + timestamp",
-    "No transparent surfaces; use bg-card or bg-background as applicable"
-  ],
-  "gradient_rules": {
-    "restriction": [
-      "Never use dark/saturated purple/pink/blue gradients",
-      "Gradients cover <20% viewport",
-      "No gradients on text-heavy content or small elements"
-    ],
-    "allowed_use": [
-      "Section headers/background dividers",
-      "Hero strip (top-only) with very mild blue-gray gradient"
-    ],
-    "fallback": "If gradient risks readability, revert to solid background"
-  },
-  "testing_ids_must_have": [
-    "generate-structure-button",
-    "section-<n>-approve-button",
-    "section-<n>-lock-indicator",
-    "alternative-card",
-    "alternative-select-radio",
-    "alternative-worst-case",
-    "override-confirm-button",
-    "final-decision-submit-button",
-    "audit-filter-apply-button",
-    "error-message"
-  ]
-}
 
-<General UI UX Design Guidelines>  
+  "usage_of_shadcn": {
+    "rules": [
+      "Use Shadcn/UI components from ./components/ui exclusively for primitives",
+      "Avoid native HTML dropdowns/dialogs; prefer Select, Dialog, DropdownMenu, etc.",
+      "Named exports for components; pages use default exports"
+    ]
+  },
+
+  "button_system": {
+    "tone": "Professional / Corporate",
+    "variants": {
+      "primary": "rounded-[var(--btn-radius)] bg-[hsl(var(--accent-blue-600))] text-white hover:bg-[hsl(var(--accent-blue-500))] shadow-[var(--btn-shadow)]",
+      "secondary": "rounded-[var(--btn-radius)] bg-secondary text-foreground hover:bg-secondary/80",
+      "ghost": "rounded-[var(--btn-radius)] hover:bg-secondary/60"
+    },
+    "sizes": {
+      "sm": "h-8 px-3 text-xs",
+      "md": "h-9 px-4 text-sm",
+      "lg": "h-11 px-5 text-base"
+    },
+    "focus": "focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[hsl(var(--accent-blue-500))]"
+  },
+
+  "tables": {
+    "component": "./components/ui/table",
+    "row_states": "hover:bg-secondary/60 data-[selected=true]:bg-secondary focus-visible:outline-none",
+    "empty": "min-h-[220px] grid place-content-center text-muted-foreground"
+  },
+
+  "filters_and_search": {
+    "quick_tabs": "./components/ui/tabs",
+    "owner_select": "./components/ui/select",
+    "source_type": "text | voice | system",
+    "reliability_levels": "low | medium | high",
+    "search_input": "./components/ui/input"
+  },
+
+  "notifications": {
+    "toast": "Use sonner (./components/ui/sonner). Place <Toaster /> at root. Use toast.success/error for transitions, assignments.",
+    "examples": [
+      "toast.success('State advanced to RESOLVED')",
+      "toast.info('Ownership reassigned to A. Singh')"
+    ]
+  },
+
+  "constraints": [
+    "No decorative gradients over content. Keep backgrounds solid; subtle textures allowed if needed",
+    "Manager-first: desktop optimized; responsive down to mobile with stacked panels",
+    "Avoid emojis; use Lucide icons.",
+    "Mobile-first responsive with sticky action bars where helpful"
+  ],
+
+  "references": [
+    {"title": "Grafana Incident Timeline", "url": "https://grafana.com/docs/grafana-cloud/alerting-and-irm/irm/use/incident-management/incident-timeline/"},
+    {"title": "ICEDASH (Indian Customs) Dashboard", "url": "https://www.icegate.gov.in/Webappl/EODB"}
+  ],
+
+  "instructions_to_main_agent": [
+    "1) Add the semantic_tokens_css_to_add block to /app/frontend/src/App.css under the existing :root scope.",
+    "2) Build Disruption List using ./components/ui/table with columns and state badges as defined. Ensure each interactive element carries data-testid attributes following the convention.",
+    "3) Implement Disruption Detail with split layout; use TimelineEvent.js for each event; render source-dot and reliability-chip.",
+    "4) Enforce permissions in UI: show disabled buttons with tooltip when user is not the decision owner.",
+    "5) Normalize all timestamps to IST using date-fns-tz helper (see date_time_timezone.usage_js).",
+    "6) Add Toaster from ./components/ui/sonner at App root and use for confirmations.",
+    "7) Verify color contrast in both modes; do not introduce gradients in content areas.",
+    "8) Ensure mobile: stack panels, make header sticky with filters, use ScrollArea for timeline on small screens.",
+    "9) Keep .js files (no .tsx). Use named exports for components, default for pages.",
+    "10) Add testing hooks: data-testid on buttons (e.g., 'assign-owner-button'), menus, filters, timeline events, and state transition confirms."
+  ],
+
+  "general_ui_ux_design_guidelines": """
     - You must **not** apply universal transition. Eg: `transition: all`. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms
     - You must **not** center align the app container, ie do not add `.App { text-align: center; }` in the css file. This disrupts the human natural reading flow of text
    - NEVER: use AI assistant Emoji characters like`🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons. Always use **FontAwesome cdn** or **lucid-react** library already installed in the package.json
@@ -442,4 +533,5 @@ NEVER stack multiple gradient layers in the same viewport.
   - Sonner component are located in `/app/src/components/ui/sonner.tsx`
 
 Use 2–4 color gradients, subtle textures/noise overlays, or CSS-based noise to avoid flat visuals.
-</General UI UX Design Guidelines>
+  """
+}
