@@ -261,6 +261,9 @@ All user stories implemented and tested. 100% test pass rate.
 - ✅ Landing page: Three-role section live
 - ✅ Services: All running successfully
 - 🔄 Ready for role-based voice testing
+
+### Phase 6 — Indian Language Voice Verification ✅ COMPLETED
+
 Goal: Complete app with auth, AI-assisted structuring, section approvals, override tracking, and audit trail.
 
 Backend (FastAPI) — Endpoints (all under /api):
