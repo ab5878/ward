@@ -1234,6 +1234,97 @@ async def execute_action_plan(case_id: str, request: ExecutePlanRequest, current
         raise HTTPException(status_code=500, detail=f"Failed to execute plan: {str(e)}")
 
 # Health check
+
+# ============================================================================
+# DOCUMENT INTELLIGENCE ENDPOINTS
+# ============================================================================
+
+from fastapi import UploadFile, File
+from document_processor import document_processor
+
+@app.post("/api/cases/{case_id}/documents/analyze")
+async def analyze_document(
+    case_id: str, 
+    file: UploadFile = File(...),
+    doc_type: str = "unknown",
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Upload and analyze a document (Invoice, BL, etc.) using Gemini Vision.
+    """
+    try:
+        content = await file.read()
+        analysis = await document_processor.analyze_document(content, file.filename, doc_type)
+        
+        # Store in DB
+        doc_record = {
+            "case_id": case_id,
+            "filename": file.filename,
+            "doc_type": doc_type,
+            "analysis": analysis,
+            "uploaded_at": datetime.utcnow(),
+            "uploaded_by": current_user["email"]
+        }
+        await db.documents.insert_one(doc_record)
+        
+        # Log to timeline
+        await db.timeline_events.insert_one({
+            "case_id": case_id,
+            "actor": current_user["email"],
+            "action": "DOCUMENT_UPLOADED",
+            "content": f"Uploaded {doc_type}: {file.filename}",
+            "source_type": "system",
+            "reliability": "high",
+            "timestamp": datetime.now(timezone.utc),
+            "metadata": {"analysis_summary": str(analysis)[:200]}
+        })
+        
+        return serialize_doc(doc_record)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
+@app.post("/api/cases/{case_id}/documents/compare")
+async def compare_documents_endpoint(
+    case_id: str, 
+    doc1_id: str, 
+    doc2_id: str, 
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Compare two previously uploaded documents for discrepancies.
+    """
+    try:
+        doc1 = await db.documents.find_one({"_id": ObjectId(doc1_id)})
+        doc2 = await db.documents.find_one({"_id": ObjectId(doc2_id)})
+        
+        if not doc1 or not doc2:
+            raise HTTPException(status_code=404, detail="Documents not found")
+            
+        comparison = await document_processor.compare_documents(doc1["analysis"], doc2["analysis"])
+        
+        # Log if mismatch found
+        if comparison.get("match") is False:
+             await db.timeline_events.insert_one({
+                "case_id": case_id,
+                "actor": "Ward AI",
+                "action": "DISCREPANCY_DETECTED",
+                "content": f"Document Mismatch detected: {comparison.get('summary')}",
+                "source_type": "system",
+                "reliability": "high",
+                "timestamp": datetime.now(timezone.utc),
+                "metadata": comparison
+            })
+            
+        return comparison
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Comparison failed: {str(e)}")
+
+@app.get("/api/cases/{case_id}/documents")
+async def list_documents(case_id: str, current_user: dict = Depends(get_current_user)):
+    cursor = db.documents.find({"case_id": case_id}).sort("uploaded_at", -1)
+    docs = await cursor.to_list(length=100)
+    return [serialize_doc(doc) for doc in docs]
+
 @app.get("/api/health")
 async def health():
     return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
