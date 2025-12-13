@@ -4,7 +4,7 @@ Analyzes disruption patterns and suggests root causes + solutions
 """
 
 from typing import Dict, List, Any, Optional
-from emergentintegrations.llmchat import LlmChat, UserMessage
+from emergent_integrations.llm_chat import LlmChat, UserMessage
 import os
 
 EMERGENT_LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
