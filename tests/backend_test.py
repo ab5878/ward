@@ -417,18 +417,25 @@ class WardBackendTester:
         """Test override handling with non-recommended choice"""
         self.log("\n=== Testing Override Scenario ===", "INFO")
         
-        # Create a new case for override testing
+        # Create a new case for override testing WITH disruption details
         success, response = self.run_test(
             "Create Case for Override Test",
             "POST",
             "cases",
             200,
             data={
-                "description": "Minor delay on Route 66. Shipment SH-2024-100 delayed by 2 hours due to traffic. Need to decide on notification strategy.",
+                "description": "Truck MH-02-AB-5678 breakdown near Nashik. Shipment contains perishable goods. Driver called at 10:00 IST. Need immediate decision on alternative transport.",
+                "disruption_details": {
+                    "disruption_type": "truck_breakdown",
+                    "scope": "single shipment",
+                    "identifier": "MH-02-AB-5678",
+                    "time_discovered_ist": "13/12/2024 10:00 IST",
+                    "source": "Phone call from driver"
+                },
                 "shipment_identifiers": {
-                    "ids": ["SH-2024-100"],
-                    "routes": ["Chicago → St. Louis"],
-                    "carriers": ["MidWest Transport"]
+                    "ids": ["SH-IND-2024-100"],
+                    "routes": ["Mumbai → Pune"],
+                    "carriers": ["VRL Logistics"]
                 }
             }
         )
