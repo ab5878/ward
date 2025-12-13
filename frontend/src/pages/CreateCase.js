@@ -92,10 +92,112 @@ export default function CreateCase() {
             </div>
           )}
 
+          {/* Disruption Details - MANDATORY */}
+          <div className="mb-6 p-4 border-2 border-[hsl(var(--warning))] rounded-lg bg-[hsl(var(--warning))]/5">
+            <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
+              <span className="text-[hsl(var(--warning))]">⚠️</span> Disruption Details (Required)
+            </h3>
+            <p className="text-xs text-[hsl(var(--muted-foreground))] mb-4">
+              Ward v0 requires explicit disruption information before structuring decisions
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="disruptionType" className="block text-sm font-medium mb-1">
+                  Disruption Type *
+                </label>
+                <select
+                  id="disruptionType"
+                  value={disruptionType}
+                  onChange={(e) => setDisruptionType(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border border-[hsl(var(--input))] rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] bg-background"
+                  data-testid="disruption-type-select"
+                >
+                  <option value="">Select type...</option>
+                  <option value="customs_hold">Customs Hold</option>
+                  <option value="port_congestion">Port Congestion</option>
+                  <option value="truck_breakdown">Truck Breakdown</option>
+                  <option value="route_closure">Route Closure</option>
+                  <option value="carrier_failure">Carrier Failure</option>
+                  <option value="documentation_issue">Documentation Issue</option>
+                  <option value="weather_delay">Weather Delay (Monsoon)</option>
+                  <option value="strike">Strike / Labour Issue</option>
+                  <option value="cha_delay">CHA Delay</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="scope" className="block text-sm font-medium mb-1">
+                  Scope *
+                </label>
+                <input
+                  id="scope"
+                  type="text"
+                  value={scope}
+                  onChange={(e) => setScope(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border border-[hsl(var(--input))] rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] bg-background"
+                  placeholder="e.g., single shipment, 3 containers, Mumbai corridor"
+                  data-testid="scope-input"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="identifier" className="block text-sm font-medium mb-1">
+                  Identifier *
+                </label>
+                <input
+                  id="identifier"
+                  type="text"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border border-[hsl(var(--input))] rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] bg-background"
+                  placeholder="Shipment ID, Container #, Truck #"
+                  data-testid="identifier-input"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="timeDiscoveredIST" className="block text-sm font-medium mb-1">
+                  Time Discovered (IST) *
+                </label>
+                <input
+                  id="timeDiscoveredIST"
+                  type="text"
+                  value={timeDiscoveredIST}
+                  onChange={(e) => setTimeDiscoveredIST(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border border-[hsl(var(--input))] rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] bg-background"
+                  placeholder="DD/MM/YYYY HH:MM IST"
+                  data-testid="time-discovered-input"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label htmlFor="source" className="block text-sm font-medium mb-1">
+                  Source *
+                </label>
+                <input
+                  id="source"
+                  type="text"
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border border-[hsl(var(--input))] rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] bg-background"
+                  placeholder="e.g., Call from CHA, WhatsApp from transporter, Port notice"
+                  data-testid="source-input"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Description */}
           <div className="mb-6">
             <label htmlFor="description" className="block text-sm font-medium mb-2">
-              Disruption Description *
+              Full Disruption Description *
             </label>
             <textarea
               id="description"
@@ -105,11 +207,11 @@ export default function CreateCase() {
               minLength={10}
               rows={6}
               className="w-full px-3 py-2 border border-[hsl(var(--input))] rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] bg-background resize-none"
-              placeholder="Describe the disruption: what happened, when, current status, time constraints..."
+              placeholder="Provide detailed context: what broke, where, current status, impact, time constraints, what you know from the source..."
               data-testid="description-input"
             />
             <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-              Be specific: include timing, scope, and urgency
+              Include all relevant details about the disruption
             </p>
           </div>
 
