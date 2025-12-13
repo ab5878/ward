@@ -335,7 +335,7 @@ async def generate_ai_draft(case_id: str, current_user: dict = Depends(get_curre
 # SECTION EDIT & APPROVAL ROUTES
 # ============================================================================
 
-@app.patch("/api/cases/{case_id}/sections/{section_key}", data-testid="update-section-endpoint")
+@app.patch("/api/cases/{case_id}/sections/{section_key}")
 async def update_section(case_id: str, section_key: str, update_data: UpdateSection, current_user: dict = Depends(get_current_user)):
     try:
         draft = await db.drafts.find_one({"case_id": case_id})
