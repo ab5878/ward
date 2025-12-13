@@ -5,6 +5,7 @@ import { ArrowLeft, Loader2, AlertTriangle, Plus } from 'lucide-react';
 import { TimelineEvent } from '../components/TimelineEvent';
 import { StateTransitionBar } from '../components/StateTransitionBar';
 import { OwnershipAssigner } from '../components/OwnershipAssigner';
+import ActiveCoordination from '../components/ActiveCoordination';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Textarea } from '../components/ui/textarea';
 import { Button } from '../components/ui/button';
