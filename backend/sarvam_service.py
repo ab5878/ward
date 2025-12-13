@@ -95,11 +95,14 @@ class SarvamService:
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
                 payload = {
-                    "inputs": [text],
-                    "target_language_code": language_code,
+                    "text": text,  # Single text, not array
+                    "language": language_code,
                     "speaker": speaker,
-                    "model": "bulbul:v1",
-                    "enable_preprocessing": True  # Better handling of numbers, dates, currencies
+                    "model": "bulbul:v2",  # Updated to v2
+                    "enable_preprocessing": True,  # Better handling of numbers, dates, currencies
+                    "pitch": 0.0,
+                    "pace": 1.0,
+                    "loudness": 1.0
                 }
                 
                 response = await client.post(
