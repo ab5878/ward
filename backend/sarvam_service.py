@@ -149,7 +149,7 @@ class SarvamService:
                     
                     response = await client.post(
                         f"{SARVAM_BASE_URL}/speech-to-text-translate",
-                        headers=self.headers,
+                        headers=self.stt_headers,
                         files=files,
                         data=data
                     )
