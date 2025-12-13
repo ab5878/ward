@@ -511,7 +511,8 @@ async def get_historical(historical_id: str, current_user: dict = Depends(get_cu
 async def transcribe_voice(voice_data: VoiceTranscript, current_user: dict = Depends(get_current_user)):
     """
     Transcribe voice to text using Sarvam AI
-    Supports 10+ Indian languages with auto-detection
+    Supports 10+ Indian languages (hi-IN, en-IN, ta-IN, te-IN, kn-IN, ml-IN, mr-IN, gu-IN, pa-IN, bn-IN, od-IN)
+    IMPORTANT: language_code is REQUIRED for Sarvam AI saarika:v1 model
     """
     try:
         # Decode base64 audio
@@ -522,8 +523,11 @@ async def transcribe_voice(voice_data: VoiceTranscript, current_user: dict = Dep
         async with aiofiles.open(temp_file_path, 'wb') as f:
             await f.write(audio_bytes)
         
-        # Transcribe using Sarvam AI
-        result = await sarvam_service.speech_to_text(temp_file_path)
+        # Transcribe using Sarvam AI with explicit language code
+        result = await sarvam_service.speech_to_text(
+            temp_file_path, 
+            language_code=voice_data.language_code
+        )
         
         # Clean up temp file
         os.remove(temp_file_path)
