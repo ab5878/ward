@@ -73,8 +73,8 @@ export const getDayLabel = (date) => {
   if (!date) return '';
   try {
     const utcDate = typeof date === 'string' ? new Date(date) : date;
-    const istDate = utcToZonedTime(utcDate, IST_TIMEZONE);
-    const today = utcToZonedTime(new Date(), IST_TIMEZONE);
+    const istDate = toZonedTime(utcDate, IST_TIMEZONE);
+    const today = toZonedTime(new Date(), IST_TIMEZONE);
     
     // Check if same day
     if (format(istDate, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd')) {
