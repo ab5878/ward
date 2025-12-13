@@ -13,8 +13,12 @@ from dotenv import load_dotenv
 import asyncio
 from contextlib import asynccontextmanager
 
-# Import AI module
+# Import AI modules
 from ai_decision import generate_decision_structure
+from sarvam_service import sarvam_service
+from voice_assistant import voice_assistant
+import aiofiles
+import base64
 
 # Load environment variables
 load_dotenv()
