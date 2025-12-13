@@ -137,6 +137,41 @@ class VoiceResponse(BaseModel):
     context: str = "clarity"  # clarity, guidance, confirmation
 
 # ============================================================================
+# LIFECYCLE MODELS
+# ============================================================================
+
+class DisruptionStatus(str, Enum):
+    REPORTED = "REPORTED"
+    CLARIFIED = "CLARIFIED"
+    DECISION_REQUIRED = "DECISION_REQUIRED"
+    DECIDED = "DECIDED"
+    IN_PROGRESS = "IN_PROGRESS"
+    RESOLVED = "RESOLVED"
+
+class SourceType(str, Enum):
+    TEXT = "text"
+    VOICE = "voice"
+    SYSTEM = "system"
+
+class ReliabilityLevel(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
+class AssignOwner(BaseModel):
+    owner_email: EmailStr
+
+class TransitionState(BaseModel):
+    next_state: DisruptionStatus
+    reason: Optional[str] = None
+
+class AddTimelineEvent(BaseModel):
+    content: str = Field(min_length=1)
+    source_type: SourceType
+    reliability: ReliabilityLevel
+    metadata: Optional[Dict[str, Any]] = None
+
+# ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
 
