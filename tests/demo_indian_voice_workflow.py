@@ -64,13 +64,13 @@ async def demo_workflow():
     # Step 3: Build conversation and extract disruption
     print(f"\n{YELLOW}STEP 3: Ward Extracts Structured Disruption{RESET}")
     
-    conversation = f\"\"\"Driver: {driver_input}
+    conversation = f"""Driver: {driver_input}
 Ward: {clarity_questions[0] if clarity_questions else 'Confirmed?'}
 Manager: {manager_answers[0]}
 Ward: {clarity_questions[1] if len(clarity_questions) > 1 else 'Scope?'}
 Manager: {manager_answers[1]}
 Ward: {clarity_questions[2] if len(clarity_questions) > 2 else 'Unknowns?'}
-Manager: {manager_answers[2]}\"\"\"
+Manager: {manager_answers[2]}"""
     
     print(f"{YELLOW}Extracting structured details from conversation...{RESET}")
     disruption = await voice_assistant.extract_disruption_details(conversation)
