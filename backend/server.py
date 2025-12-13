@@ -1233,6 +1233,21 @@ async def execute_action_plan(case_id: str, request: ExecutePlanRequest, current
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to execute plan: {str(e)}")
 
+
+# ============================================================================
+# ANALYTICS ENDPOINTS
+# ============================================================================
+
+from analytics_service import AnalyticsService
+
+@app.get("/api/analytics/dashboard")
+async def get_analytics_dashboard(days: int = 30, current_user: dict = Depends(get_current_user)):
+    """
+    Get strategic analytics for the dashboard.
+    """
+    service = AnalyticsService(db)
+    return await service.get_dashboard_metrics(days)
+
 # Health check
 
 # ============================================================================
