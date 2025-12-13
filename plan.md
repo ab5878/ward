@@ -73,6 +73,78 @@ All user stories implemented and tested. 100% test pass rate.
 - AI Integration: 4/4 POC tests passed with India-specific scenarios
 - DISRUPTION FIRST gate validated: Properly rejects cases without required fields
 - India context verified: AI responses include JNPT, CHA, Mumbai, INR, IST references
+
+### Phase 4 — Voice-First Integration with Sarvam AI ✅ COMPLETED
+
+**Complete Voice-First Disruption & Decision Mode Implemented:**
+
+**1. Sarvam AI Integration (Backend):**
+- Speech-to-Text (STT) using Saarika model
+  - 10+ Indian languages with auto-detection
+  - Handles code-mixing, accents, noisy environments
+  - Support for MP3, WAV, AAC, FLAC formats
+- Text-to-Speech (TTS) using Bulbul v2 model
+  - 11 Indian languages with natural voices
+  - Anushka voice (clear, professional) for guidance
+  - Text preprocessing for numbers, dates, currencies
+- Translation service using Saaras model (STT + English translation)
+
+**2. Voice Decision Assistant (AI Orchestration):**
+- Clarity Questions Generation: AI generates 2-3 clarity-enforcing questions (not recommendations)
+- Disruption Extraction: Converts voice conversation to structured disruption details
+- Decision Guidance: Generates voice prompts for 6-step protocol
+- India-first context in all AI interactions
+
+**3. Backend API Endpoints:**
+- `/api/voice/transcribe` - Multilingual speech-to-text
+- `/api/voice/clarity-questions` - Generate clarifying questions
+- `/api/voice/extract-disruption` - Extract structured details from conversation
+- `/api/voice/text-to-speech` - Synthesize voice responses
+- `/api/voice/decision-guidance` - Generate decision protocol guidance
+- `/api/cases/voice-create` - Create cases with full voice transcript audit
+
+**4. Frontend Voice UI (Complete 5-Step Protocol):**
+- **Step 1: Speak Disruption** - Voice recording in any Indian language
+- **Step 2: Ward Clarifies** - Voice Q&A with clarity-enforcing questions
+- **Step 3: Disruption Locked** - Human approval of extracted details
+- **Step 4: Voice-Guided Decision** - Redirects to standard flow with pre-filled data
+- **Step 5: Written Output** - Full transcript stored in audit trail
+
+**5. Landing Page:**
+- Complete Voice-First section explaining 5-step protocol
+- "Why Voice?" - India-first positioning (CHA calls, WhatsApp, time pressure)
+- "How Voice Works" - Detailed step-by-step breakdown
+- "Why Sarvam AI" - Multilingual, noisy environment, India-first
+- "What Ward Voice Will NEVER Do" - Clear trust boundaries
+- Prominent throughout: Voice is interface, humans own decisions
+
+**6. Dashboard Integration:**
+- New "Voice Disruption" button (primary CTA)
+- "Type Disruption" button (secondary option)
+- Voice cases marked with special badge in case list
+
+**7. Key Features:**
+- Real-time voice recording with Recorder.js
+- Base64 audio encoding for API transmission
+- Automatic language detection (Hindi, English, regional languages)
+- Code-mixing support (Hinglish, etc.)
+- Conversation transcript logging
+- Voice playback of AI responses
+- Manual edit fallback option
+- Full audit trail with voice transcripts
+
+**Philosophy Preserved:**
+✅ Voice is an interface, NOT an autonomous agent
+✅ Ward clarifies - it does NOT decide
+✅ Human approval required at every step
+✅ Written output preserves accountability
+✅ Voice improves speed, text preserves structure
+✅ No predictions, no optimization, no auto-execution
+
+**Testing Status:**
+- Backend: All voice endpoints functional (STT, TTS, extraction)
+- Frontend: Voice UI compiled successfully
+- Integration: Sarvam AI API key configured and ready
 Goal: Complete app with auth, AI-assisted structuring, section approvals, override tracking, and audit trail.
 
 Backend (FastAPI) — Endpoints (all under /api):
