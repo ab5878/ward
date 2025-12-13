@@ -52,6 +52,12 @@ export default function VoiceCase() {
 
   const startRecording = async () => {
     try {
+      // Check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Your browser does not support audio recording. Please use Chrome, Firefox, or Safari.');
+        return;
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       
       const recorder = new Recorder(audioContextRef.current, {
@@ -64,7 +70,15 @@ export default function VoiceCase() {
       recorderRef.current = recorder;
       setRecording(true);
     } catch (error) {
-      alert('Microphone access denied or not available: ' + error.message);
+      console.error('Microphone access error:', error);
+      
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        alert('Microphone access denied. Please:\n\n1. Click the 🔒 lock icon in your browser address bar\n2. Allow microphone access for this site\n3. Refresh the page and try again');
+      } else if (error.name === 'NotFoundError') {
+        alert('No microphone found. Please connect a microphone and try again.');
+      } else {
+        alert('Microphone error: ' + error.message + '\n\nPlease check your microphone settings and try again.');
+      }
     }
   };
 
