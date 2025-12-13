@@ -582,6 +582,231 @@ async def get_historical(historical_id: str, current_user: dict = Depends(get_cu
         raise HTTPException(status_code=400, detail=str(e))
 
 # ============================================================================
+# LIFECYCLE MANAGEMENT ENDPOINTS
+# ============================================================================
+
+@app.post("/api/cases/{case_id}/assign-owner")
+async def assign_owner(case_id: str, assignment: AssignOwner, current_user: dict = Depends(get_current_user)):
+    """
+    Assign or reassign decision owner for a disruption.
+    Anyone can assign ownership - this supports the fluid Indian ops reality.
+    """
+    try:
+        case = await db.cases.find_one({"_id": ObjectId(case_id), "operator_id": current_user["user_id"]})
+        if not case:
+            raise HTTPException(status_code=404, detail="Case not found")
+        
+        # Find the user being assigned
+        assigned_user = await db.users.find_one({"email": assignment.owner_email})
+        if not assigned_user:
+            raise HTTPException(status_code=404, detail="Assigned user not found")
+        
+        assigned_user_id = str(assigned_user["_id"])
+        previous_owner = case.get("decision_owner_email")
+        now = datetime.now(timezone.utc)
+        
+        # Update case
+        await db.cases.update_one(
+            {"_id": ObjectId(case_id)},
+            {
+                "$set": {
+                    "decision_owner_id": assigned_user_id,
+                    "decision_owner_email": assignment.owner_email,
+                    "updated_at": now
+                }
+            }
+        )
+        
+        # Create audit log
+        await log_audit(case_id, current_user["email"], "OWNER_ASSIGNED", {
+            "previous_owner": previous_owner,
+            "new_owner": assignment.owner_email,
+            "assigned_by": current_user["email"]
+        })
+        
+        # Create timeline event
+        action_text = f"Ownership assigned to {assignment.owner_email}"
+        if previous_owner:
+            action_text = f"Ownership reassigned from {previous_owner} to {assignment.owner_email}"
+        
+        await db.timeline_events.insert_one({
+            "case_id": case_id,
+            "actor": current_user["email"],
+            "action": "OWNER_ASSIGNED",
+            "content": action_text,
+            "source_type": SourceType.SYSTEM.value,
+            "reliability": ReliabilityLevel.HIGH.value,
+            "timestamp": now,
+            "metadata": {
+                "previous_owner": previous_owner,
+                "new_owner": assignment.owner_email,
+                "assigned_by": current_user["email"]
+            }
+        })
+        
+        # Get updated case
+        updated_case = await db.cases.find_one({"_id": ObjectId(case_id)})
+        return serialize_doc(updated_case)
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to assign owner: {str(e)}")
+
+@app.post("/api/cases/{case_id}/transition")
+async def transition_state(case_id: str, transition: TransitionState, current_user: dict = Depends(get_current_user)):
+    """
+    Transition disruption to next state.
+    ONLY the decision owner can advance states.
+    """
+    try:
+        case = await db.cases.find_one({"_id": ObjectId(case_id), "operator_id": current_user["user_id"]})
+        if not case:
+            raise HTTPException(status_code=404, detail="Case not found")
+        
+        # Check if user is decision owner
+        if case.get("decision_owner_email") != current_user["email"]:
+            raise HTTPException(
+                status_code=403,
+                detail="Only the decision owner can advance the state"
+            )
+        
+        current_state = case.get("status", DisruptionStatus.REPORTED.value)
+        next_state = transition.next_state.value
+        
+        # Validate state transition
+        valid_transitions = {
+            DisruptionStatus.REPORTED.value: [DisruptionStatus.CLARIFIED.value],
+            DisruptionStatus.CLARIFIED.value: [DisruptionStatus.DECISION_REQUIRED.value],
+            DisruptionStatus.DECISION_REQUIRED.value: [DisruptionStatus.DECIDED.value],
+            DisruptionStatus.DECIDED.value: [DisruptionStatus.IN_PROGRESS.value],
+            DisruptionStatus.IN_PROGRESS.value: [DisruptionStatus.RESOLVED.value],
+            DisruptionStatus.RESOLVED.value: []
+        }
+        
+        if next_state not in valid_transitions.get(current_state, []):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid transition from {current_state} to {next_state}"
+            )
+        
+        now = datetime.now(timezone.utc)
+        
+        # Update case status
+        await db.cases.update_one(
+            {"_id": ObjectId(case_id)},
+            {
+                "$set": {
+                    "status": next_state,
+                    "updated_at": now
+                }
+            }
+        )
+        
+        # Create audit log
+        await log_audit(case_id, current_user["email"], "STATE_TRANSITION", {
+            "from_state": current_state,
+            "to_state": next_state,
+            "reason": transition.reason
+        })
+        
+        # Create timeline event
+        content = f"State advanced from {current_state} to {next_state}"
+        if transition.reason:
+            content += f": {transition.reason}"
+        
+        await db.timeline_events.insert_one({
+            "case_id": case_id,
+            "actor": current_user["email"],
+            "action": "STATE_TRANSITION",
+            "content": content,
+            "source_type": SourceType.SYSTEM.value,
+            "reliability": ReliabilityLevel.HIGH.value,
+            "timestamp": now,
+            "metadata": {
+                "from_state": current_state,
+                "to_state": next_state,
+                "reason": transition.reason
+            }
+        })
+        
+        # Get updated case
+        updated_case = await db.cases.find_one({"_id": ObjectId(case_id)})
+        return serialize_doc(updated_case)
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to transition state: {str(e)}")
+
+@app.post("/api/cases/{case_id}/timeline")
+async def add_timeline_event(case_id: str, event_data: AddTimelineEvent, current_user: dict = Depends(get_current_user)):
+    """
+    Add a timeline event to a disruption.
+    Anyone can add context - supports fluid Indian ops where information comes from many sources.
+    """
+    try:
+        case = await db.cases.find_one({"_id": ObjectId(case_id), "operator_id": current_user["user_id"]})
+        if not case:
+            raise HTTPException(status_code=404, detail="Case not found")
+        
+        now = datetime.now(timezone.utc)
+        
+        # Create timeline event
+        event = {
+            "case_id": case_id,
+            "actor": current_user["email"],
+            "action": "CONTEXT_ADDED",
+            "content": event_data.content,
+            "source_type": event_data.source_type.value,
+            "reliability": event_data.reliability.value,
+            "timestamp": now,
+            "metadata": event_data.metadata or {}
+        }
+        
+        result = await db.timeline_events.insert_one(event)
+        event["_id"] = result.inserted_id
+        
+        # Update case timestamp
+        await db.cases.update_one(
+            {"_id": ObjectId(case_id)},
+            {"$set": {"updated_at": now}}
+        )
+        
+        # Create audit log
+        await log_audit(case_id, current_user["email"], "TIMELINE_EVENT_ADDED", {
+            "source_type": event_data.source_type.value,
+            "reliability": event_data.reliability.value
+        })
+        
+        return serialize_doc(event)
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to add timeline event: {str(e)}")
+
+@app.get("/api/cases/{case_id}/timeline")
+async def get_timeline(case_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Get all timeline events for a disruption.
+    """
+    try:
+        case = await db.cases.find_one({"_id": ObjectId(case_id), "operator_id": current_user["user_id"]})
+        if not case:
+            raise HTTPException(status_code=404, detail="Case not found")
+        
+        cursor = db.timeline_events.find({"case_id": case_id}).sort("timestamp", -1)
+        events = await cursor.to_list(length=1000)
+        
+        return [serialize_doc(event) for event in events]
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get timeline: {str(e)}")
+
+# ============================================================================
 # VOICE-FIRST ENDPOINTS (Sarvam AI Integration)
 # ============================================================================
 
