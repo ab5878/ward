@@ -162,22 +162,38 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ROI Section */}
+      {/* Why Ward */}
       <section className="bg-muted/30 py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h3 className="text-3xl font-bold mb-6">
-              Real ROI for logistics teams
+              Built for Indian logistics reality
             </h3>
             <p className="text-lg text-muted-foreground mb-8">
-              50 disruptions/month × 17 hours saved × ₹4,000/hour
+              The only disruption management system that speaks 11 Indian languages and understands JNPT, customs, and CHA dynamics.
             </p>
             
-            <div className="bg-card border-2 border-primary/20 rounded-lg p-8">
-              <div className="text-5xl font-bold text-primary mb-2">₹34 Lakhs</div>
-              <div className="text-muted-foreground mb-6">saved per year</div>
-              <div className="text-sm text-muted-foreground">
-                Ward cost: ₹8 Lakhs/year • <strong className="text-foreground">ROI: 4.25x</strong>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="text-2xl mb-2">🇮🇳</div>
+                <h4 className="font-semibold mb-2">India-First</h4>
+                <p className="text-sm text-muted-foreground">
+                  Built for ports, customs, CHAs. Not generic software translated to Hindi.
+                </p>
+              </div>
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="text-2xl mb-2">🎤</div>
+                <h4 className="font-semibold mb-2">Zero Training</h4>
+                <p className="text-sm text-muted-foreground">
+                  Speak in your language. No manuals, no training sessions, no adoption friction.
+                </p>
+              </div>
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="text-2xl mb-2">🧠</div>
+                <h4 className="font-semibold mb-2">AI Intelligence</h4>
+                <p className="text-sm text-muted-foreground">
+                  Root cause analysis and recommended actions. Not just tracking.
+                </p>
               </div>
             </div>
           </div>
