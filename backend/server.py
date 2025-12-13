@@ -129,6 +129,7 @@ class FinalizeDecision(BaseModel):
 class VoiceTranscript(BaseModel):
     audio_base64: str
     audio_format: str = "wav"
+    language_code: str = "hi-IN"  # Default to Hindi, but frontend should specify
 
 class VoiceResponse(BaseModel):
     response_text: str
