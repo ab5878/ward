@@ -390,16 +390,23 @@ Options: expedite through senior CHA contact, wait for normal process, or arrang
             }
         },
         {
-            "name": "Route Closure",
-            "description": """Interstate 80 through Wyoming is closed due to accident, affecting 3 active shipments.
-Closure expected for 4-6 hours. Alternative routes available:
-- I-76 through Nebraska (adds 2 hours, higher toll costs)
-- Hold at current location until I-80 reopens
-All three shipments have delivery windows within next 12 hours.""",
+            "name": "Monsoon Road Blockage",
+            "description": """NH-48 between Mumbai and Ahmedabad blocked due to heavy monsoon flooding.
+Discovered via WhatsApp from truck driver at 11:00 IST on 13/12/2024.
+Three trucks with urgent pharma shipments stuck. Alternative route via NH-8 adds 6-8 hours.
+Local authorities say road may clear in 4-6 hours when water recedes.
+Customer delivery windows closing within 12 hours. Driver safety also a concern.""",
             "shipment_data": {
-                "ids": ["SH-2024-801", "SH-2024-802", "SH-2024-803"],
-                "routes": ["Salt Lake City → Chicago via I-80"],
-                "carriers": ["Regional Haul Co", "Midwest Transport"]
+                "ids": ["TRK-MH-801", "TRK-MH-802", "TRK-MH-803"],
+                "routes": ["Mumbai → Ahmedabad via NH-48"],
+                "carriers": ["VRL Logistics", "TCI Freight"]
+            },
+            "disruption_details": {
+                "disruption_type": "route_closure",
+                "scope": "3_trucks_corridor",
+                "identifier": "NH-48 KM 125",
+                "time_discovered_ist": "13/12/2024 11:00 IST",
+                "source": "WhatsApp from driver Ramesh"
             }
         },
         {
