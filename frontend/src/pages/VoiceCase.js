@@ -87,10 +87,11 @@ export default function VoiceCase() {
     setProcessing(true);
     
     try {
-      // Step 1: Transcribe voice
+      // Step 1: Transcribe voice with explicit language code
       const transcribeResponse = await api.post('/voice/transcribe', {
         audio_base64: audioBase64,
-        audio_format: 'wav'
+        audio_format: 'wav',
+        language_code: selectedLanguage  // REQUIRED for Sarvam AI
       });
       
       const transcript = transcribeResponse.data.transcript;
