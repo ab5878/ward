@@ -67,10 +67,13 @@ export default function Landing() {
       <section className="bg-[hsl(var(--muted))]/30 border-y border-[hsl(var(--border))]">
         <div className="container mx-auto px-6 py-12">
           <div className="max-w-3xl mx-auto">
-            <p className="text-base text-[hsl(var(--muted-foreground))] text-center leading-relaxed">
+            <p className="text-base text-[hsl(var(--muted-foreground))] text-center leading-relaxed mb-6">
               <span className="font-semibold text-foreground">Ward is not a voice assistant and not an autonomous agent.</span><br />
-              Ward uses voice only to capture disruptions, reduce cognitive load, and guide humans through structured decisions under uncertainty.<br />
-              <span className="font-semibold text-foreground">Voice exists to support human judgment, not replace it.</span>
+              Ward is the calm person on the call who asks the right questions, writes everything down, and makes sure the decision is remembered.<br />
+              <span className="font-semibold text-foreground">Voice is a capture + guidance layer, not a command layer.</span>
+            </p>
+            <p className="text-sm text-center text-[hsl(var(--muted-foreground))]">
+              <span className="font-semibold text-foreground">Ward coordinates humans under uncertainty.</span> It preserves who knew what, when, and why — without telling anyone what to do autonomously.
             </p>
           </div>
         </div>
