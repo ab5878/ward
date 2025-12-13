@@ -1243,6 +1243,43 @@ async def execute_action_plan(case_id: str, request: ExecutePlanRequest, current
 # INSTITUTIONAL MEMORY ENDPOINTS
 # ============================================================================
 
+
+# ============================================================================
+# INTEGRATION ENDPOINTS
+# ============================================================================
+
+from integration_service import integration_service
+
+class CommunicationRequest(BaseModel):
+    channel: str = "sms" # or email
+    recipient: str
+    content: str
+    subject: Optional[str] = None
+
+@app.post("/api/integrations/send")
+async def send_communication(request: CommunicationRequest, current_user: dict = Depends(get_current_user)):
+    """
+    Send a real-world communication (SMS/Email).
+    """
+    try:
+        if request.channel == "sms":
+            result = await integration_service.send_sms(request.recipient, request.content)
+        elif request.channel == "email":
+            result = await integration_service.send_email(request.recipient, request.subject or "Ward Alert", request.content)
+        else:
+            raise HTTPException(status_code=400, detail="Invalid channel")
+            
+        # Audit log
+        await log_audit("system", current_user["email"], "COMMUNICATION_SENT", {
+            "channel": request.channel, 
+            "recipient": request.recipient,
+            "status": result["status"]
+        })
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 from similarity_engine import SimilarityEngine
 
 @app.get("/api/cases/{case_id}/similar")
