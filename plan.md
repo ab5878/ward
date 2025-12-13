@@ -1,532 +1,220 @@
-# Ward v0 — Phase 1: Disruption Lifecycle Engine
-
-## 1) Objectives
-- Deliver Ward v0 as a decision support tool (not planning/prediction/optimization/execution)
-- Enforce fixed 6-step protocol on every decision (Framing → Known Inputs → Assumptions → Alternatives → Risk & Downside → Recommendation)
-- Implement Hybrid AI-Assisted (Constrained) drafting with mandatory operator review/approval of each section
-- Label evidence with source, freshness, reliability (low/medium/high), and relevance; surface unknowns explicitly
-- Enforce counterfactual discipline and cognitive load limits (≤3 alternatives, worst-case first, plain language)
-- Read-only context integrations only; no execution/syncing
-- Simple email/password auth (JWT); full audit trail stored in MongoDB
-- Backend: FastAPI; Frontend: React + shadcn/ui; DB: MongoDB; AI: Gemini 2.5 Flash via Emergent Universal LLM key
-
-## 2) Implementation Steps (by Phase)
-
-### Phase 1 — Core POC (Isolation): AI Decision Structuring
-Goal: Prove Gemini reliably generates the 6-step structure with evidence labels, alternatives (≤3), counterfactuals, worst-case-first risks, and regret-minimizing recommendation, while refusing forbidden scopes.
-
-User Stories (POC):
-1. As a developer, I can call Gemini with a disruption description and get a 6-step draft.
-2. As a developer, the draft includes known inputs with sources, freshness, reliability, and explicit unknowns.
-3. As a developer, I see ≥2 and ≤3 realistic alternatives, including “do nothing/delay” when applicable.
-4. As a developer, each alternative has worst-case, irreversible consequences, blast radius, failure signals.
-5. As a developer, the recommendation minimizes regret and provides reversal conditions without optimizing for cost/ETA.
-6. As a developer, the AI refuses planning/forecasting/network optimization or hypothetical futures.
-
-Scope & Constraints:
-- Inputs allowed: operator description, shipment IDs/routes/carriers, read-only historical disruptions (labeled)
-- Forbidden: autonomous decisions, skipping steps, collapsing alternatives
-
-Steps:
-1. Integration playbook: request Gemini (text) via Emergent Universal LLM key; confirm model name and limits; note JSON-friendly prompting.
-2. Secrets: fetch EMERGENT_LLM_KEY from environment (no user key needed).
-3. Write single script /app/tests/test_core_ward_poc.py that:
-   - Defines scenarios: (a) shipment delay at hub, (b) route closure, (c) carrier capacity failure
-   - Sends prompt with strict output contract: JSON object { decision_framing, known_inputs, declared_assumptions, alternatives[], risk_and_downside[], recommendation }
-   - Validates: keys present; ≤3 alternatives; each alternative has counterfactuals; evidence labels exist; worst-case first; recommendation has reversal conditions; refusal behavior on prohibited prompt
-4. Run script; iterate prompts until all validations pass (Fix Until It Works). Persist final prompt.
-5. Document POC result (structure examples) and finalize prompt template for backend use.
-
-Deliverables:
-- Proven prompt + working Gemini call
-- Validated structured JSON that satisfies all checks
-
-### Phase 1 — Core POC (Isolation): AI Decision Structuring ✅ COMPLETED
-All 4 POC tests passed successfully. Gemini reliably generates 6-step decision structures with evidence labeling, 2-3 alternatives, and proper guardrails.
-
-### Phase 2 — Full Application Development ✅ COMPLETED
-All user stories implemented and tested. 100% test pass rate.
-
-### Phase 3 — Critical Causal Locks Implementation ✅ COMPLETED
-
-### Phase 4 — Voice-First Integration with Sarvam AI ✅ COMPLETED
-
-### Phase 5 — Three-Role Voice Architecture ✅ COMPLETED
-
-**1. INDIA CONTEXT LOCK (Always On):**
-- AI system prompt updated to assume India by default
-- Indian ports: JNPT, Mundra, Chennai, Vizag, Kolkata
-- Indian customs: CHA (Customs House Agent), documentation holds
-- Indian realities: monsoon delays, strikes, congestion, manual processes
-- Communication: phone calls, WhatsApp, broker updates
-- Formats: IST timezone, DD/MM/YYYY dates, INR currency
-- POC tests updated with Indian scenarios (customs hold at JNPT, monsoon blockage, truck breakdown)
-
-**2. DISRUPTION FIRST HARD GATE:**
-- Backend models updated: DisruptionDetails now mandatory (type, scope, identifier, time_discovered_ist, source)
-- Backend validation: Cases without disruption details rejected with 422 error
-- Frontend form updated: Mandatory disruption fields with dropdown for types (customs_hold, port_congestion, truck_breakdown, monsoon, CHA_delay, etc.)
-- AI prompt enhanced: Disruption context passed explicitly to Gemini
-- Validation confirmed: Test attempting to create case without disruption details properly rejected
-
-**Testing Results:**
-- Backend: 27/27 tests passed (100%)
-- Frontend: 95% (all forms functional, disruption fields present)
-- AI Integration: 4/4 POC tests passed with India-specific scenarios
-- DISRUPTION FIRST gate validated: Properly rejects cases without required fields
-- India context verified: AI responses include JNPT, CHA, Mumbai, INR, IST references
-
-### Phase 4 — Voice-First Integration with Sarvam AI ✅ COMPLETED
-
-**Complete Voice-First Disruption & Decision Mode Implemented:**
-
-**1. Sarvam AI Integration (Backend):**
-- Speech-to-Text (STT) using Saarika model
-  - 10+ Indian languages with auto-detection
-  - Handles code-mixing, accents, noisy environments
-  - Support for MP3, WAV, AAC, FLAC formats
-- Text-to-Speech (TTS) using Bulbul v2 model
-  - 11 Indian languages with natural voices
-  - Anushka voice (clear, professional) for guidance
-  - Text preprocessing for numbers, dates, currencies
-- Translation service using Saaras model (STT + English translation)
-
-**2. Voice Decision Assistant (AI Orchestration):**
-- Clarity Questions Generation: AI generates 2-3 clarity-enforcing questions (not recommendations)
-- Disruption Extraction: Converts voice conversation to structured disruption details
-- Decision Guidance: Generates voice prompts for 6-step protocol
-- India-first context in all AI interactions
-
-**3. Backend API Endpoints:**
-- `/api/voice/transcribe` - Multilingual speech-to-text
-- `/api/voice/clarity-questions` - Generate clarifying questions
-- `/api/voice/extract-disruption` - Extract structured details from conversation
-- `/api/voice/text-to-speech` - Synthesize voice responses
-- `/api/voice/decision-guidance` - Generate decision protocol guidance
-- `/api/cases/voice-create` - Create cases with full voice transcript audit
-
-**4. Frontend Voice UI (Complete 5-Step Protocol):**
-- **Step 1: Speak Disruption** - Voice recording in any Indian language
-- **Step 2: Ward Clarifies** - Voice Q&A with clarity-enforcing questions
-- **Step 3: Disruption Locked** - Human approval of extracted details
-- **Step 4: Voice-Guided Decision** - Redirects to standard flow with pre-filled data
-- **Step 5: Written Output** - Full transcript stored in audit trail
-
-**5. Landing Page:**
-- Complete Voice-First section explaining 5-step protocol
-- "Why Voice?" - India-first positioning (CHA calls, WhatsApp, time pressure)
-- "How Voice Works" - Detailed step-by-step breakdown
-- "Why Sarvam AI" - Multilingual, noisy environment, India-first
-- "What Ward Voice Will NEVER Do" - Clear trust boundaries
-- Prominent throughout: Voice is interface, humans own decisions
-
-**6. Dashboard Integration:**
-- New "Voice Disruption" button (primary CTA)
-- "Type Disruption" button (secondary option)
-- Voice cases marked with special badge in case list
-
-**7. Key Features:**
-- Real-time voice recording with Recorder.js
-- Base64 audio encoding for API transmission
-- Automatic language detection (Hindi, English, regional languages)
-- Code-mixing support (Hinglish, etc.)
-- Conversation transcript logging
-- Voice playback of AI responses
-- Manual edit fallback option
-- Full audit trail with voice transcripts
-
-**Philosophy Preserved:**
-✅ Voice is an interface, NOT an autonomous agent
-✅ Ward clarifies - it does NOT decide
-✅ Human approval required at every step
-✅ Written output preserves accountability
-✅ Voice improves speed, text preserves structure
-✅ No predictions, no optimization, no auto-execution
-
-**Testing Status:**
-- Backend: All voice endpoints functional (STT, TTS, extraction)
-- Frontend: Voice UI compiled successfully
-- Integration: Sarvam AI API key configured and ready
-
-### Phase 5 — Three-Role Voice Architecture ✅ COMPLETED
-
-**Complete Role-Based Voice Coordination System:**
-
-**1. Three Distinct Voice Roles Implemented:**
-
-**DRIVER (Field Reality Capture)**
-- Role: Reports what's happening on the ground
-- Context: May not read English, under stress, noisy environment
-- Authority: NO decision-making power
-- Ward Responses:
-  - ✓ Acknowledgment ("Message received. Ops team reviewing.")
-  - ✓ Safe coordination ("Please wait at safe parking area")
-  - ✓ Clarifying questions about what they SEE/HEAR
-  - ✗ Routing decisions
-  - ✗ ETA promises
-  - ✗ Load/unload instructions
-- API Endpoint: `/api/voice/driver-response`
-- Response Length: Max 25 words (short, calm, trust-building)
-- Language: Simple Hinglish or match driver's language
-
-**MANAGER (Decision Owner)**
-- Role: Makes the decision now
-- Context: Juggling calls, WhatsApp, dashboards — needs clarity fast
-- Authority: FULL decision-making power
-- Ward Provides:
-  - ✓ Structured reality (no advice, just facts)
-  - ✓ Explicit unknowns
-  - ✓ Alternatives with worst-case outcomes
-  - ✓ Decision framing protocol (6 steps)
-  - ✓ Audit trail with provenance
-- API Endpoint: `/api/voice/clarity-questions` (manager role)
-- Flow: Full 5-step voice protocol
-- Output: Written decision + full transcript
-
-**HELPER (Context Provider)**
-- Role: Provides domain knowledge (CHA, senior ops, supervisor)
-- Context: Has partial but important institutional knowledge
-- Authority: NO decision-making power
-- Ward Asks:
-  - ✓ "Is this common?"
-  - ✓ "What usually resolves this fastest?"
-  - ✓ "What has failed before?"
-  - ✓ "What are typical clearance times?"
-  - ✗ "What should we do?" (that's manager's job)
-  - ✗ "What's your decision?" (helper doesn't decide)
-- API Endpoint: `/api/voice/helper-questions`
-- Purpose: Context harvesting, NOT advice solicitation
-- Output: Domain knowledge stored as tagged input
-
-**2. Backend Implementation:**
-- **voice_assistant.py** updated with role-specific methods:
-  - `generate_driver_response()` - Safe coordination only
-  - `generate_helper_questions()` - Context harvesting
-  - `generate_clarity_questions()` - Manager protocol
-- **Role-specific AI prompts**:
-  - Driver prompt: Enforces NO decisions, NO predictions, only safety
-  - Helper prompt: Asks for patterns/knowledge, NOT advice
-  - Manager prompt: Full protocol, all alternatives
-- **3 New API Endpoints**:
-  - `/api/voice/driver-response` - Safe responses (role: driver, safe: true flag)
-  - `/api/voice/helper-questions` - Context questions (role: helper)
-  - Updated `/api/voice/clarity-questions` - Manager protocol (role: manager)
-
-**3. Landing Page - Three Role Section:**
-- New "The Three Voice Roles" section prominently displayed
-- Visual cards for Driver, Manager, Helper with:
-  - Role definition
-  - Authority boundaries
-  - What Ward provides/asks per role
-  - What Ward NEVER does per role
-- "Voice Does Not Collapse Authority" callout box
-- Updated philosophy: "Voice is a capture + guidance layer, not a command layer"
-- Mental model: "Ward is the calm person on the call who asks the right questions"
-
-**4. Key Architecture Principles:**
-
-**Authority Preservation:**
-- Driver: Reality input (no authority)
-- Helper: Context input (no authority)
-- Manager: Decision authority (full)
-- Ward: Structure + memory (no authority)
-
-**Safe vs Unsafe Instructions:**
-- SAFE (Coordination): "Please wait safely", "Do not move until confirmation", "Expect callback"
-- UNSAFE (Decisions): "Take route B", "Unload now", "This will take 2 hours"
-
-**Response Templates:**
-- Driver: Max 25 words, calm, acknowledgment-focused
-- Helper: 2-3 context-harvesting questions
-- Manager: Full structured protocol, alternatives with worst-cases
-
-**5. WhatsApp Integration Pattern:**
-- Driver WhatsApps voice note
-- Ward transcribes via Sarvam AI
-- Sends back SHORT acknowledgment (safe coordination)
-- Flags ops team (Manager)
-- Example: "Message received. Ops team reviewing. Please stay parked safely. I'll update you."
-
-**6. Philosophy Locks:**
-✅ Voice is capture + guidance, NOT command
-✅ Ward coordinates humans, doesn't decide
-✅ Authority hierarchy preserved (driver → helper → manager)
-✅ Safe coordination ≠ decision-making
-✅ Context harvesting ≠ advice solicitation
-✅ Written output preserves accountability across all roles
-
-**Testing Status:**
-- ✅ Backend: 3 role-specific endpoints implemented
-- ✅ Voice assistant: Role-aware AI prompts
-- ✅ Landing page: Three-role section live
-- ✅ Services: All running successfully
-- 🔄 Ready for role-based voice testing
-
-### Phase 6 — Indian Language Voice Verification ✅ COMPLETED
-
-### Phase 7 — Flawless Sarvam API Integration ✅ COMPLETED
-
-**Complete End-to-End Indian Language Voice Capture & Disruption Creation Verified:**
-
-**1. Comprehensive Integration Tests:**
-- Created `/app/tests/test_sarvam_integration.py`
-- **6/6 tests passed (100%)**:
-  - ✅ Sarvam API key configuration verified
-  - ✅ Driver role safe responses (Hindi/Hinglish, max 25 words)
-  - ✅ Helper role context-harvesting questions (no advice-seeking)
-  - ✅ Manager role clarity-enforcing questions
-  - ✅ Disruption extraction from conversation (all required fields)
-  - ✅ Text-to-Speech in Hindi (Anushka voice, 204KB+ audio generated)
-
-**2. Full Workflow Demo:**
-- Created `/app/tests/demo_indian_voice_workflow.py`
-- **Simulated real disruption**: Truck breakdown with perishable goods
-- **Languages tested**: Hindi/Hinglish code-mixing
-- **All three roles exercised**:
-  - Driver: Reported in Hinglish, received safe coordination (16 words)
-  - Manager: Received clarity questions, provided answers
-  - Helper: Asked context-harvesting questions (not "what should we do?")
-
-**3. Verified Capabilities:**
-
-**Speech-to-Text (Sarvam AI Saarika)**:
-- ✅ 10+ Indian languages supported
-- ✅ Auto-detection working
-- ✅ Code-mixing (Hinglish) handling
-- ✅ Noisy environment tolerance
-- ✅ Multiple audio formats (WAV, MP3, AAC, FLAC)
-
-**Text-to-Speech (Sarvam AI Bulbul v2)**:
-- ✅ Hindi audio generation: 286KB WAV file
-- ✅ Anushka voice (clear, professional)
-- ✅ Text preprocessing (numbers, dates, currencies)
-- ✅ Natural prosody and intonation
-
-**Disruption Extraction**:
-- ✅ All required fields extracted:
-  - disruption_type: "truck_breakdown"
-  - scope: "single truck"
-  - identifier: "MH-02-AB-1234"
-  - time_discovered_ist: "XX/XX/XXXX 09:15 IST"
-  - source: "Phone call from driver"
-  - explicit_unknowns: Array of unknown factors
-- ✅ Ready for manager approval
-- ✅ India-first context maintained
-
-**Role-Based Responses**:
-- ✅ Driver: "MH-02-AB-1234 breakdown, reefer fail, temperature issue, understood. Ops team review kar rahi hai. Please wait safely." (16 words, Hinglish, safe)
-- ✅ Manager: 3 clarity questions generated
-- ✅ Helper: 2 context-harvesting questions (patterns, not advice)
-
-**4. Sample Workflow Outputs:**
-
-**Driver Input (Hinglish)**:
-> "Ward, truck MH-02-AB-1234 Nashik toll plaza pe breakdown ho gaya. Reefer unit fail ho gaya hai. Medicine ka shipment hai, temperature maintain nahi ho raha."
-
-**Ward Response (Safe Coordination)**:
-> "MH-02-AB-1234 breakdown, reefer fail, temperature issue, understood. Ops team review kar rahi hai. Please wait safely."
-
-**Hindi TTS Output**:
-> Text: "समझा। कृपया सुरक्षित स्थान पर प्रतीक्षा करें। ऑप्स टीम समीक्षा कर रही है। हम जल्द ही आपको अपडेट देंगे।"
-> Translation: "Understood. Please wait at a safe location. Ops team is reviewing. We will update you soon."
-> Audio: 286KB WAV file ready for playback
-
-**5. Authority Preservation Verified:**
-- ✅ Driver gets coordination, NOT decisions
-- ✅ Helper asked for patterns, NOT advice
-- ✅ Manager gets full protocol access
-- ✅ Ward provides structure + memory, no autonomous decisions
-
-**6. Frontend Integration Ready:**
-- VoiceCase.js component complete with:
-  - ✅ Microphone recording (Recorder.js)
-  - ✅ Real-time transcription via Sarvam API
-  - ✅ Role-aware response generation
-  - ✅ Voice playback of AI responses
-  - ✅ Conversation transcript display
-  - ✅ Disruption extraction and approval workflow
-- Route: `/cases/voice`
-- Dashboard CTA: "Voice Disruption" button
-
-**Testing Status:**
-- ✅ **Sarvam AI Integration**: 6/6 tests passed
-- ✅ **Indian Language Support**: Hindi, Hinglish verified
-- ✅ **Full Workflow**: Driver → Manager → Helper coordination working
-- ✅ **TTS Generation**: 286KB Hindi audio successfully generated
-- ✅ **Disruption Creation**: All required fields extracted
-- ✅ **Authority Preservation**: Role-based responses enforced
-- ✅ **Backend Services**: All running successfully
-- ✅ **Frontend UI**: Compiled and ready
-
-**Next Action for User**: 
-Open `/cases/voice` in browser, allow microphone access, and speak in Hindi/English/Hinglish to create a live disruption.
-
-### Phase 7 — Flawless Sarvam API Integration ✅ COMPLETED
-
-**Critical Fix: language_code Parameter Made Mandatory**
-
-**Issue Identified from Documentation:**
-- Sarvam AI `saarika:v1` model REQUIRES `language_code` parameter
-- Previous implementation had it as optional, causing API errors
-
-**Fixes Applied:**
-
-**1. Backend (sarvam_service.py):**
-- ✅ Changed `language_code` from Optional to REQUIRED with default "hi-IN"
-- ✅ Updated function signature: `async def speech_to_text(self, audio_file_path: str, language_code: str = "hi-IN")`
-- ✅ Added mandatory parameter to STT data payload
-- ✅ Fixed syntax error (missing closing brace)
-- ✅ Updated translate_and_transcribe to include source_language_code
-- ✅ Separate headers for STT and TTS (both use api-subscription-key)
-
-**2. Backend (server.py):**
-- ✅ Updated VoiceTranscript model to include `language_code: str = "hi-IN"`
-- ✅ Updated transcribe endpoint to pass language_code to Sarvam AI
-- ✅ Added comprehensive documentation about required parameter
-
-**3. Frontend (VoiceCase.js):**
-- ✅ Added `selectedLanguage` state (default: "hi-IN")
-- ✅ Created language selector dropdown with 11 Indian languages:
-  - Hindi (हिन्दी)
-  - English (Indian)
-  - Tamil (தமிழ்)
-  - Telugu (తెలుగు)
-  - Kannada (ಕನ್ನಡ)
-  - Malayalam (മലയാളം)
-  - Marathi (मराठी)
-  - Gujarati (ગુજરાતી)
-  - Punjabi (ਪੰਜਾਬੀ)
-  - Bengali (বাংলা)
-  - Odia (ଓଡ଼ିଆ)
-- ✅ Updated transcribe API call to include `language_code: selectedLanguage`
-- ✅ Language selector with native script labels and flag emojis
-
-**4. Comprehensive Testing:**
-
-**Test Suite: test_flawless_sarvam.py**
-- ✅ All 11 language codes validated
-- ✅ Default language (hi-IN) verified
-- ✅ API endpoint headers validated
-- ✅ language_code parameter mandatory check passed
-- ✅ Hindi TTS: 127KB audio generated
-- ✅ English TTS: 154KB audio generated
-
-**Results: 5/5 Tests PASSED (100%)**
-
-**Key Improvements:**
-
-**Before (Broken):**
-- language_code optional → API errors
-- No language selector → users couldn't specify language
-- "Language code is required" errors
-
-**After (Flawless):**
-- language_code mandatory with default
-- 11-language selector in UI
-- Zero API errors
-- Clear user control over language selection
-
-**TTS Audio Quality Verified:**
-- Hindi: 127,532 bytes (clear, natural prosody)
-- English (Indian): 154,668 bytes (clear, natural)
-- Speaker: Anushka (professional, trustworthy voice)
-- Format: WAV (high quality)
-
-**Testing Status:**
-- ✅ Backend: language_code mandatory, default working
-- ✅ Frontend: Language selector with 11 options
-- ✅ API Integration: No errors, proper headers
-- ✅ TTS: Both Hindi and English generating high-quality audio
-- ✅ All services running successfully
-- ✅ **Voice tech stack is now FLAWLESS** The system will:
-1. Transcribe your voice (any Indian language)
-2. Ask 2-3 clarity questions
-3. Extract structured disruption
-4. Present for approval
-5. Create case with full voice transcript
-
-Goal: Complete app with auth, AI-assisted structuring, section approvals, override tracking, and audit trail.
-
-Backend (FastAPI) — Endpoints (all under /api):
-- Auth: POST /auth/register, POST /auth/login (JWT), GET /auth/me
-- Cases: POST /cases (create with description, shipment IDs/routes/carrier), GET /cases, GET /cases/{id}
-- AI Draft: POST /cases/{id}/ai_draft (calls Gemini with POC prompt; stores draft)
-- Sections: PATCH /cases/{id}/sections/{sectionKey} (edit), POST /cases/{id}/sections/{sectionKey}/approve (lock)
-- Finalize: POST /cases/{id}/finalize (select alternative; require override rationale if not AI recommendation)
-- Audit: GET /audit (list); GET /cases/{id}/audit (detail)
-- Historical: GET /historical (read-only list), GET /historical/{id}
-
-Backend Data Model (MongoDB):
-- users: { email, password_hash, created_at }
-- cases: { operator_id, description, shipment_identifiers{ids,routes,carriers}, status, created_at }
-- drafts: { case_id, decision_framing, known_inputs{facts,unknowns,evidence[]}, declared_assumptions[], alternatives[max3], risk_and_downside[by alt], recommendation{choice, rationale, reversal_signals}, ai_model, ai_prompt, created_at }
-- approvals: { case_id, section_key, approved_by, approved_at, content_snapshot }
-- decisions: { case_id, final_choice, override{exists, rationale}, decided_by, decided_at }
-- audit_entries: { case_id, actor, action, payload, ts }
-- historical: { title, summary, labels, content, created_at } (read-only seed)
-
-Backend Rules/Guards:
-- Enforce ≤3 alternatives; reject more
-- Serialize datetime/ObjectId safely; consistent evidence labeling schema
-- Guardrails: refuse requests violating scope; return 400 with reason
-- Use environment variables (MONGO_URL); bind 0.0.0.0:8001
-
-Frontend (React + shadcn/ui):
-- Auth pages: Login/Register (simple, reliable)
-- Dashboard: list active cases and recent decisions
-- New Case: form for description + shipment IDs/routes/carriers, option to reference historical
-- Case Detail: 6-step view/editor with:
-  - “Generate Decision Structure” (shows loading)
-  - Section editors (textareas) with approve/lock per section
-  - Alternatives card list (≤3) with worst-case-first risk display
-  - Final decision chooser (radio); override rationale prompt if not AI recommendation
-  - Evidence labels displayed inline
-- Audit Trail: chronological view with filters
-- Historical: read-only viewer; link to reference in a case
-- All interactive elements include data-testid
-
-Frontend States & UX:
-- Clear loading/error/empty states; non-transparent backgrounds; plain operational language
-- Warning/alert styling for risks; lock icons for approved sections
-
-Build/Dev Steps:
-1. After POC, call design_agent for UI guidelines; install any UI deps
-2. Implement backend + frontend in parallel using bulk_file_writer; ensure route/contract match
-3. Add JWT auth middleware; protect case operations
-4. Validate AI output server-side (schema + constraints) before persisting
-5. Test images/files: N/A in v0; ensure all text flows work
-6. Logs sanity check; fix until clean
-
-Testing (end of Phase 2):
-- Use testing_agent_v3 for end-to-end on all Phase 1 & 2 user stories (skip drag/drop/camera)
-- Lint Python/JS; verify no import/runtime errors
-
-User Stories (Phase 2 — at least 10):
-1. As an operator, I can register and login to get a JWT.
-2. As an operator, I can create a new disruption case with description and shipment details.
-3. As an operator, I can trigger AI to draft the 6-step structure and see a working indicator.
-4. As an operator, I can edit and approve each section individually and see locked state.
-5. As an operator, I can view ≤3 alternatives with worst-case-first risks.
-6. As an operator, I can choose a final decision via radio buttons.
-7. As an operator, I must provide override rationale if my choice differs from AI recommendation.
-8. As an operator, I can view a complete audit trail of actions on a case.
-9. As an operator, I can browse historical disruptions (read-only) and reference them in a case.
-10. As an operator, I see evidence labels and explicit unknowns in the UI.
-
-## 3) Next Actions (Immediate)
-1. Request Gemini integration playbook (text gen) via Emergent Universal LLM key; confirm model identifier and SDK usage.
-2. Implement Phase 1 single test script with 3 scenarios + guardrail test; iterate prompt until all assertions pass.
-3. After POC success, call design_agent; then scaffold backend and frontend in parallel (bulk_file_writer) following this plan.
-4. Run end-to-end tests with testing_agent_v3; fix all reported issues (high → low); re-run until green.
-
-## 4) Success Criteria
-- Phase 1: Single script produces valid structured JSON for all 3 scenarios; guardrail refusal works; ≤3 alternatives; evidence labels present; recommendation includes reversal conditions; zero unhandled exceptions.
-- Phase 2: 
-  - Auth works; protected endpoints enforce JWT
-  - AI drafting endpoint returns validated structure; UI displays and allows edits/approvals
-  - Finalization enforces override rationale when needed; audit entries complete and queryable
-  - Historical data readable and clearly labeled
-  - All backend routes prefixed with /api; no hardcoded envs; server bound to 0.0.0.0:8001
-  - All interactive UI elements have data-testid; clear loading/error states; no red screens
-  - Testing agent passes all user stories from Phases 1 & 2; fixed regressions
-- Global: Adheres to product identity and hard rules; uncertainty surfaced; regrets-minimizing logic (not cost/ETA optimization); weak evidence clearly labeled.
+# Ward v0 — Disruption Lifecycle Engine Build Plan
+
+## Strategic Vision
+Transform Ward from "Decision Support at a moment" to **"Disruption Lifecycle Owner"** — a system that owns the full lifecycle of a live disruption from REPORTED to RESOLVED, with explicit per-disruption ownership and multi-source timeline tracking.
+
+**One-Line Build Test:** _"Can I answer: Who owned this disruption, what did we know at the time, and why did we move it forward?"_
+
+---
+
+## Phase 1: Disruption Lifecycle Engine (Status: In Progress)
+
+### Objectives
+Build the core lifecycle management system with:
+- **6-state lifecycle**: REPORTED → CLARIFIED → DECISION_REQUIRED → DECIDED → IN_PROGRESS → RESOLVED
+- **Per-disruption ownership**: Assigned explicitly, reassignable with audit trail
+- **Multi-source timeline tracking**: Voice/text/system events with reliability tags
+- **State transitions with authority**: Only decision owner can advance states
+- **Manager-first web dashboard**: Desktop-optimized, responsive for mobile
+- **India-first context**: IST timezone, ports, customs vocabulary
+
+### Key Implementation Checklist
+
+#### Backend Implementation
+- [ ] **Database Schema Updates**
+  - [ ] Add `status` field to cases collection (enum: REPORTED, CLARIFIED, DECISION_REQUIRED, DECIDED, IN_PROGRESS, RESOLVED)
+  - [ ] Add `decision_owner_id` field (user ID, nullable)
+  - [ ] Add `decision_owner_email` field
+  - [ ] Create `timeline_events` collection
+    - Structure: `{case_id, actor (user/phone/system), action (message/transcript/state_change), content, source_type (voice/text/system), reliability (low/medium/high), timestamp_ist, metadata}`
+
+- [ ] **API Endpoints - Ownership**
+  - [ ] `POST /api/cases/{case_id}/assign-owner` - Assign or reassign decision owner (with audit)
+    - Body: `{owner_email}`
+    - Response: Updated case with new owner
+    - Audit: Log reassignment with who/when
+
+- [ ] **API Endpoints - State Transitions**
+  - [ ] `POST /api/cases/{case_id}/transition` - Advance state to next valid state
+    - Body: `{next_state, reason (optional)}`
+    - Auth: Verify current user is decision owner
+    - Response: Updated case with new state
+    - Side effect: Create timeline event for state change
+
+- [ ] **API Endpoints - Timeline**
+  - [ ] `POST /api/cases/{case_id}/timeline` - Add timeline event
+    - Body: `{content, source_type, reliability}`
+    - Auth: Any authenticated user can add
+    - Response: Created timeline event
+  - [ ] `GET /api/cases/{case_id}/timeline` - Get all timeline events for case
+    - Response: Array of timeline events sorted by timestamp DESC
+
+- [ ] **API Endpoints - Updated**
+  - [ ] Update `POST /api/cases` - Initialize new cases with `status: REPORTED`
+  - [ ] Update `GET /api/cases` - Add query params for filtering by status, owner, source_type
+  - [ ] Update `GET /api/cases/{case_id}` - Include timeline events in response
+
+#### Frontend Implementation
+- [ ] **Design System Updates**
+  - [ ] Add lifecycle state color tokens to `/app/frontend/src/App.css` (from design_guidelines.md)
+  - [ ] Add reliability tag tokens
+  - [ ] Add source type tokens
+  - [ ] Implement utility classes: `.state-badge`, `.reliability-chip`, `.source-dot`
+
+- [ ] **Utility Functions**
+  - [ ] Create `/app/frontend/src/utils/datetime.js` with IST formatting helper
+    - Use `date-fns-tz` to format timestamps to IST
+
+- [ ] **New Components**
+  - [ ] `/app/frontend/src/components/DisruptionRow.js`
+    - Displays: state badge, title, owner badge, last event source + reliability, location, updated time, actions
+    - Props: `{disruption, onSelect, onAssign}`
+    - data-testid: `disruption-row-{id}`
+  
+  - [ ] `/app/frontend/src/components/TimelineEvent.js`
+    - Displays: source icon, timestamp (IST), reliability chip, author, content, payload
+    - Props: `{event}`
+    - data-testid: `timeline-event-{id}`
+  
+  - [ ] `/app/frontend/src/components/StateTransitionBar.js`
+    - Displays: Transition buttons for valid next states (if decision owner)
+    - Shows disabled message if not decision owner
+    - Props: `{currentState, nextStates, canAdvance, onAdvance}`
+    - data-testid: `transition-actions`, `advance-to-{state}-button`
+  
+  - [ ] `/app/frontend/src/components/OwnershipAssigner.js`
+    - Displays: Owner Select dropdown + Assign button
+    - Props: `{owners, currentOwner, onChange, onSubmit}`
+    - data-testid: `ownership-assigner`, `owner-select-trigger`, `assign-owner-button`
+
+- [ ] **Page Updates**
+  - [ ] **Dashboard.js**
+    - [ ] Replace simple list with table view using `./components/ui/table`
+    - [ ] Add state filter tabs (using `./components/ui/tabs`) for 6 states
+    - [ ] Add quick filters: owner select, source type, reliability level
+    - [ ] Show state badge, owner badge, last event info per row
+    - [ ] data-testid: `dashboard`, `state-tab-{state}`, `filter-owner`, `filter-source`
+  
+  - [ ] **CaseDetail.js** (Major Rewrite)
+    - [ ] Header section:
+      - [ ] Show state badge
+      - [ ] Show OwnershipAssigner component
+      - [ ] Show created/updated timestamps (IST)
+    - [ ] Main content (grid layout: 2 cols for timeline, 1 col for sidebar on lg):
+      - [ ] Timeline view (left 2 cols):
+        - [ ] Map timeline events using TimelineEvent component
+        - [ ] Group by day with sticky day headers
+        - [ ] Use `./components/ui/scroll-area` for scrolling
+      - [ ] Sidebar (right 1 col):
+        - [ ] StateTransitionBar component (visible only to decision owner)
+        - [ ] Properties panel (disruption details, shipment info)
+        - [ ] Quick actions (add timeline note button)
+    - [ ] Add timeline note form:
+      - [ ] Textarea for content
+      - [ ] Select for source_type (text/voice/system)
+      - [ ] Select for reliability (low/medium/high)
+      - [ ] Submit button
+      - [ ] data-testid: `add-timeline-note-form`, `timeline-content-input`
+
+- [ ] **Preserved Pages**
+  - Landing.js - No changes
+  - Login.js - No changes
+  - Register.js - No changes
+  - VoiceCase.js - No changes
+  - AuditTrail.js - Minor update to show state changes
+
+- [ ] **Toaster Integration**
+  - [ ] Add `<Toaster />` from `./components/ui/sonner` to App.js root
+  - [ ] Use `toast.success()`, `toast.error()`, `toast.info()` for:
+    - State transitions
+    - Owner assignments
+    - Timeline additions
+
+### Success Criteria
+- [ ] User can create a disruption (automatically set to REPORTED)
+- [ ] Manager can assign themselves or another user as decision owner
+- [ ] Decision owner can advance state through the 6-state lifecycle with confirmation dialog
+- [ ] Any user can add timeline context with source type and reliability
+- [ ] Timeline displays with clear visual distinction (icons for source, chips for reliability)
+- [ ] Non-owners see disabled transition buttons with tooltip: "Only the decision owner can advance the state"
+- [ ] All state changes and owner assignments are logged in audit trail
+- [ ] Dashboard filters disruptions by lifecycle state using tab navigation
+- [ ] All timestamps display in IST with "IST" label
+- [ ] UI matches design guidelines:
+  - Control center aesthetic (serious, high-contrast)
+  - No decorative gradients
+  - Deep purposeful colors for states
+  - Swiss layout discipline
+  - Manager-first desktop UX, responsive for mobile
+
+---
+
+## Phase 2: Voice Hotline + PWA (Status: Not Started)
+Voice-first ingestion via phone hotline, lightweight mobile-first PWA for field usage.
+
+**Deferred until Phase 1 proves valuable.**
+
+---
+
+## Phase 3: Decision Patterns (Status: Not Started)
+Suggest common alternatives and worst-cases for recurring disruption types, without being rigidly prescriptive.
+
+**Deferred until Phase 1 proves valuable.**
+
+---
+
+## Phase 4: Post-Decision Learning (Status: Not Started)
+"Explain the Regret" mode — capture human wisdom after RESOLVED to enrich Decision Patterns.
+
+**Deferred until Phase 1 proves valuable.**
+
+---
+
+## Phase 5: WhatsApp Integration (Status: Deferred)
+Bidirectional WhatsApp coordination for disruption reporting and updates.
+
+**Explicitly deferred. Ward must earn the right to live inside WhatsApp. Product truth before distribution.**
+
+---
+
+## Previously Completed Work
+- ✅ Initial MVP: User auth (JWT), decision construction protocol (6-step), audit trail
+- ✅ AI Integration: Google Gemini for decision structuring (via Emergent LLM Key), validated in POC
+- ✅ Voice Integration: Sarvam AI for multilingual STT/TTS (11+ Indian languages, tested end-to-end)
+- ✅ Role-Based Architecture: Driver/Manager/Helper roles for voice interactions
+- ✅ India-First Context: Ports, customs, IST timezone, INR currency
+- ✅ Disruption First Hard Gate: All cases require disruption details (type, scope, identifier, time, source)
+- ✅ Landing Page: Product philosophy ("Support human judgment, not automate it")
+- ✅ Strategic Analysis: Deep analysis of "Disruption Lifecycle Owner" vision and implementation roadmap
+
+---
+
+## Tech Stack
+- **Backend**: FastAPI (Python) + MongoDB + Motor (async driver)
+- **Frontend**: React + Tailwind CSS + Shadcn/UI components
+- **AI**: Google Gemini (via Emergent LLM Key), Sarvam AI (user-provided key for STT/TTS)
+- **Auth**: JWT tokens
+- **Deployment**: Kubernetes preview environment
+
+## Key Files to Modify
+- `/app/backend/server.py` - Add lifecycle endpoints, update schema logic
+- `/app/frontend/src/pages/Dashboard.js` - Rewrite for table view with filters
+- `/app/frontend/src/pages/CaseDetail.js` - Complete rewrite for timeline + transitions
+- `/app/frontend/src/App.css` - Add design tokens from design_guidelines.md
+- `/app/frontend/src/components/` - Create 4 new components (DisruptionRow, TimelineEvent, StateTransitionBar, OwnershipAssigner)
+
+## Key Files to Preserve
+- `/app/backend/ai_decision.py` - Decision structuring logic (used in DECISION_REQUIRED → DECIDED)
+- `/app/backend/sarvam_service.py` - Voice service (Phase 2 integration)
+- `/app/backend/voice_assistant.py` - Voice assistant logic (Phase 2)
+- `/app/frontend/src/pages/Landing.js` - Product landing page
+- `/app/frontend/src/pages/VoiceCase.js` - Voice capture UI (Phase 2)
+- `/app/frontend/src/contexts/AuthContext.js` - Auth state management
+
+## Design Reference
+All design specifications are in `/app/design_guidelines.md`:
+- Color tokens for 6 lifecycle states
+- Reliability and source type styling
+- Component patterns and examples
+- India-first considerations (IST formatting, logistics vocabulary)
+- Accessibility and testing conventions
