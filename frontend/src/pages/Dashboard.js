@@ -1,19 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
-import { Plus, LogOut, AlertTriangle, FileText, Clock } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { Plus, LogOut, AlertTriangle, Mic } from 'lucide-react';
+import { DisruptionRow } from '../components/DisruptionRow';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '../components/ui/select';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+} from '../components/ui/table';
+import { TooltipProvider } from '../components/ui/tooltip';
+
+const LIFECYCLE_STATES = [
+  { value: 'ALL', label: 'All States' },
+  { value: 'REPORTED', label: 'Reported' },
+  { value: 'CLARIFIED', label: 'Clarified' },
+  { value: 'DECISION_REQUIRED', label: 'Decision Required' },
+  { value: 'DECIDED', label: 'Decided' },
+  { value: 'IN_PROGRESS', label: 'In Progress' },
+  { value: 'RESOLVED', label: 'Resolved' },
+];
 
 export default function Dashboard() {
   const [cases, setCases] = useState([]);
+  const [filteredCases, setFilteredCases] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('ALL');
+  const [ownerFilter, setOwnerFilter] = useState('all');
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     loadCases();
   }, []);
+
+  useEffect(() => {
+    filterCases();
+  }, [cases, activeTab, ownerFilter]);
 
   const loadCases = async () => {
     try {
@@ -26,151 +59,167 @@ export default function Dashboard() {
     }
   };
 
-  const getStatusBadge = (status) => {
-    const styles = {
-      draft: 'bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))]',
-      reviewing: 'bg-[hsl(var(--info))]/10 text-[hsl(var(--info))]',
-      finalized: 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]',
-    };
-    return (
-      <span className={`px-2 py-1 rounded text-xs font-medium ${styles[status] || styles.draft}`}>
-        {status?.toUpperCase() || 'DRAFT'}
-      </span>
-    );
+  const filterCases = () => {
+    let filtered = cases;
+
+    // Filter by state
+    if (activeTab !== 'ALL') {
+      filtered = filtered.filter((c) => c.status === activeTab);
+    }
+
+    // Filter by owner
+    if (ownerFilter === 'mine') {
+      filtered = filtered.filter(
+        (c) => c.decision_owner_email === user?.email
+      );
+    } else if (ownerFilter === 'unassigned') {
+      filtered = filtered.filter((c) => !c.decision_owner_email);
+    }
+
+    setFilteredCases(filtered);
+  };
+
+  const handleSelectCase = (caseId) => {
+    navigate(`/cases/${caseId}`);
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-[hsl(var(--border))] bg-card">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">Ward v0</h1>
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">
-              Logistics Decision Support
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-[hsl(var(--muted-foreground))]">
-              {user?.email}
-            </span>
-            <button
-              onClick={logout}
-              className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))] hover:text-foreground transition-colors"
-              data-testid="logout-button"
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <div className="container mx-auto px-6 py-8">
-        {/* Actions Bar */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h2 className="text-xl font-semibold">Active Disruptions</h2>
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">
-              Manage ongoing disruption decisions
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <Link
-              to="/audit"
-              className="flex items-center gap-2 px-4 py-2 text-sm border border-[hsl(var(--border))] rounded-md hover:bg-[hsl(var(--secondary))] transition-colors"
-              data-testid="audit-trail-link"
-            >
-              <FileText className="h-4 w-4" />
-              Audit Trail
-            </Link>
-            <Link
-              to="/cases/new"
-              className="flex items-center gap-2 px-4 py-2 text-sm border border-[hsl(var(--border))] rounded-md hover:bg-[hsl(var(--secondary))] transition-colors"
-              data-testid="create-case-button"
-            >
-              <Plus className="h-4 w-4" />
-              Type Disruption
-            </Link>
-            <Link
-              to="/cases/voice"
-              className="flex items-center gap-2 px-4 py-2 text-sm bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-md hover:bg-[hsl(var(--primary))]/90 transition-colors"
-              data-testid="voice-case-button"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
-              Voice Disruption
-            </Link>
-          </div>
-        </div>
-
-        {/* Cases List */}
-        {loading ? (
-          <div className="text-center py-12">
-            <p className="text-[hsl(var(--muted-foreground))]">Loading cases...</p>
-          </div>
-        ) : cases.length === 0 ? (
-          <div className="text-center py-12 bg-card border border-[hsl(var(--border))] rounded-lg">
-            <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--muted-foreground))]" />
-            <h3 className="text-lg font-medium mb-2">No disruptions yet</h3>
-            <p className="text-[hsl(var(--muted-foreground))] mb-4">
-              Create your first disruption case to get started
-            </p>
-            <Link
-              to="/cases/new"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-md hover:bg-[hsl(var(--primary))]/90 transition-colors"
-            >
-              <Plus className="h-4 w-4" />
-              Create Disruption
-            </Link>
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {cases.map((caseItem) => (
-              <div
-                key={caseItem._id}
-                className="bg-card border border-[hsl(var(--border))] rounded-lg p-5 hover:border-[hsl(var(--primary))] transition-colors cursor-pointer"
-                onClick={() => navigate(`/cases/${caseItem._id}`)}
-                data-testid={`case-item-${caseItem._id}`}
+    <TooltipProvider>
+      <div className="min-h-screen bg-background" data-testid="dashboard">
+        {/* Header */}
+        <header className="border-b border-border bg-card sticky top-0 z-10">
+          <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Ward v0</h1>
+              <p className="text-sm text-muted-foreground">
+                Disruption Lifecycle Management
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-muted-foreground">
+                {user?.email}
+              </span>
+              <button
+                onClick={logout}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                data-testid="logout-button"
               >
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold">
-                        Case #{caseItem._id.slice(-6).toUpperCase()}
-                      </h3>
-                      {getStatusBadge(caseItem.status)}
-                    </div>
-                    <p className="text-sm text-[hsl(var(--muted-foreground))] line-clamp-2">
-                      {caseItem.description}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-xs text-[hsl(var(--muted-foreground))]">
-                  <div className="flex items-center gap-4">
-                    {caseItem.shipment_identifiers?.ids?.length > 0 && (
-                      <span>
-                        Shipments: {caseItem.shipment_identifiers.ids.join(', ')}
-                      </span>
-                    )}
-                    {caseItem.shipment_identifiers?.carriers?.length > 0 && (
-                      <span>
-                        Carriers: {caseItem.shipment_identifiers.carriers.join(', ')}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {formatDistanceToNow(new Date(caseItem.created_at), { addSuffix: true })}
-                  </div>
-                </div>
-              </div>
-            ))}
+                <LogOut className="h-4 w-4" />
+                Logout
+              </button>
+            </div>
           </div>
-        )}
+        </header>
+
+        <div className="container mx-auto px-6 py-8">
+          {/* Actions Bar */}
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h2 className="text-xl font-semibold tracking-tight">Active Disruptions</h2>
+              <p className="text-sm text-muted-foreground">
+                {filteredCases.length} disruption{filteredCases.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Link
+                to="/cases/new"
+                className="flex items-center gap-2 px-4 py-2 text-sm border border-border rounded-md hover:bg-secondary transition-colors"
+                data-testid="create-case-button"
+              >
+                <Plus className="h-4 w-4" />
+                New Disruption
+              </Link>
+              <Link
+                to="/cases/voice"
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                data-testid="voice-case-button"
+              >
+                <Mic className="h-4 w-4" />
+                Voice Report
+              </Link>
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div className="mb-6 space-y-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-7">
+                {LIFECYCLE_STATES.map((state) => (
+                  <TabsTrigger
+                    key={state.value}
+                    value={state.value}
+                    data-testid={`state-tab-${state.value}`}
+                  >
+                    {state.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+
+            <div className="flex gap-3">
+              <Select value={ownerFilter} onValueChange={setOwnerFilter}>
+                <SelectTrigger className="w-48" data-testid="filter-owner">
+                  <SelectValue placeholder="Filter by owner" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All owners</SelectItem>
+                  <SelectItem value="mine">My disruptions</SelectItem>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Cases Table */}
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Loading disruptions...</p>
+            </div>
+          ) : filteredCases.length === 0 ? (
+            <div className="text-center py-12 bg-card border border-border rounded-lg">
+              <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-medium mb-2">No disruptions found</h3>
+              <p className="text-muted-foreground mb-4">
+                {activeTab === 'ALL'
+                  ? 'Create your first disruption to get started'
+                  : `No disruptions in ${activeTab.replace('_', ' ')} state`}
+              </p>
+              <Link
+                to="/cases/new"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                Create Disruption
+              </Link>
+            </div>
+          ) : (
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-32">State</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead className="w-40">Owner</TableHead>
+                    <TableHead className="w-32">Last Event</TableHead>
+                    <TableHead className="w-32">Location</TableHead>
+                    <TableHead className="w-48">Updated (IST)</TableHead>
+                    <TableHead className="w-24 text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredCases.map((disruption) => (
+                    <DisruptionRow
+                      key={disruption._id}
+                      disruption={disruption}
+                      onSelect={handleSelectCase}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
