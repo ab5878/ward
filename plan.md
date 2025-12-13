@@ -46,6 +46,31 @@ All 4 POC tests passed successfully. Gemini reliably generates 6-step decision s
 
 ### Phase 2 — Full Application Development ✅ COMPLETED
 All user stories implemented and tested. 100% test pass rate.
+
+### Phase 3 — Critical Causal Locks Implementation ✅ COMPLETED
+
+**1. INDIA CONTEXT LOCK (Always On):**
+- AI system prompt updated to assume India by default
+- Indian ports: JNPT, Mundra, Chennai, Vizag, Kolkata
+- Indian customs: CHA (Customs House Agent), documentation holds
+- Indian realities: monsoon delays, strikes, congestion, manual processes
+- Communication: phone calls, WhatsApp, broker updates
+- Formats: IST timezone, DD/MM/YYYY dates, INR currency
+- POC tests updated with Indian scenarios (customs hold at JNPT, monsoon blockage, truck breakdown)
+
+**2. DISRUPTION FIRST HARD GATE:**
+- Backend models updated: DisruptionDetails now mandatory (type, scope, identifier, time_discovered_ist, source)
+- Backend validation: Cases without disruption details rejected with 422 error
+- Frontend form updated: Mandatory disruption fields with dropdown for types (customs_hold, port_congestion, truck_breakdown, monsoon, CHA_delay, etc.)
+- AI prompt enhanced: Disruption context passed explicitly to Gemini
+- Validation confirmed: Test attempting to create case without disruption details properly rejected
+
+**Testing Results:**
+- Backend: 27/27 tests passed (100%)
+- Frontend: 95% (all forms functional, disruption fields present)
+- AI Integration: 4/4 POC tests passed with India-specific scenarios
+- DISRUPTION FIRST gate validated: Properly rejects cases without required fields
+- India context verified: AI responses include JNPT, CHA, Mumbai, INR, IST references
 Goal: Complete app with auth, AI-assisted structuring, section approvals, override tracking, and audit trail.
 
 Backend (FastAPI) — Endpoints (all under /api):
