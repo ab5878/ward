@@ -102,10 +102,12 @@ Return ONLY the questions, one per line, numbered. Use the EXACT same language a
         
         except Exception as e:
             print(f"Error generating clarity questions: {e}")
+            # Fallback to generic questions (English)
+            # Note: In production, detect language from transcript and provide localized fallbacks
             return [
-                "Is this confirmed by a port notice or only verbal communication?",
-                "Is the impact limited to this shipment or are other shipments affected?",
-                "What information is still unknown or uncertain?"
+                "What is the exact location and identifier?",
+                "When was this discovered and by whom?",
+                "What is still unknown or uncertain?"
             ]
     
     def get_disruption_extraction_prompt(self) -> str:
