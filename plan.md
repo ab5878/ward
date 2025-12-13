@@ -1,52 +1,48 @@
 # Ward v0 — Disruption Lifecycle Engine Build Plan
 
 ## Strategic Vision
-Transform Ward from "Decision Support at a moment" to **"Disruption Lifecycle Owner"** — a system that owns the full lifecycle of a live disruption from REPORTED to RESOLVED, with explicit per-disruption ownership and multi-source timeline tracking.
-
-**One-Line Build Test:** _"Can I answer: Who owned this disruption, what did we know at the time, and why did we move it forward?"_
+Transform Ward from "Decision Support at a moment" to **"Disruption Lifecycle Owner"** — a system that owns the full lifecycle of a live disruption from REPORTED to RESOLVED.
 
 ---
 
 ## Phase 1: Disruption Lifecycle Engine (COMPLETED)
-- ✅ 6-state lifecycle: REPORTED → CLARIFIED → DECISION_REQUIRED → DECIDED → IN_PROGRESS → RESOLVED
-- ✅ Per-disruption ownership: Assigned explicitly, reassignable with audit trail
-- ✅ Multi-source timeline tracking
-- ✅ State transitions with authority
-- ✅ Manager-first web dashboard
-- ✅ India-first context
+- ✅ 6-state lifecycle & ownership
+- ✅ Multi-source timeline & audit trail
+- ✅ Manager-first dashboard
 
 ## Phase 2: Voice & Multilingual (COMPLETED)
-- ✅ Sarvam AI integration for STT/TTS
-- ✅ Multilingual support (Hindi, Tamil, etc.)
-- ✅ Voice-first case reporting interface
+- ✅ Sarvam AI integration (STT/TTS)
+- ✅ Multilingual support
 
-## Phase 3: Active Coordination (COMPLETED - READY FOR DEMO)
-- ✅ **AI Agent Architecture**: `CoordinationManager` orchestrating 5 specialized agents.
-- ✅ **Stakeholder Identification**: Logic to identify CHA, Shipping Line, Port Ops based on disruption type.
-- ✅ **Outreach Simulation**: Backend capability to "send" messages (mocked) and track status.
-- ✅ **Enhanced RCA**: AI Agent that synthesizes data from initial reports + stakeholder responses.
-- ✅ **Action Plan Execution**: Agent to execute approved plans (notify, remind).
-- ✅ **Demo Tools**: "Simulate Response" UI built for the upcoming demo.
+## Phase 3: Active Coordination (COMPLETED)
+- ✅ AI Agent Architecture (`CoordinationManager`)
+- ✅ Stakeholder Identification & Outreach Simulation
+- ✅ Enhanced RCA & Action Execution
+- ✅ Demo Tools ("Simulate Response")
 
-## Phase 4: Production Hardening (UPCOMING)
-- [ ] Real WhatsApp Business API integration
-- [ ] Role-based access control (RBAC) fine-tuning
-- [ ] Analytics Dashboard (`/dashboard/analytics`)
-- [ ] Post-Decision Learning ("Explain the Regret")
+## Phase 4: Product Depth (CURRENT FOCUS)
+**Goal:** Deepen the product functionality to "Real World" standards.
+
+### 4.1. AI Document Intelligence (The "Proof" Layer) - **IN PROGRESS**
+- [ ] **Document Processor Service:** Use Gemini Vision to OCR and analyze PDFs/Images.
+- [ ] **Comparison Logic:** Auto-detect discrepancies (e.g., Invoice vs Bill of Lading).
+- [ ] **UI Integration:** File upload in Case Detail + "Discrepancy Alert".
+
+### 4.2. Institutional Memory (The "Learning" Layer)
+- [ ] **Similarity Engine:** Find historical cases with matching embedding/tags.
+- [ ] **Resolution Recommender:** "Last time this happened, we did X."
+
+### 4.3. Real World Comms (The "Integration" Layer)
+- [ ] **Twilio Integration:** Real SMS for "Urgent" alerts.
+- [ ] **SendGrid Integration:** Email summaries for stakeholders.
+
+### 4.4. Strategic Analytics (The "Value" Layer)
+- [ ] **Analytics Dashboard:** Time to Resolve, Vendor Scorecards.
+- [ ] **Export Reports:** PDF/CSV download for management.
 
 ---
 
 ## Technical Architecture
-- **Backend**: FastAPI (Python) + MongoDB + Motor
-- **Frontend**: React + Tailwind CSS + Shadcn/UI
-- **AI Agents**:
-  - `StakeholderIdentifierAgent`: Who to call?
-  - `OutreachAgent`: Sends messages (WhatsApp/SMS/API)
-  - `ResponseCollectorAgent`: Gathers replies
-  - `EnhancedRCAAgent`: Analyzes combined data (Gemini)
-  - `ActionExecutorAgent`: Executes the fix
-- **AI Services**: Google Gemini (Intelligence), Sarvam AI (Voice)
-
-## Credentials
-- **Emergent LLM Key**: Configured in `.env`
-- **Sarvam AI Key**: User provided
+- **Backend**: FastAPI + MongoDB
+- **AI**: Gemini (Text & Vision), Sarvam (Voice)
+- **Integrations**: Twilio (SMS), SendGrid (Email)
