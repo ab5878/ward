@@ -97,7 +97,7 @@ export default function Landing() {
                   <li>• Context scattered across 10 calls</li>
                   <li>• New shift manager has zero context</li>
                   <li>• Can't analyze: "How often does this happen?"</li>
-                  <li>• <strong className="text-foreground">Avg resolution: 24 hours</strong></li>
+                  <li>• <strong className="text-foreground">Slow, manual, reactive</strong></li>
                 </ul>
               </div>
 
