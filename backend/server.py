@@ -464,7 +464,7 @@ async def get_case_audit(case_id: str, current_user: dict = Depends(get_current_
 # HISTORICAL DISRUPTIONS (READ-ONLY)
 # ============================================================================
 
-@app.get("/api/historical", data-testid="list-historical-endpoint")
+@app.get("/api/historical")
 async def list_historical(current_user: dict = Depends(get_current_user)):
     cursor = db.historical.find().sort("created_at", -1).limit(20)
     entries = await cursor.to_list(length=20)
