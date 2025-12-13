@@ -413,6 +413,33 @@ class WardBackendTester:
         
         return success
 
+    def test_disruption_validation(self):
+        """Test that cases WITHOUT disruption details are rejected (DISRUPTION FIRST hard gate)"""
+        self.log("\n=== Testing DISRUPTION FIRST Hard Gate ===", "INFO")
+        
+        # Try to create case WITHOUT disruption details - should fail with 422
+        success, response = self.run_test(
+            "Create Case WITHOUT Disruption Details (Should Fail)",
+            "POST",
+            "cases",
+            422,  # Expecting validation error
+            data={
+                "description": "Some generic logistics issue without proper disruption context.",
+                "shipment_identifiers": {
+                    "ids": ["SH-2024-999"],
+                    "routes": ["Mumbai → Delhi"],
+                    "carriers": ["Generic Carrier"]
+                }
+            }
+        )
+        
+        if success:
+            self.log("  DISRUPTION FIRST gate working correctly - rejected case without disruption details", "PASS")
+        else:
+            self.log("  WARNING: Case without disruption details was not properly rejected", "FAIL")
+        
+        return success
+
     def test_override_scenario(self):
         """Test override handling with non-recommended choice"""
         self.log("\n=== Testing Override Scenario ===", "INFO")
