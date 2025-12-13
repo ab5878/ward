@@ -106,7 +106,17 @@ Provide comprehensive RCA in JSON format."""
             response = await chat.send_message(message)
             
             # Parse JSON response
-            rca = json.loads(response.strip())
+            cleaned_response = response.strip()
+            if cleaned_response.startswith("```json"):
+                cleaned_response = cleaned_response.split("```json")[1]
+            if cleaned_response.startswith("```"):
+                cleaned_response = cleaned_response.split("```", 1)[1]
+            if "```" in cleaned_response:
+                cleaned_response = cleaned_response.split("```")[0]
+            
+            cleaned_response = cleaned_response.strip()
+            
+            rca = json.loads(cleaned_response)
             return rca
         
         except Exception as e:
