@@ -198,6 +198,8 @@ export default function VoiceCase() {
       // Use detected language or selected language for TTS
       const languageForTTS = detectedLanguage || selectedLanguage;
       
+      console.log(`🔊 Ward is speaking in ${languageForTTS}: "${text}"`);
+      
       const ttsResponse = await api.post('/voice/text-to-speech', {
         response_text: text,
         language_code: languageForTTS,
@@ -207,10 +209,27 @@ export default function VoiceCase() {
       // Play audio
       const audio = new Audio(`data:audio/wav;base64,${ttsResponse.data.audio_base64}`);
       audioPlayerRef.current = audio;
-      await audio.play();
+      
+      return new Promise((resolve, reject) => {
+        audio.onended = () => {
+          console.log('✓ Audio playback completed');
+          resolve();
+        };
+        audio.onerror = (e) => {
+          console.error('Audio playback error:', e);
+          reject(e);
+        };
+        audio.play().catch((e) => {
+          console.error('Failed to play audio:', e);
+          // Browser might block autoplay
+          alert('Please click to hear Ward\'s question');
+          reject(e);
+        });
+      });
     } catch (error) {
       console.error('TTS error:', error);
       // Fallback: just log the text without audio
+      alert(`Ward asks: ${text}`);
     }
   };
 
