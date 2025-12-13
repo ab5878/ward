@@ -502,6 +502,187 @@ async def get_historical(historical_id: str, current_user: dict = Depends(get_cu
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+# ============================================================================
+# VOICE-FIRST ENDPOINTS (Sarvam AI Integration)
+# ============================================================================
+
+@app.post("/api/voice/transcribe")
+async def transcribe_voice(voice_data: VoiceTranscript, current_user: dict = Depends(get_current_user)):
+    """
+    Transcribe voice to text using Sarvam AI
+    Supports 10+ Indian languages with auto-detection
+    """
+    try:
+        # Decode base64 audio
+        audio_bytes = base64.b64decode(voice_data.audio_base64)
+        
+        # Save temporarily
+        temp_file_path = f"/tmp/voice_{current_user['user_id']}_{datetime.utcnow().timestamp()}.{voice_data.audio_format}"
+        async with aiofiles.open(temp_file_path, 'wb') as f:
+            await f.write(audio_bytes)
+        
+        # Transcribe using Sarvam AI
+        result = await sarvam_service.speech_to_text(temp_file_path)
+        
+        # Clean up temp file
+        os.remove(temp_file_path)
+        
+        if not result.get("success"):
+            raise HTTPException(status_code=500, detail=result.get("error", "Transcription failed"))
+        
+        return {
+            "transcript": result["transcript"],
+            "language_code": result.get("language_code"),
+            "duration": result.get("duration")
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Voice transcription failed: {str(e)}")
+
+@app.post("/api/voice/clarity-questions")
+async def generate_clarity_questions(transcript: dict, current_user: dict = Depends(get_current_user)):
+    """
+    Generate clarity-enforcing questions based on initial disruption
+    Ward clarifies - it does not decide
+    """
+    try:
+        initial_transcript = transcript.get("transcript", "")
+        if not initial_transcript:
+            raise HTTPException(status_code=400, detail="Transcript is required")
+        
+        questions = await voice_assistant.generate_clarity_questions(initial_transcript)
+        
+        return {
+            "questions": questions,
+            "count": len(questions)
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate questions: {str(e)}")
+
+@app.post("/api/voice/extract-disruption")
+async def extract_disruption_from_conversation(conversation: dict, current_user: dict = Depends(get_current_user)):
+    """
+    Extract structured disruption details from voice conversation
+    Operator must approve before decision creation
+    """
+    try:
+        conversation_transcript = conversation.get("conversation_transcript", "")
+        if not conversation_transcript:
+            raise HTTPException(status_code=400, detail="Conversation transcript is required")
+        
+        disruption = await voice_assistant.extract_disruption_details(conversation_transcript)
+        
+        if "error" in disruption:
+            raise HTTPException(status_code=500, detail=disruption["error"])
+        
+        return disruption
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to extract disruption: {str(e)}")
+
+@app.post("/api/voice/text-to-speech")
+async def synthesize_speech(voice_response: VoiceResponse, current_user: dict = Depends(get_current_user)):
+    """
+    Convert text to speech using Sarvam AI Bulbul v2
+    Returns base64 encoded audio for playback
+    """
+    try:
+        text = voice_response.response_text
+        if not text:
+            raise HTTPException(status_code=400, detail="Text is required")
+        
+        # Use Anushka voice (clear, professional) in Hindi-English mix
+        audio_bytes = await sarvam_service.text_to_speech(
+            text=text,
+            language_code="hi-IN",
+            speaker="anushka"
+        )
+        
+        if not audio_bytes:
+            raise HTTPException(status_code=500, detail="Speech synthesis failed")
+        
+        # Return base64 encoded audio
+        audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
+        
+        return {
+            "audio_base64": audio_base64,
+            "format": "wav",
+            "text": text
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Speech synthesis failed: {str(e)}")
+
+@app.post("/api/voice/decision-guidance")
+async def generate_voice_guidance(disruption: dict, current_user: dict = Depends(get_current_user)):
+    """
+    Generate voice guidance for decision protocol steps
+    Ward guides through the 6-step protocol
+    """
+    try:
+        disruption_summary = disruption.get("summary", "")
+        if not disruption_summary:
+            raise HTTPException(status_code=400, detail="Disruption summary is required")
+        
+        guidance = await voice_assistant.generate_decision_guidance(disruption_summary)
+        
+        return guidance
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate guidance: {str(e)}")
+
+@app.post("/api/cases/voice-create")
+async def create_case_from_voice(voice_case: dict, current_user: dict = Depends(get_current_user)):
+    """
+    Create case from voice conversation
+    Includes full voice transcript in audit trail
+    """
+    try:
+        # Extract data
+        disruption_details = voice_case.get("disruption_details")
+        description = voice_case.get("description")
+        shipment_identifiers = voice_case.get("shipment_identifiers", {})
+        voice_transcript = voice_case.get("voice_transcript", "")
+        
+        if not disruption_details or not description:
+            raise HTTPException(status_code=400, detail="Disruption details and description required")
+        
+        # Create case
+        case = {
+            "operator_id": current_user["user_id"],
+            "operator_email": current_user["email"],
+            "description": description,
+            "disruption_details": disruption_details,
+            "shipment_identifiers": shipment_identifiers,
+            "voice_transcript": voice_transcript,  # Store full transcript
+            "created_via": "voice",
+            "status": "draft",
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        
+        result = await db.cases.insert_one(case)
+        case_id = str(result.inserted_id)
+        
+        await log_audit(case_id, current_user["email"], "VOICE_CASE_CREATED", {
+            "description": description[:100],
+            "voice_enabled": True,
+            "transcript_length": len(voice_transcript)
+        })
+        
+        case["_id"] = result.inserted_id
+        return serialize_doc(case)
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create case from voice: {str(e)}")
+
 # Health check
 @app.get("/api/health")
 async def health():
