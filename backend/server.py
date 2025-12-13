@@ -449,7 +449,7 @@ async def list_audit_trail(current_user: dict = Depends(get_current_user)):
     entries = await cursor.to_list(length=100)
     return [serialize_doc(entry) for entry in entries]
 
-@app.get("/api/cases/{case_id}/audit", data-testid="case-audit-endpoint")
+@app.get("/api/cases/{case_id}/audit")
 async def get_case_audit(case_id: str, current_user: dict = Depends(get_current_user)):
     # Verify case belongs to user
     case = await db.cases.find_one({"_id": ObjectId(case_id), "operator_id": current_user["user_id"]})
