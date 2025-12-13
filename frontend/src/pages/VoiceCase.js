@@ -9,6 +9,9 @@ export default function VoiceCase() {
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
   
+  // Language selection
+  const [selectedLanguage, setSelectedLanguage] = useState('hi-IN'); // Default to Hindi
+  
   // Step 1: Initial disruption
   const [initialTranscript, setInitialTranscript] = useState('');
   const [detectedLanguage, setDetectedLanguage] = useState('');
