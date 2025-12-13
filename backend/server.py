@@ -816,6 +816,98 @@ async def get_timeline(case_id: str, current_user: dict = Depends(get_current_us
         raise HTTPException(status_code=500, detail=f"Failed to get timeline: {str(e)}")
 
 # ============================================================================
+# ROOT CAUSE ANALYSIS ENDPOINTS
+# ============================================================================
+
+@app.post("/api/cases/{case_id}/rca")
+async def perform_rca(case_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Perform Root Cause Analysis on a disruption
+    Analyzes timeline and suggests root cause, actions, preventive measures
+    """
+    try:
+        case = await db.cases.find_one({"_id": ObjectId(case_id), "operator_id": current_user["user_id"]})
+        if not case:
+            raise HTTPException(status_code=404, detail="Case not found")
+        
+        # Get timeline events
+        timeline_cursor = db.timeline_events.find({"case_id": case_id}).sort("timestamp", 1)
+        timeline_events = await timeline_cursor.to_list(length=500)
+        
+        # Perform RCA
+        rca_result = await rca_engine.analyze_disruption(
+            serialize_doc(case),
+            [serialize_doc(event) for event in timeline_events]
+        )
+        
+        # Store RCA in case
+        now = datetime.now(timezone.utc)
+        await db.cases.update_one(
+            {"_id": ObjectId(case_id)},
+            {
+                "$set": {
+                    "rca": rca_result,
+                    "rca_performed_at": now,
+                    "rca_performed_by": current_user["email"],
+                    "updated_at": now
+                }
+            }
+        )
+        
+        # Create timeline event for RCA
+        await db.timeline_events.insert_one({
+            "case_id": case_id,
+            "actor": "Ward AI",
+            "action": "RCA_PERFORMED",
+            "content": f"Root Cause Analysis completed: {rca_result.get('root_cause', 'Analysis in progress')}",
+            "source_type": SourceType.SYSTEM.value,
+            "reliability": ReliabilityLevel.HIGH.value,
+            "timestamp": now,
+            "metadata": rca_result
+        })
+        
+        # Log audit
+        await log_audit(case_id, current_user["email"], "RCA_PERFORMED", {
+            "root_cause": rca_result.get("root_cause"),
+            "confidence": rca_result.get("confidence")
+        })
+        
+        return rca_result
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"RCA failed: {str(e)}")
+
+@app.get("/api/cases/{case_id}/similar-resolutions")
+async def get_similar_resolutions(case_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Get similar disruptions and how they were resolved
+    Helps with pattern recognition and learning
+    """
+    try:
+        case = await db.cases.find_one({"_id": ObjectId(case_id), "operator_id": current_user["user_id"]})
+        if not case:
+            raise HTTPException(status_code=404, detail="Case not found")
+        
+        disruption_type = case.get("disruption_details", {}).get("disruption_type", "")
+        location = case.get("disruption_details", {}).get("identifier", "")
+        
+        similar = await rca_engine.suggest_similar_resolutions(disruption_type, location)
+        
+        return {
+            "case_id": case_id,
+            "disruption_type": disruption_type,
+            "similar_resolutions": similar,
+            "count": len(similar)
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get similar resolutions: {str(e)}")
+
+# ============================================================================
 # VOICE-FIRST ENDPOINTS (Sarvam AI Integration)
 # ============================================================================
 
