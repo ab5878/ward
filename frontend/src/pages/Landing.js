@@ -42,8 +42,7 @@ export default function Landing() {
           </h2>
           
           <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-            Driver reports in Gujarati. Ward asks in Gujarati. Manager gets root cause + action plan. 
-            <strong className="text-foreground"> 4 hours vs 24 hours.</strong>
+            Driver reports in Gujarati. Ward asks in Gujarati. Manager gets root cause analysis + action plan.
           </p>
           
           <div className="flex flex-wrap gap-4 justify-center">
@@ -51,29 +50,29 @@ export default function Landing() {
               to="/register"
               className="px-8 py-4 text-base font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-lg"
             >
-              Start 30-Day Pilot <ArrowRight className="w-5 h-5" />
+              Try Ward <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
               to="/login"
               className="px-8 py-4 text-base font-medium border-2 border-border rounded-lg hover:bg-secondary transition-colors"
             >
-              See Demo
+              Sign In
             </Link>
           </div>
 
-          {/* Quick Stats */}
+          {/* Key Features */}
           <div className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
-            <div>
-              <div className="text-3xl font-bold text-primary">4h</div>
-              <div className="text-sm text-muted-foreground">Avg Resolution</div>
-            </div>
             <div>
               <div className="text-3xl font-bold text-primary">11</div>
               <div className="text-sm text-muted-foreground">Indian Languages</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-primary">84%</div>
-              <div className="text-sm text-muted-foreground">Adoption Rate</div>
+              <div className="text-3xl font-bold text-primary">AI</div>
+              <div className="text-sm text-muted-foreground">Root Cause Analysis</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-primary">6</div>
+              <div className="text-sm text-muted-foreground">Lifecycle States</div>
             </div>
           </div>
         </div>
