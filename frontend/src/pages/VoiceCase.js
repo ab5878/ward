@@ -308,8 +308,35 @@ export default function VoiceCase() {
             <Mic className="h-16 w-16 mx-auto mb-4 text-[hsl(var(--primary))]" />
             <h2 className="text-2xl font-bold mb-2">Speak the Disruption</h2>
             <p className="text-[hsl(var(--muted-foreground))] mb-6">
-              Describe what just happened in Hindi, English, or any Indian language.
+              Select your language and describe what just happened.
             </p>
+            
+            {/* Language Selector */}
+            <div className="mb-6 max-w-xs mx-auto">
+              <label htmlFor="language" className="block text-sm font-medium mb-2 text-left">
+                Select Language *
+              </label>
+              <select
+                id="language"
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+                className="w-full px-3 py-2 border border-[hsl(var(--input))] rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] bg-background text-left"
+                data-testid="language-select"
+              >
+                <option value="hi-IN">🇮🇳 Hindi (हिन्दी)</option>
+                <option value="en-IN">🇮🇳 English (Indian)</option>
+                <option value="ta-IN">🇮🇳 Tamil (தமிழ்)</option>
+                <option value="te-IN">🇮🇳 Telugu (తెలుగు)</option>
+                <option value="kn-IN">🇮🇳 Kannada (ಕನ್ನಡ)</option>
+                <option value="ml-IN">🇮🇳 Malayalam (മലയാളം)</option>
+                <option value="mr-IN">🇮🇳 Marathi (मराठी)</option>
+                <option value="gu-IN">🇮🇳 Gujarati (ગુજરાતી)</option>
+                <option value="pa-IN">🇮🇳 Punjabi (ਪੰਜਾਬੀ)</option>
+                <option value="bn-IN">🇮🇳 Bengali (বাংলা)</option>
+                <option value="od-IN">🇮🇳 Odia (ଓଡ଼ିଆ)</option>
+              </select>
+            </div>
+            
             <p className="text-sm text-[hsl(var(--muted-foreground))] mb-6 italic">
               Example: "Ward, container XYZ is stuck at Mundra. CHA says assessment pending, exact reason not clear yet."
             </p>
