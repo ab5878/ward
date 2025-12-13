@@ -1,15 +1,16 @@
 """Voice-First Decision Assistant for Ward v0
 
-Guides operators through the 5-step voice protocol:
-1. Capture disruption via voice
-2. Ask clarity-enforcing questions
-3. Lock disruption with human approval
-4. Guide through decision protocol
-5. Output written decision with transcript
+Three distinct voice roles with clear authority boundaries:
+1. DRIVER (Field Reality Capture) - Reports disruptions, no decision authority
+2. MANAGER (Decision Owner) - Makes decisions, full protocol access
+3. HELPER (Context Provider) - Provides domain knowledge (CHA, senior ops)
+
+Ward coordinates humans under uncertainty, preserves authority hierarchy.
+Voice is for capture + guidance, NOT command.
 """
 
 import json
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Literal
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 import os
 from dotenv import load_dotenv
@@ -18,8 +19,11 @@ load_dotenv()
 
 EMERGENT_LLM_KEY = os.getenv("EMERGENT_LLM_KEY")
 
+# Role type definition
+VoiceRole = Literal["driver", "manager", "helper"]
+
 class VoiceDecisionAssistant:
-    """Manages voice-guided decision workflow"""
+    """Manages role-based voice-guided workflows"""
     
     def __init__(self):
         self.api_key = EMERGENT_LLM_KEY
