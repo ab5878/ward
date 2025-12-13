@@ -42,6 +42,13 @@ export default function CreateCase() {
     try {
       const response = await api.post('/cases', {
         description,
+        disruption_details: {
+          disruption_type: disruptionType,
+          scope: scope,
+          identifier: identifier,
+          time_discovered_ist: timeDiscoveredIST,
+          source: source,
+        },
         shipment_identifiers: {
           ids: shipmentIds.filter(id => id.trim()),
           routes: routes.filter(r => r.trim()),
