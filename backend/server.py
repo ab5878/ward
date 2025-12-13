@@ -234,7 +234,7 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 # CASE ROUTES
 # ============================================================================
 
-@app.post("/api/cases", data-testid="create-case-endpoint")
+@app.post("/api/cases")
 async def create_case(case_data: CreateCase, current_user: dict = Depends(get_current_user)):
     case = {
         "operator_id": current_user["user_id"],
