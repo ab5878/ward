@@ -13,27 +13,27 @@
   },
   {
     "content": "Phase 1: Test and validate Gemini generates 6-step structure correctly",
-    "status": "in_progress"
+    "status": "completed"
   },
   {
     "content": "Phase 1: Verify evidence labeling and max 3 alternatives constraint",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 1: Test guardrails (AI refuses planning/prediction requests)",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 1: Fix POC until all validations pass",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 1: All user stories covered in POC testing",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Get design guidelines from design_agent",
-    "status": "pending"
+    "status": "in_progress"
   },
   {
     "content": "Phase 2: Backend implementation (auth, cases, AI draft, decisions, audit)",
