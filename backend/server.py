@@ -22,6 +22,9 @@ from rca_engine import RCAEngine
 import aiofiles
 import base64
 
+# Initialize voice assistant and RCA engine
+rca_engine = RCAEngine()
+
 # Load environment variables
 load_dotenv()
 
