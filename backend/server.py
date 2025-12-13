@@ -18,6 +18,7 @@ from contextlib import asynccontextmanager
 from ai_decision import generate_decision_structure
 from sarvam_service import sarvam_service
 from voice_assistant import voice_assistant
+from rca_engine import RCAEngine
 import aiofiles
 import base64
 
