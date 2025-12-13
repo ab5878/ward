@@ -158,6 +158,7 @@ export default function CaseDetail() {
             <OwnershipAssigner
               caseId={caseId}
               currentOwner={caseData.decision_owner_email}
+            <CommunicationTool />
               onAssigned={loadCase}
             />
           </div>
