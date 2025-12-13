@@ -254,7 +254,7 @@ async def create_case(case_data: CreateCase, current_user: dict = Depends(get_cu
     case["_id"] = result.inserted_id
     return serialize_doc(case)
 
-@app.get("/api/cases", data-testid="list-cases-endpoint")
+@app.get("/api/cases")
 async def list_cases(current_user: dict = Depends(get_current_user)):
     cursor = db.cases.find({"operator_id": current_user["user_id"]}).sort("created_at", -1).limit(50)
     cases = await cursor.to_list(length=50)
