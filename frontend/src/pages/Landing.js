@@ -205,19 +205,19 @@ export default function Landing() {
         <div className="container mx-auto px-6">
           <div className="max-w-2xl mx-auto text-center">
             <h3 className="text-4xl font-bold mb-6">
-              Start your 30-day pilot
+              Ready to try Ward?
             </h3>
             <p className="text-lg text-muted-foreground mb-8">
-              5 managers. 20 drivers. Full features. No cost.
+              See how voice-first disruption management works for your team.
             </p>
             <Link
               to="/register"
               className="inline-flex items-center gap-2 px-10 py-5 text-lg font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-xl"
             >
-              Get Started Free <ArrowRight className="w-6 h-6" />
+              Get Started <ArrowRight className="w-6 h-6" />
             </Link>
             <p className="mt-6 text-sm text-muted-foreground">
-              Setup in 1 week. WhatsApp integration included.
+              No credit card required. Explore all features.
             </p>
           </div>
         </div>
