@@ -1,19 +1,19 @@
 [
   {
     "content": "Phase 1: Install emergentintegrations library",
-    "status": "in_progress"
+    "status": "completed"
   },
   {
     "content": "Phase 1: Add EMERGENT_LLM_KEY to backend .env",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 1: Create POC test script for AI decision structuring with 3 scenarios",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 1: Test and validate Gemini generates 6-step structure correctly",
-    "status": "pending"
+    "status": "in_progress"
   },
   {
     "content": "Phase 1: Verify evidence labeling and max 3 alternatives constraint",
