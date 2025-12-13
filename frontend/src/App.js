@@ -41,6 +41,7 @@ function App() {
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/cases/new" element={<PrivateRoute><CreateCase /></PrivateRoute>} />
+          <Route path="/cases/voice" element={<PrivateRoute><VoiceCase /></PrivateRoute>} />
           <Route path="/cases/:caseId" element={<PrivateRoute><CaseDetail /></PrivateRoute>} />
           <Route path="/audit" element={<PrivateRoute><AuditTrail /></PrivateRoute>} />
         </Routes>
