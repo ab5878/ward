@@ -410,17 +410,26 @@ Customer delivery windows closing within 12 hours. Driver safety also a concern.
             }
         },
         {
-            "name": "Carrier Capacity Failure",
-            "description": """Primary carrier GlobalShip just notified us their truck broke down.
-Shipment SH-2024-901 with perishable goods (refrigerated, 48-hour window) is affected.
-Options: 
-- Wait for replacement truck (ETA 3 hours)
-- Transfer to backup carrier SpeedyCo (available now, 20% price premium, unknown reliability)
-- Hold at current cold storage facility (costs $150/hour)""",
+            "name": "Truck Breakdown with Perishables",
+            "description": """Refrigerated truck (MH-02-AB-1234) broke down near Nashik toll plaza.
+Discovered via phone call from driver at 09:15 IST on 13/12/2024.
+Shipment COLD-IND-901 contains temperature-sensitive medicines (must maintain 2-8°C).
+Current outside temperature 35°C. Reefer unit failed completely.
+Options being communicated via WhatsApp with transporter:
+- Wait for replacement truck from depot (ETA 4 hours, unsure of reefer availability)
+- Transfer to nearby cold storage (₹5000/hour, 15km away)
+- Arrange emergency backup carrier (local transporter quoted ₹25000, unknown reliability)""",
             "shipment_data": {
-                "ids": ["SH-2024-901"],
-                "routes": ["Miami → Atlanta → Nashville"],
-                "carriers": ["GlobalShip (broken down)", "SpeedyCo (backup option)"]
+                "ids": ["COLD-IND-901"],
+                "routes": ["Mumbai → Nagpur via NH-160"],
+                "carriers": ["Snowman Logistics (broken)", "Local backup options"]
+            },
+            "disruption_details": {
+                "disruption_type": "truck_breakdown",
+                "scope": "single_shipment_perishable",
+                "identifier": "MH-02-AB-1234",
+                "time_discovered_ist": "13/12/2024 09:15 IST",
+                "source": "Phone call from driver Suresh"
             }
         }
     ]
