@@ -50,6 +50,7 @@ class SarvamService:
                     data = {
                         'model': 'saarika:v1',
                         'language_code': language_code  # MANDATORY parameter
+                    }
                     
                     response = await client.post(
                         f"{SARVAM_BASE_URL}/speech-to-text",
