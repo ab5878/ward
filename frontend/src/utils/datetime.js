@@ -1,5 +1,5 @@
 import { format, formatDistanceToNow } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 
 const IST_TIMEZONE = 'Asia/Kolkata';
 
