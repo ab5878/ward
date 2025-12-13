@@ -260,7 +260,7 @@ async def list_cases(current_user: dict = Depends(get_current_user)):
     cases = await cursor.to_list(length=50)
     return [serialize_doc(case) for case in cases]
 
-@app.get("/api/cases/{case_id}", data-testid="get-case-endpoint")
+@app.get("/api/cases/{case_id}")
 async def get_case(case_id: str, current_user: dict = Depends(get_current_user)):
     try:
         case = await db.cases.find_one({"_id": ObjectId(case_id), "operator_id": current_user["user_id"]})
