@@ -79,10 +79,104 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Voice-First for Indian Ops Teams */}
+      {/* The Three Voice Roles */}
       <section className="container mx-auto px-6 py-16 md:py-20">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Voice-First for Indian Ops Teams</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">The Three Voice Roles</h2>
+          <p className="text-[hsl(var(--muted-foreground))] mb-8">
+            Ward sits in the middle, stitching reality → clarity → decision → audit. Voice makes it faster, not flatter.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {/* Driver */}
+            <div className="bg-card border-2 border-[hsl(var(--border))] rounded-lg p-6">
+              <div className="w-12 h-12 rounded-full bg-[hsl(var(--info))]/10 flex items-center justify-center mb-4">
+                <svg className="h-6 w-6 text-[hsl(var(--info))]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-2">1. Driver</h3>
+              <p className="text-sm text-[hsl(var(--muted-foreground))] mb-3">Field Reality Capture</p>
+              <div className="space-y-2 text-sm">
+                <p><span className="font-medium">Role:</span> Reports what's happening on the ground</p>
+                <p className="text-xs">May not read English, under stress, noisy environment</p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-[hsl(var(--border))]">
+                <p className="text-xs font-medium mb-2">Ward responds with:</p>
+                <ul className="text-xs space-y-1 text-[hsl(var(--muted-foreground))]">
+                  <li>✓ Acknowledgment</li>
+                  <li>✓ Safe coordination ("wait safely")</li>
+                  <li>✓ Clarifying questions</li>
+                  <li className="text-[hsl(var(--destructive))]">✗ Routing decisions</li>
+                  <li className="text-[hsl(var(--destructive))]">✗ ETA promises</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Manager */}
+            <div className="bg-card border-2 border-[hsl(var(--primary))] rounded-lg p-6">
+              <div className="w-12 h-12 rounded-full bg-[hsl(var(--primary))]/10 flex items-center justify-center mb-4">
+                <svg className="h-6 w-6 text-[hsl(var(--primary))]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-2">2. Manager</h3>
+              <p className="text-sm text-[hsl(var(--muted-foreground))] mb-3">Decision Owner</p>
+              <div className="space-y-2 text-sm">
+                <p><span className="font-medium">Role:</span> Makes the decision now</p>
+                <p className="text-xs">Juggling calls, WhatsApp, dashboards — needs clarity fast</p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-[hsl(var(--border))]">
+                <p className="text-xs font-medium mb-2">Ward provides:</p>
+                <ul className="text-xs space-y-1 text-[hsl(var(--muted-foreground))]">
+                  <li>✓ Structured reality (no advice)</li>
+                  <li>✓ Explicit unknowns</li>
+                  <li>✓ Alternatives with worst-cases</li>
+                  <li>✓ Decision framing protocol</li>
+                  <li>✓ Audit trail</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Helper */}
+            <div className="bg-card border-2 border-[hsl(var(--border))] rounded-lg p-6">
+              <div className="w-12 h-12 rounded-full bg-[hsl(var(--success))]/10 flex items-center justify-center mb-4">
+                <svg className="h-6 w-6 text-[hsl(var(--success))]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-2">3. Helper</h3>
+              <p className="text-sm text-[hsl(var(--muted-foreground))] mb-3">Context Provider</p>
+              <div className="space-y-2 text-sm">
+                <p><span className="font-medium">Role:</span> Provides domain knowledge (CHA, senior ops)</p>
+                <p className="text-xs">Has partial but important context</p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-[hsl(var(--border))]">
+                <p className="text-xs font-medium mb-2">Ward asks:</p>
+                <ul className="text-xs space-y-1 text-[hsl(var(--muted-foreground))]">
+                  <li>✓ "Is this common?"</li>
+                  <li>✓ "What usually works?"</li>
+                  <li>✓ "What has failed before?"</li>
+                  <li className="text-[hsl(var(--destructive))]">✗ "What should we do?"</li>
+                  <li className="text-[hsl(var(--destructive))]">✗ "What's your decision?"</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg p-6 text-center">
+            <p className="font-semibold mb-2">Voice Does Not Collapse Authority</p>
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              Driver provides reality input • Helper provides context • Manager owns the decision • Ward provides structure + memory
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Voice-First for Indian Ops Teams */}
+      <section className="container mx-auto px-6 py-16 md:py-20 bg-[hsl(var(--muted))]/30">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Why Voice for Indian Operations</h2>
           
           {/* Why Voice */}
           <div className="mb-12">
