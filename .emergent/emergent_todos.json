@@ -1,0 +1,54 @@
+[
+  {
+    "content": "Phase 1: Install emergentintegrations library",
+    "status": "in_progress"
+  },
+  {
+    "content": "Phase 1: Add EMERGENT_LLM_KEY to backend .env",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 1: Create POC test script for AI decision structuring with 3 scenarios",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 1: Test and validate Gemini generates 6-step structure correctly",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 1: Verify evidence labeling and max 3 alternatives constraint",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 1: Test guardrails (AI refuses planning/prediction requests)",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 1: Fix POC until all validations pass",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 1: All user stories covered in POC testing",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 2: Get design guidelines from design_agent",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 2: Backend implementation (auth, cases, AI draft, decisions, audit)",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 2: Frontend implementation (auth, dashboard, case management, approval workflow)",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 2: All user stories covered in Development",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 2: End to End Testing using Testing Agent",
+    "status": "pending"
+  }
+]
