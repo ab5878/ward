@@ -19,11 +19,13 @@ from ai_decision import generate_decision_structure
 from sarvam_service import sarvam_service
 from voice_assistant import voice_assistant
 from rca_engine import RCAEngine
+from coordination_manager import CoordinationManager
 import aiofiles
 import base64
 
 # Initialize voice assistant and RCA engine
 rca_engine = RCAEngine()
+coordination_manager = None  # Will be initialized in lifespan
 
 # Load environment variables
 load_dotenv()
