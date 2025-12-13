@@ -367,18 +367,26 @@ async def main():
     
     validator = WardPOCValidator()
     
-    # Define test scenarios
+    # Define test scenarios (INDIA CONTEXT)
     scenarios = [
         {
-            "name": "Shipment Delay at Hub",
-            "description": """Critical shipment SH-2024-789 is delayed at Chicago hub due to severe weather.
-Expected arrival was 2 hours ago. Customer has time-sensitive medical supplies order.
-Alternative hub in Milwaukee is operational but adds 4 hours transit time.
-Current ETA shows 6-8 hour delay if we wait for Chicago hub to reopen.""",
+            "name": "Customs Hold at JNPT",
+            "description": """Container CMAU1234567 held at JNPT customs for document verification.
+Discovered via call from CHA at 14:30 IST on 13/12/2024.
+Original documents submitted but customs officer requesting additional import license copy.
+Shipment contains electronics for urgent customer order. CHA says resolution can take 2-4 days normally.
+Options: expedite through senior CHA contact, wait for normal process, or arrange alternative clearance route.""",
             "shipment_data": {
-                "ids": ["SH-2024-789"],
-                "routes": ["New York → Chicago → Denver"],
-                "carriers": ["FastFreight Express"]
+                "ids": ["SH-IND-2024-789"],
+                "routes": ["JNPT Port → Mumbai → Pune"],
+                "carriers": ["Maersk Line", "VRL Logistics"]
+            },
+            "disruption_details": {
+                "disruption_type": "customs_hold",
+                "scope": "single_container",
+                "identifier": "CMAU1234567",
+                "time_discovered_ist": "13/12/2024 14:30 IST",
+                "source": "Call from CHA (Jagdish Customs)"
             }
         },
         {
