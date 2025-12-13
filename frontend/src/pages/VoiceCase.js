@@ -97,6 +97,13 @@ export default function VoiceCase() {
       const transcript = transcribeResponse.data.transcript;
       const languageCode = transcribeResponse.data.language_code;
       
+      // Check if transcript is empty
+      if (!transcript || transcript.trim().length === 0) {
+        alert('No speech detected. Please try speaking again.');
+        setProcessing(false);
+        return;
+      }
+      
       // Add to conversation log
       addToConversation('operator', transcript);
       
