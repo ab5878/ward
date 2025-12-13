@@ -362,18 +362,23 @@ async def get_case(case_id: str, current_user: dict = Depends(get_current_user))
         if not case:
             raise HTTPException(status_code=404, detail="Case not found")
         
-        # Get draft if exists
+        # Get timeline events
+        timeline_cursor = db.timeline_events.find({"case_id": case_id}).sort("timestamp", -1)
+        timeline_events = await timeline_cursor.to_list(length=500)
+        
+        # Get draft if exists (for legacy decision flow)
         draft = await db.drafts.find_one({"case_id": case_id})
         
-        # Get approvals
+        # Get approvals (for legacy decision flow)
         approvals_cursor = db.approvals.find({"case_id": case_id})
         approvals = await approvals_cursor.to_list(length=100)
         
-        # Get decision if exists
+        # Get decision if exists (for legacy decision flow)
         decision = await db.decisions.find_one({"case_id": case_id})
         
         return serialize_doc({
             "case": case,
+            "timeline": timeline_events,
             "draft": draft,
             "approvals": approvals,
             "decision": decision
