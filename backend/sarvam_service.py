@@ -105,7 +105,7 @@ class SarvamService:
                 response = await client.post(
                     f"{SARVAM_BASE_URL}/text-to-speech",
                     headers={
-                        **self.headers,
+                        **self.tts_headers,
                         "Content-Type": "application/json"
                     },
                     json=payload
