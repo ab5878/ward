@@ -46,7 +46,11 @@ async def lifespan(app: FastAPI):
     # Create indexes
     await db.users.create_index("email", unique=True)
     await db.cases.create_index("created_at")
+    await db.cases.create_index("status")
+    await db.cases.create_index("decision_owner_email")
     await db.audit_entries.create_index("case_id")
+    await db.timeline_events.create_index("case_id")
+    await db.timeline_events.create_index("timestamp")
     
     yield
     
