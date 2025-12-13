@@ -116,13 +116,22 @@ class SarvamService:
                 
                 response.raise_for_status()
                 
-                # Sarvam returns base64 encoded audio
-                result = response.json()
-                import base64
-                audio_base64 = result.get("audios", [""])[0]
-                audio_bytes = base64.b64decode(audio_base64)
+                # Sarvam returns audio directly in response
+                # Check content type - could be audio/wav or application/json with base64
+                content_type = response.headers.get('content-type', '')
                 
-                return audio_bytes
+                if 'audio' in content_type:
+                    # Direct audio bytes
+                    return response.content
+                else:
+                    # JSON with base64 encoded audio
+                    result = response.json()
+                    import base64
+                    audio_base64 = result.get("audios", [""])[0] if isinstance(result.get("audios"), list) else result.get("audio", "")
+                    if audio_base64:
+                        audio_bytes = base64.b64decode(audio_base64)
+                        return audio_bytes
+                    return b""
         
         except Exception as e:
             print(f"Text-to-speech error: {e}")
