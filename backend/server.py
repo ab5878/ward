@@ -290,7 +290,7 @@ async def get_case(case_id: str, current_user: dict = Depends(get_current_user))
 # AI DRAFT ROUTES
 # ============================================================================
 
-@app.post("/api/cases/{case_id}/ai_draft", data-testid="generate-ai-draft-endpoint")
+@app.post("/api/cases/{case_id}/ai_draft")
 async def generate_ai_draft(case_id: str, current_user: dict = Depends(get_current_user)):
     try:
         case = await db.cases.find_one({"_id": ObjectId(case_id), "operator_id": current_user["user_id"]})
