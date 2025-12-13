@@ -32,7 +32,7 @@ load_dotenv()
 
 # Configuration
 MONGO_URL = os.getenv("MONGO_URL")
-DB_NAME = os.getenv("DB_NAME", "ward_v0")
+DB_NAME = os.getenv("DB_NAME")
 JWT_SECRET = os.getenv("JWT_SECRET", "ward-v0-secret-key-change-in-production")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
