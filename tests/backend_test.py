@@ -10,7 +10,7 @@ from datetime import datetime
 import json
 
 class WardBackendTester:
-    def __init__(self, base_url="https://logismart-19.preview.emergentagent.com"):
+    def __init__(self, base_url="https://logistics-ward.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.test_email = f"test_operator_{int(time.time())}@example.com"
