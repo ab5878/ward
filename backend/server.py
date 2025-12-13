@@ -48,10 +48,10 @@ async def lifespan(app: FastAPI):
     client = AsyncIOMotorClient(MONGO_URL)
     db = client[DB_NAME]
     print(f"Connected to MongoDB: {DB_NAME}")
-
+    
     # Initialize Coordination Manager
     coordination_manager = CoordinationManager(db)
-    
+
     # Create indexes
     await db.users.create_index("email", unique=True)
     await db.cases.create_index("created_at")
@@ -1146,6 +1146,92 @@ async def create_case_from_voice(voice_case: dict, current_user: dict = Depends(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create case from voice: {str(e)}")
+
+# ============================================================================
+# ACTIVE COORDINATION ENDPOINTS
+# ============================================================================
+
+class SimulateResponseRequest(BaseModel):
+    actor: str
+    content: str
+
+class ExecutePlanRequest(BaseModel):
+    action_plan: List[Dict[str, Any]]
+
+@app.post("/api/cases/{case_id}/coordination/start")
+async def start_coordination(case_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Start the active coordination process: Identify stakeholders and send outreach.
+    """
+    try:
+        case = await db.cases.find_one({"_id": ObjectId(case_id)})
+        if not case:
+            raise HTTPException(status_code=404, detail="Case not found")
+        
+        disruption_type = case.get("disruption_details", {}).get("disruption_type", "unknown")
+        location = case.get("disruption_details", {}).get("identifier", "unknown")
+        summary = case.get("description", "")
+        
+        result = await coordination_manager.start_coordination(
+            case_id=case_id,
+            disruption_summary=summary,
+            disruption_type=disruption_type,
+            location=location
+        )
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to start coordination: {str(e)}")
+
+@app.post("/api/cases/{case_id}/coordination/simulate-response")
+async def simulate_response(case_id: str, request: SimulateResponseRequest, current_user: dict = Depends(get_current_user)):
+    """
+    DEMO TOOL: Simulate a response from a stakeholder.
+    """
+    try:
+        event = await coordination_manager.simulate_response(
+            case_id=case_id,
+            actor=request.actor,
+            content=request.content
+        )
+        return serialize_doc(event)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to simulate response: {str(e)}")
+
+@app.post("/api/cases/{case_id}/coordination/rca")
+async def perform_enhanced_rca(case_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Perform RCA using collected stakeholder data.
+    """
+    try:
+        result = await coordination_manager.perform_enhanced_rca(case_id)
+        
+        # Update case with enhanced RCA
+        now = datetime.now(timezone.utc)
+        await db.cases.update_one(
+            {"_id": ObjectId(case_id)},
+            {
+                "$set": {
+                    "enhanced_rca": result,
+                    "rca_performed_at": now,
+                    "updated_at": now
+                }
+            }
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to perform enhanced RCA: {str(e)}")
+
+@app.post("/api/cases/{case_id}/coordination/execute")
+async def execute_action_plan(case_id: str, request: ExecutePlanRequest, current_user: dict = Depends(get_current_user)):
+    """
+    Execute the approved action plan.
+    """
+    try:
+        result = await coordination_manager.execute_plan(case_id, request.action_plan)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to execute plan: {str(e)}")
 
 # Health check
 @app.get("/api/health")
