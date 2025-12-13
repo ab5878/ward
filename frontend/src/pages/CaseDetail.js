@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
 import { ArrowLeft, Loader2, AlertTriangle, Plus } from 'lucide-react';
+import CommunicationTool from '../components/CommunicationTool';
 import { TimelineEvent } from '../components/TimelineEvent';
 import { StateTransitionBar } from '../components/StateTransitionBar';
 import { OwnershipAssigner } from '../components/OwnershipAssigner';
