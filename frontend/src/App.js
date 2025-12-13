@@ -1,54 +1,81 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { Toaster } from './components/ui/sonner';
 import Landing from './pages/Landing';
+import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import CreateCase from './pages/CreateCase';
-import VoiceCase from './pages/VoiceCase';
 import CaseDetail from './pages/CaseDetail';
-import AuditTrail from './pages/AuditTrail';
-import './App.css';
+import VoiceCase from './pages/VoiceCase';
+import AnalyticsDashboard from './pages/Analytics';
+import { Toaster } from "@/components/ui/sonner"
 
-function PrivateRoute({ children }) {
+const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return <div>Loading...</div>;
   }
   
-  return user ? children : <Navigate to="/login" />;
-}
-
-function PublicRoute({ children }) {
-  const { user, loading } = useAuth();
-  
-  if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  if (!user) {
+    return <Navigate to="/login" />;
   }
   
-  return user ? <Navigate to="/dashboard" /> : children;
-}
+  return children;
+};
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="/cases/new" element={<PrivateRoute><CreateCase /></PrivateRoute>} />
-          <Route path="/cases/voice" element={<PrivateRoute><VoiceCase /></PrivateRoute>} />
-          <Route path="/cases/:caseId" element={<PrivateRoute><CaseDetail /></PrivateRoute>} />
-          <Route path="/audit" element={<PrivateRoute><AuditTrail /></PrivateRoute>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard/analytics" 
+            element={
+              <ProtectedRoute>
+                <AnalyticsDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/cases/new" 
+            element={
+              <ProtectedRoute>
+                <VoiceCase mode="text" />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/cases/voice" 
+            element={
+              <ProtectedRoute>
+                <VoiceCase mode="voice" />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/cases/:caseId" 
+            element={
+              <ProtectedRoute>
+                <CaseDetail />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
         <Toaster />
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
