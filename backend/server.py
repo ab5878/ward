@@ -248,6 +248,7 @@ async def create_case(case_data: CreateCase, current_user: dict = Depends(get_cu
         "operator_id": current_user["user_id"],
         "operator_email": current_user["email"],
         "description": case_data.description,
+        "disruption_details": case_data.disruption_details.dict(),
         "shipment_identifiers": case_data.shipment_identifiers.dict(),
         "status": "draft",
         "created_at": datetime.utcnow(),
