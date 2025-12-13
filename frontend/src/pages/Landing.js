@@ -111,7 +111,7 @@ export default function Landing() {
                   <li>• AI performs root cause analysis</li>
                   <li>• Manager gets action plan with owners</li>
                   <li>• Complete audit trail preserved</li>
-                  <li>• <strong className="text-primary">Avg resolution: 4 hours</strong></li>
+                  <li>• <strong className="text-primary">Single source of truth</strong></li>
                 </ul>
               </div>
             </div>
