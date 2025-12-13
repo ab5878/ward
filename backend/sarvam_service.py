@@ -23,14 +23,17 @@ class SarvamService:
             "api-subscription-key": self.api_key  # TTS also uses subscription key
         }
     
-    async def speech_to_text(self, audio_file_path: str, language_code: Optional[str] = None) -> Dict[str, Any]:
+    async def speech_to_text(self, audio_file_path: str, language_code: str = "hi-IN") -> Dict[str, Any]:
         """
         Convert speech to text using Sarvam AI
-        Supports 10+ Indian languages with auto-detection
+        Supports 10+ Indian languages
         
         Args:
             audio_file_path: Path to audio file (MP3, WAV, AAC, FLAC)
-            language_code: Optional language code (auto-detects if None)
+            language_code: Language code (REQUIRED for saarika:v1)
+                          Options: hi-IN, en-IN, ta-IN, te-IN, kn-IN, ml-IN, mr-IN, 
+                                   gu-IN, pa-IN, bn-IN, od-IN
+                          Default: hi-IN (Hindi)
         
         Returns:
             Dictionary with transcript and metadata
@@ -42,13 +45,11 @@ class SarvamService:
                         'file': (os.path.basename(audio_file_path), audio_file, 'audio/wav')
                     }
                     
-                    # Use Saarika model for transcription in original language
+                    # Use Saarika model for transcription
+                    # IMPORTANT: language_code is REQUIRED for saarika:v1
                     data = {
-                        'model': 'saarika:v1'
-                    }
-                    
-                    if language_code:
-                        data['language_code'] = language_code
+                        'model': 'saarika:v1',
+                        'language_code': language_code  # MANDATORY parameter
                     
                     response = await client.post(
                         f"{SARVAM_BASE_URL}/speech-to-text",
