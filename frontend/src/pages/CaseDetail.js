@@ -99,21 +99,21 @@ export default function CaseDetail() {
 
   if (loading) {
     return (
-      <div className=\"min-h-screen bg-background flex items-center justify-center\">
-        <Loader2 className=\"h-8 w-8 animate-spin text-primary\" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   if (!caseData) {
     return (
-      <div className=\"min-h-screen bg-background flex items-center justify-center\">
-        <div className=\"text-center\">
-          <AlertTriangle className=\"h-12 w-12 mx-auto mb-4 text-muted-foreground\" />
-          <p className=\"text-muted-foreground\">Case not found</p>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          <p className="text-muted-foreground">Case not found</p>
           <Link
-            to=\"/dashboard\"
-            className=\"text-primary hover:underline mt-4 inline-block\"
+            to="/dashboard"
+            className="text-primary hover:underline mt-4 inline-block"
           >
             Back to Dashboard
           </Link>
@@ -125,28 +125,28 @@ export default function CaseDetail() {
   const isDecisionOwner = caseData.decision_owner_email === user?.email;
 
   return (
-    <div className=\"min-h-screen bg-background\">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className=\"border-b border-border bg-card sticky top-0 z-10\">
-        <div className=\"container mx-auto px-6 py-4\">
+      <header className="border-b border-border bg-card sticky top-0 z-10">
+        <div className="container mx-auto px-6 py-4">
           <Link
-            to=\"/dashboard\"
-            className=\"inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-2\"
+            to="/dashboard"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-2"
           >
-            <ArrowLeft className=\"h-4 w-4\" />
+            <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
           </Link>
-          <div className=\"flex justify-between items-start\">
-            <div className=\"space-y-2\">
-              <div className=\"flex items-center gap-3\">
-                <h1 className=\"text-2xl font-bold tracking-tight\">
+          <div className="flex justify-between items-start">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold tracking-tight">
                   Case #{caseId.slice(-6).toUpperCase()}
                 </h1>
-                <span className=\"state-badge\" data-state={caseData.status}>
+                <span className="state-badge" data-state={caseData.status}>
                   {caseData.status.replace('_', ' ')}
                 </span>
               </div>
-              <div className=\"flex items-center gap-4 text-sm text-muted-foreground\">
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <span>Created {toIST(caseData.created_at)}</span>
                 <span>•</span>
                 <span>Updated {toIST(caseData.updated_at)}</span>
@@ -161,44 +161,44 @@ export default function CaseDetail() {
         </div>
       </header>
 
-      <div className=\"container mx-auto px-6 py-8\">
-        <div className=\"grid grid-cols-1 lg:grid-cols-3 gap-6\">
+      <div className="container mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Timeline - Left 2 columns */}
-          <div className=\"lg:col-span-2 space-y-6\">
+          <div className="lg:col-span-2 space-y-6">
             {/* Disruption Description Card */}
             <Card>
               <CardHeader>
-                <CardTitle className=\"text-lg\">Disruption Details</CardTitle>
+                <CardTitle className="text-lg">Disruption Details</CardTitle>
               </CardHeader>
-              <CardContent className=\"space-y-4\">
+              <CardContent className="space-y-4">
                 <div>
-                  <p className=\"text-sm leading-relaxed\" data-testid=\"case-description\">
+                  <p className="text-sm leading-relaxed" data-testid="case-description">
                     {caseData.description}
                   </p>
                 </div>
                 <Separator />
-                <div className=\"grid grid-cols-2 gap-4 text-sm\">
+                <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className=\"font-medium\">Type:</span>
-                    <p className=\"text-muted-foreground\">
+                    <span className="font-medium">Type:</span>
+                    <p className="text-muted-foreground">
                       {caseData.disruption_details?.disruption_type || 'N/A'}
                     </p>
                   </div>
                   <div>
-                    <span className=\"font-medium\">Scope:</span>
-                    <p className=\"text-muted-foreground\">
+                    <span className="font-medium">Scope:</span>
+                    <p className="text-muted-foreground">
                       {caseData.disruption_details?.scope || 'N/A'}
                     </p>
                   </div>
                   <div>
-                    <span className=\"font-medium\">Location:</span>
-                    <p className=\"text-muted-foreground\">
+                    <span className="font-medium">Location:</span>
+                    <p className="text-muted-foreground">
                       {caseData.disruption_details?.identifier || 'N/A'}
                     </p>
                   </div>
                   <div>
-                    <span className=\"font-medium\">Discovered:</span>
-                    <p className=\"text-muted-foreground\">
+                    <span className="font-medium">Discovered:</span>
+                    <p className="text-muted-foreground">
                       {caseData.disruption_details?.time_discovered_ist || 'N/A'}
                     </p>
                   </div>
@@ -209,24 +209,24 @@ export default function CaseDetail() {
             {/* Timeline */}
             <Card>
               <CardHeader>
-                <CardTitle className=\"text-lg\">Timeline</CardTitle>
+                <CardTitle className="text-lg">Timeline</CardTitle>
               </CardHeader>
               <CardContent>
-                <ScrollArea className=\"h-[600px] pr-4\">
+                <ScrollArea className="h-[600px] pr-4">
                   {timeline.length === 0 ? (
-                    <div className=\"text-center py-8 text-muted-foreground\">
+                    <div className="text-center py-8 text-muted-foreground">
                       No timeline events yet
                     </div>
                   ) : (
-                    <div className=\"space-y-6\">
+                    <div className="space-y-6">
                       {Object.entries(groupedTimeline).map(([day, events]) => (
                         <div key={day}>
-                          <div className=\"sticky top-0 bg-background py-2 mb-4\">
-                            <h3 className=\"text-xs uppercase tracking-wider text-muted-foreground font-medium\">
+                          <div className="sticky top-0 bg-background py-2 mb-4">
+                            <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
                               {day}
                             </h3>
                           </div>
-                          <div className=\"space-y-4\">
+                          <div className="space-y-4">
                             {events.map((event) => (
                               <TimelineEvent key={event._id} event={event} />
                             ))}
@@ -241,11 +241,11 @@ export default function CaseDetail() {
           </div>
 
           {/* Sidebar - Right column */}
-          <div className=\"space-y-6\">
+          <div className="space-y-6">
             {/* State Transition */}
             <Card>
               <CardHeader>
-                <CardTitle className=\"text-lg\">State Transition</CardTitle>
+                <CardTitle className="text-lg">State Transition</CardTitle>
               </CardHeader>
               <CardContent>
                 <StateTransitionBar
@@ -259,43 +259,43 @@ export default function CaseDetail() {
             {/* Add Timeline Note */}
             <Card>
               <CardHeader>
-                <CardTitle className=\"text-lg\">Add Timeline Note</CardTitle>
+                <CardTitle className="text-lg">Add Timeline Note</CardTitle>
               </CardHeader>
-              <CardContent className=\"space-y-3\" data-testid=\"add-timeline-note-form\">
+              <CardContent className="space-y-3" data-testid="add-timeline-note-form">
                 <div>
-                  <label className=\"text-sm font-medium mb-1 block\">Content</label>
+                  <label className="text-sm font-medium mb-1 block">Content</label>
                   <Textarea
                     value={noteContent}
                     onChange={(e) => setNoteContent(e.target.value)}
                     rows={4}
-                    placeholder=\"What happened? What do we know?\"
-                    data-testid=\"timeline-content-input\"
+                    placeholder="What happened? What do we know?"
+                    data-testid="timeline-content-input"
                   />
                 </div>
-                <div className=\"grid grid-cols-2 gap-3\">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className=\"text-sm font-medium mb-1 block\">Source</label>
+                    <label className="text-sm font-medium mb-1 block">Source</label>
                     <Select value={noteSourceType} onValueChange={setNoteSourceType}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value=\"text\">Text</SelectItem>
-                        <SelectItem value=\"voice\">Voice</SelectItem>
-                        <SelectItem value=\"system\">System</SelectItem>
+                        <SelectItem value="text">Text</SelectItem>
+                        <SelectItem value="voice">Voice</SelectItem>
+                        <SelectItem value="system">System</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <label className=\"text-sm font-medium mb-1 block\">Reliability</label>
+                    <label className="text-sm font-medium mb-1 block">Reliability</label>
                     <Select value={noteReliability} onValueChange={setNoteReliability}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value=\"low\">Low</SelectItem>
-                        <SelectItem value=\"medium\">Medium</SelectItem>
-                        <SelectItem value=\"high\">High</SelectItem>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -303,10 +303,10 @@ export default function CaseDetail() {
                 <Button
                   onClick={handleAddNote}
                   disabled={addingNote || !noteContent.trim()}
-                  className=\"w-full\"
-                  data-testid=\"add-note-button\"
+                  className="w-full"
+                  data-testid="add-note-button"
                 >
-                  <Plus className=\"w-4 h-4 mr-2\" />
+                  <Plus className="w-4 h-4 mr-2" />
                   {addingNote ? 'Adding...' : 'Add Note'}
                 </Button>
               </CardContent>
@@ -315,24 +315,24 @@ export default function CaseDetail() {
             {/* Properties */}
             <Card>
               <CardHeader>
-                <CardTitle className=\"text-lg\">Properties</CardTitle>
+                <CardTitle className="text-lg">Properties</CardTitle>
               </CardHeader>
-              <CardContent className=\"space-y-3 text-sm\">
+              <CardContent className="space-y-3 text-sm">
                 <div>
-                  <span className=\"font-medium\">Decision Owner:</span>
-                  <p className=\"text-muted-foreground\">
+                  <span className="font-medium">Decision Owner:</span>
+                  <p className="text-muted-foreground">
                     {caseData.decision_owner_email || 'Unassigned'}
                   </p>
                 </div>
                 <Separator />
                 <div>
-                  <span className=\"font-medium\">Created By:</span>
-                  <p className=\"text-muted-foreground\">{caseData.operator_email}</p>
+                  <span className="font-medium">Created By:</span>
+                  <p className="text-muted-foreground">{caseData.operator_email}</p>
                 </div>
                 <Separator />
                 <div>
-                  <span className=\"font-medium\">Shipments:</span>
-                  <p className=\"text-muted-foreground\">
+                  <span className="font-medium">Shipments:</span>
+                  <p className="text-muted-foreground">
                     {caseData.shipment_identifiers?.ids?.join(', ') || 'None'}
                   </p>
                 </div>
