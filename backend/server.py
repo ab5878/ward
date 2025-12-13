@@ -138,6 +138,7 @@ class VoiceTranscript(BaseModel):
 
 class VoiceResponse(BaseModel):
     response_text: str
+    language_code: Optional[str] = "hi-IN"  # Default to Hindi
     context: str = "clarity"  # clarity, guidance, confirmation
 
 # ============================================================================
