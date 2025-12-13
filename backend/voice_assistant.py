@@ -56,12 +56,13 @@ Generate 2-3 clarity questions max. Be direct and operational."""
     async def generate_clarity_questions(self, initial_transcript: str) -> List[str]:
         """
         Generate 2-3 clarity-enforcing questions based on initial disruption
+        Questions will be in the SAME LANGUAGE as the user's input
         
         Args:
             initial_transcript: Voice transcript of disruption description
         
         Returns:
-            List of clarity questions
+            List of clarity questions in the same language as input
         """
         try:
             chat = LlmChat(
@@ -74,12 +75,15 @@ Generate 2-3 clarity questions max. Be direct and operational."""
 
 \"{initial_transcript}\"
 
+CRITICAL: Generate questions in the SAME LANGUAGE as the operator's input above.
+If they spoke in Tamil, ask in Tamil. If Hindi, ask in Hindi. If English, ask in English.
+
 Generate 2-3 clarity-enforcing questions to understand:
 1. What is confirmed fact vs assumption?
 2. What is the exact scope?
 3. What is explicitly unknown?
 
-Return ONLY the questions, one per line, numbered."""
+Return ONLY the questions, one per line, numbered. Use the EXACT same language as the input."""
             
             message = UserMessage(text=prompt)
             response = await chat.send_message(message)
