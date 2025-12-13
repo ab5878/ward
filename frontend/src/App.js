@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CreateCase from './pages/CreateCase';
+import VoiceCase from './pages/VoiceCase';
 import CaseDetail from './pages/CaseDetail';
 import AuditTrail from './pages/AuditTrail';
 import './App.css';
