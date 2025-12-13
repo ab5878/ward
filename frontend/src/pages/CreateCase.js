@@ -5,6 +5,14 @@ import { ArrowLeft, Plus, X } from 'lucide-react';
 
 export default function CreateCase() {
   const [description, setDescription] = useState('');
+  
+  // Disruption Details (REQUIRED)
+  const [disruptionType, setDisruptionType] = useState('');
+  const [scope, setScope] = useState('');
+  const [identifier, setIdentifier] = useState('');
+  const [timeDiscoveredIST, setTimeDiscoveredIST] = useState('');
+  const [source, setSource] = useState('');
+  
   const [shipmentIds, setShipmentIds] = useState(['']);
   const [routes, setRoutes] = useState(['']);
   const [carriers, setCarriers] = useState(['']);
