@@ -1238,6 +1238,25 @@ async def execute_action_plan(case_id: str, request: ExecutePlanRequest, current
 # ANALYTICS ENDPOINTS
 # ============================================================================
 
+
+# ============================================================================
+# INSTITUTIONAL MEMORY ENDPOINTS
+# ============================================================================
+
+from similarity_engine import SimilarityEngine
+
+@app.get("/api/cases/{case_id}/similar")
+async def get_similar_cases(case_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Find historically similar cases to help make better decisions.
+    """
+    case = await db.cases.find_one({"_id": ObjectId(case_id)})
+    if not case:
+        raise HTTPException(status_code=404, detail="Case not found")
+        
+    engine = SimilarityEngine(db)
+    return await engine.find_similar_cases(case)
+
 from analytics_service import AnalyticsService
 
 @app.get("/api/analytics/dashboard")
