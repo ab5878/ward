@@ -16,8 +16,11 @@ class SarvamService:
     
     def __init__(self):
         self.api_key = SARVAM_API_KEY
-        self.headers = {
-            "api-subscription-key": self.api_key
+        self.stt_headers = {
+            "api-subscription-key": self.api_key  # STT uses this format
+        }
+        self.tts_headers = {
+            "Authorization": f"{self.api_key}"  # TTS uses Bearer format
         }
     
     async def speech_to_text(self, audio_file_path: str, language_code: Optional[str] = None) -> Dict[str, Any]:
