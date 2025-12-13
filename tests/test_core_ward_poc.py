@@ -80,6 +80,8 @@ You must respond with a valid JSON object containing exactly these keys:
       "failure_signals": ["Signs that would indicate this is failing"]
     }
   ],
+  
+  NOTE: You MUST include 2-3 alternatives. One alternative MUST ALWAYS be "Wait/Do Nothing" or "Delay Decision" - this is mandatory even if it seems like a bad option. Operators need to see the cost of inaction.
   "recommendation": {
     "choice": "Which alternative minimizes regret",
     "rationale": "Why this choice under uncertainty",
