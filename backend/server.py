@@ -124,6 +124,8 @@ class CreateCase(BaseModel):
     description: str = Field(min_length=10)
     disruption_details: DisruptionDetails
     shipment_identifiers: ShipmentIdentifiers
+    financial_impact: Optional[FinancialImpact] = None
+    structured_context: Optional[StructuredContext] = None
 
 class EvidenceFact(BaseModel):
     fact: str
