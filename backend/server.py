@@ -124,6 +124,12 @@ class StructuredContext(BaseModel):
     """Links to Master Data"""
     carrier_code: Optional[str] = None
     location_code: Optional[str] = None
+class Responsibility(BaseModel):
+    primary_party: str
+    confidence: str
+    reasoning: str
+    is_override: Optional[bool] = False
+    override_reason: Optional[str] = None
     vendor_id: Optional[str] = None
     reason_code: Optional[str] = None
 
