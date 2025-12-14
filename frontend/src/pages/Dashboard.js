@@ -5,17 +5,9 @@ import api from '../services/api';
 import { 
   Plus, LogOut, AlertTriangle, Mic, 
   LayoutList, Clock, AlertCircle, CheckCircle2, 
-  Search, Filter, Code
+  Search, Filter, Code, BarChart3, Database
 } from 'lucide-react';
 import { DisruptionRow } from '../components/DisruptionRow';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '../components/ui/select';
 import {
   Table,
   TableHeader,
@@ -26,7 +18,9 @@ import {
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent } from '../components/ui/card';
+import { Button } from '@/components/ui/button';
 import { TooltipProvider } from '../components/ui/tooltip';
+import { toast } from 'sonner';
 
 // Simplified Smart Views for Supply Chain "Exception Management"
 const SMART_VIEWS = [
@@ -84,6 +78,42 @@ export default function Dashboard() {
     }
   };
 
+  // --- NEW: Generate Demo Data Logic ---
+  const generateDemoData = async () => {
+      setLoading(true);
+      try {
+          // Trigger the backend seeder (requires new endpoint or existing script execution)
+          // Since we don't have a direct "seed" endpoint for non-admins, we will simulate it 
+          // or rely on the admin endpoint I created: /api/admin/seed-master-data
+          // BUT that seeds master data, not cases.
+          // Let's create a specialized "demo-seed" endpoint in server.py? 
+          // Or just create ONE realistic case via the API client right here.
+          
+          await api.post('/cases', {
+              description: "Container MSKU987654 stuck at JNPT gate. Driver reports customs hold due to HS Code mismatch. Urgent clearance needed.",
+              disruption_details: {
+                  disruption_type: "customs_hold",
+                  scope: "container",
+                  identifier: "JNPT-GATE-4",
+                  time_discovered_ist: "10:30 AM",
+                  source: "Driver Call"
+              },
+              shipment_identifiers: {
+                  ids: ["SHP-DEMO-001"],
+                  routes: ["Mundra-Delhi"],
+                  carriers: ["Maersk"]
+              }
+          });
+          
+          toast.success("Demo case created!");
+          loadCases(); // Reload
+      } catch (e) {
+          toast.error("Failed to generate data");
+      } finally {
+          setLoading(false);
+      }
+  };
+
   const filterCases = () => {
     let filtered = cases;
 
@@ -97,12 +127,9 @@ export default function Dashboard() {
       );
     }
 
-    // 2. Smart View Filters (The "Supply Chain Exception" Logic)
+    // 2. Smart View Filters
     switch (activeView) {
       case 'needs_attention':
-        // Show cases where:
-        // - User is owner AND state is DECISION_REQUIRED
-        // - OR status is REPORTED (needs triage)
         filtered = filtered.filter(c => 
           (c.status === 'DECISION_REQUIRED' && c.decision_owner_email === user?.email) ||
           c.status === 'REPORTED' ||
@@ -111,8 +138,6 @@ export default function Dashboard() {
         break;
       
       case 'awaiting_stakeholders':
-        // Active coordination implies waiting
-        // Or specific states like IN_PROGRESS
         filtered = filtered.filter(c => 
           c.status === 'IN_PROGRESS' || 
           (c.coordination_status === 'outreach_sent')
@@ -136,22 +161,13 @@ export default function Dashboard() {
     navigate(`/cases/${caseId}`);
   };
 
-  // Calculate counts for badges
   const getCount = (viewId) => {
     if (!cases.length) return 0;
-    
     switch (viewId) {
       case 'needs_attention':
-        return cases.filter(c => 
-          (c.status === 'DECISION_REQUIRED' && c.decision_owner_email === user?.email) ||
-          c.status === 'REPORTED' ||
-          c.status === 'CLARIFIED'
-        ).length;
+        return cases.filter(c => (c.status === 'DECISION_REQUIRED' && c.decision_owner_email === user?.email) || c.status === 'REPORTED' || c.status === 'CLARIFIED').length;
       case 'awaiting_stakeholders':
-        return cases.filter(c => 
-          c.status === 'IN_PROGRESS' || 
-          (c.coordination_status === 'outreach_sent')
-        ).length;
+        return cases.filter(c => c.status === 'IN_PROGRESS' || (c.coordination_status === 'outreach_sent')).length;
       case 'all_active':
         return cases.filter(c => c.status !== 'RESOLVED').length;
       case 'resolved':
@@ -181,19 +197,10 @@ export default function Dashboard() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              
               <div className="h-6 w-px bg-gray-200"></div>
-
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-700">
-                  {user?.email}
-                </span>
-                <button
-                  onClick={logout}
-                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                  title="Logout"
-                  data-testid="logout-button"
-                >
+                <span className="text-sm font-medium text-gray-700">{user?.email}</span>
+                <button onClick={logout} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Logout">
                   <LogOut className="h-4 w-4" />
                 </button>
               </div>
@@ -202,85 +209,54 @@ export default function Dashboard() {
         </header>
 
         <div className="container mx-auto px-6 py-8">
-          {/* Top Actions & KPI Area */}
+          {/* Actions & KPI */}
           <div className="flex justify-between items-end mb-8">
             <div>
               <h2 className="text-2xl font-semibold text-gray-900">Disruption Control</h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Manage and coordinate active supply chain exceptions
-              </p>
+              <p className="text-sm text-gray-500 mt-1">Manage active supply chain exceptions</p>
             </div>
             <div className="flex gap-3">
-              <Link
-                to="/settings/developer"
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:text-gray-900 transition-all"
-              >
-                <Code className="h-4 w-4" />
-                API
+              <Link to="/settings/developer" className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-all">
+                <Code className="h-4 w-4" /> API
               </Link>
-              <Link
-                to="/dashboard/analytics"
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:text-gray-900 transition-all"
-              >
-                <LayoutList className="h-4 w-4" />
-                Analytics
+              <Link to="/dashboard/analytics" className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-all">
+                <BarChart3 className="h-4 w-4" /> Analytics
               </Link>
-              <Link
-                to="/cases/voice"
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all active:scale-95"
-                data-testid="voice-case-button"
-              >
-                <Mic className="h-4 w-4" />
-                Voice Report
+              <Link to="/cases/voice" className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all">
+                <Mic className="h-4 w-4" /> Voice Report
               </Link>
-              <Link
-                to="/cases/new"
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:text-gray-900 transition-all"
-                data-testid="create-case-button"
-              >
-                <Plus className="h-4 w-4" />
-                Manual Entry
+              <Link to="/cases/new" className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-all">
+                <Plus className="h-4 w-4" /> Manual Entry
               </Link>
             </div>
           </div>
 
-          {/* Smart Views (Replaces 7 Tabs) */}
+          {/* Smart Views */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             {SMART_VIEWS.map((view) => {
               const isActive = activeView === view.id;
               const count = getCount(view.id);
               const Icon = view.icon;
-              
               return (
                 <button
                   key={view.id}
                   onClick={() => setActiveView(view.id)}
-                  className={`relative p-4 rounded-xl border text-left transition-all duration-200 ${
-                    isActive 
-                      ? 'bg-white border-blue-600 ring-1 ring-blue-600 shadow-md' 
-                      : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
+                  className={`relative p-4 rounded-xl border text-left transition-all duration-200 ${isActive ? 'bg-white border-blue-600 ring-1 ring-blue-600 shadow-md' : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div className={`p-2 rounded-lg ${isActive ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
                       <Icon className="h-5 w-5" />
                     </div>
-                    <Badge variant={isActive ? "default" : "secondary"} className="text-xs font-bold">
-                      {count}
-                    </Badge>
+                    <Badge variant={isActive ? "default" : "secondary"} className="text-xs font-bold">{count}</Badge>
                   </div>
-                  <h3 className={`font-semibold ${isActive ? 'text-gray-900' : 'text-gray-700'}`}>
-                    {view.label}
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-1 truncate">
-                    {view.description}
-                  </p>
+                  <h3 className={`font-semibold ${isActive ? 'text-gray-900' : 'text-gray-700'}`}>{view.label}</h3>
+                  <p className="text-xs text-gray-500 mt-1 truncate">{view.description}</p>
                 </button>
               );
             })}
           </div>
 
-          {/* Main List Area */}
+          {/* Main List */}
           <Card className="border-gray-200 shadow-sm overflow-hidden bg-white">
             <CardContent className="p-0">
               {loading ? (
@@ -291,18 +267,14 @@ export default function Dashboard() {
               ) : filteredCases.length === 0 ? (
                 <div className="text-center py-20 bg-gray-50/50">
                   <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle2 className="h-8 w-8 text-gray-400" />
+                    <Database className="h-8 w-8 text-gray-400" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-1">All clear</h3>
-                  <p className="text-gray-500 mb-6">No disruptions found in this view.</p>
-                  {activeView === 'all_active' && (
-                    <Link
-                      to="/cases/new"
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
-                    >
-                      Create your first disruption
-                    </Link>
-                  )}
+                  <h3 className="text-lg font-medium text-gray-900 mb-1">No disruptions found</h3>
+                  <p className="text-gray-500 mb-6">Your dashboard is clean. Need to test?</p>
+                  
+                  <Button onClick={generateDemoData} variant="outline" className="gap-2">
+                    <Plus className="h-4 w-4" /> Generate Demo Case
+                  </Button>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
