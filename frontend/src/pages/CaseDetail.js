@@ -6,6 +6,7 @@ import EvidenceScore from '../components/EvidenceScore';
 import ResponsibilityCard from '../components/ResponsibilityCard';
 import CommunicationTool from '../components/CommunicationTool';
 import ShareCase from '../components/ShareCase';
+import DisputeButton from '../components/DisputeButton';
 import { TimelineEvent } from '../components/TimelineEvent';
 import { StateTransitionBar } from '../components/StateTransitionBar';
 import { OwnershipAssigner } from '../components/OwnershipAssigner';
