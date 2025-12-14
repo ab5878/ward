@@ -349,6 +349,9 @@ export default function CaseDetail() {
 
           {/* Sidebar - Right column */}
           <div className="space-y-6">
+            {/* Financial Impact (Enterprise) */}
+            <FinancialImpactCard impact={caseData.financial_impact} />
+
             {/* State Transition Control */}
             <Card className="border-l-4 border-l-blue-600 shadow-sm">
               <CardHeader className="pb-2">
