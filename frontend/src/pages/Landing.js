@@ -88,6 +88,7 @@ export default function Landing() {
                 {'  '}<span className="text-purple-400">const</span> rca = <span className="text-purple-400">await</span> ward.<span className="text-blue-400">analyze</span>(event);{'\n'}
                 {'  '}<span className="text-purple-400">await</span> ward.<span className="text-blue-400">coordinate</span>(rca.action_plan);{'\n'}
                 {'  '}console.<span className="text-yellow-300">log</span>(<span className="text-green-300">`Resolved in ${'{'}rca.resolution_time{'}'}`</span>);{'\n'}
+                {'  '}
                 {'}'});
               </pre>
             </div>
@@ -101,22 +102,10 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="py-10 border-y border-slate-100 bg-slate-50/50">
-        <div className="container mx-auto px-6 text-center">
-          <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-8">Trusted by logistics leaders</p>
-          <div className="flex flex-wrap justify-center gap-12 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-            {['Maersk', 'VRL Logistics', 'Gati KWE', 'Mahindra Logistics', 'Blue Dart'].map(logo => (
-              <span key={logo} className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                <Globe className="h-5 w-5" /> {logo}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Social Proof (REMOVED as per user request) */}
 
       {/* Value Props */}
-      <section id="features" className="py-24">
+      <section id="features" className="py-24 bg-slate-50/50">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-20">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
@@ -261,8 +250,8 @@ export default function Landing() {
 
 function FeatureCard({ icon: Icon, title, description }) {
   return (
-    <div className="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-100 hover:bg-white hover:shadow-xl transition-all duration-300 group">
-      <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+    <div className="p-8 rounded-2xl bg-white border border-slate-100 hover:border-blue-100 hover:shadow-xl transition-all duration-300 group">
+      <div className="w-12 h-12 bg-slate-50 rounded-xl shadow-sm border border-slate-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
         <Icon className="h-6 w-6 text-blue-600" />
       </div>
       <h3 className="text-xl font-bold text-slate-900 mb-3">{title}</h3>
