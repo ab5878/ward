@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import CaseDetail from './pages/CaseDetail';
 import VoiceCase from './pages/VoiceCase';
 import AnalyticsDashboard from './pages/Analytics';
+import DeveloperSettings from './pages/Developer';
 import { Toaster } from "@/components/ui/sonner"
 
 const ProtectedRoute = ({ children }) => {
@@ -45,6 +46,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <AnalyticsDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/settings/developer" 
+            element={
+              <ProtectedRoute>
+                <DeveloperSettings />
               </ProtectedRoute>
             } 
           />
