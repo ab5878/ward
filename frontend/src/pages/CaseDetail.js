@@ -192,7 +192,12 @@ export default function CaseDetail() {
                   </div>
                   <div>
                     <span className="font-semibold text-gray-700 block">Location</span>
-                    {caseData.disruption_details?.identifier || 'N/A'}
+                    <div className="flex items-center gap-1">
+                      {caseData.structured_context?.location_code && (
+                        <Badge variant="outline" className="text-[10px] font-mono h-4 px-1">{caseData.structured_context.location_code}</Badge>
+                      )}
+                      {caseData.disruption_details?.identifier || 'N/A'}
+                    </div>
                   </div>
                   <div>
                     <span className="font-semibold text-gray-700 block">Source</span>
