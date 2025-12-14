@@ -98,6 +98,13 @@ class EvidenceService:
             "score": score,
             "breakdown": breakdown,
             "missing_actions": missing_actions,
+        # 7. Check for Evidence Readiness (70% Threshold)
+        # If score >= 70 and not previously marked, timestamp it.
+        if score >= 70 and not case.get("evidence_ready_at"):
+            await self.db.cases.update_one(
+                {"_id": ObjectId(case_id)},
+                {"$set": {"evidence_ready_at": datetime.now(timezone.utc)}}
+            )
             "last_calculated": datetime.now(timezone.utc)
         }
 
