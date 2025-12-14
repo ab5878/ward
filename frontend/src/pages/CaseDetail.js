@@ -190,6 +190,13 @@ export default function CaseDetail() {
               onUpdate={loadCase} 
             />
 
+            {/* Responsibility Attribution (New) */}
+            <ResponsibilityCard
+              caseId={caseId}
+              responsibility={caseData.responsibility}
+              onUpdate={loadCase}
+            />
+
             {/* Case Description - Always Visible */}
             <Card className="border-none shadow-sm bg-white">
               <CardContent className="pt-6">
