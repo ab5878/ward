@@ -1434,6 +1434,40 @@ async def list_documents(case_id: str, current_user: dict = Depends(get_current_
 async def health():
     return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
 
+# ============================================================================
+# DEVELOPER API ENDPOINTS
+# ============================================================================
+
+from developer_service import DeveloperService
+
+class WebhookCreate(BaseModel):
+    url: str
+    events: List[str]
+
+class ApiKeyCreate(BaseModel):
+    name: str
+
+@app.post("/api/developer/keys")
+async def create_api_key(request: ApiKeyCreate, current_user: dict = Depends(get_current_user)):
+    service = DeveloperService(db)
+    return await service.generate_api_key(current_user["user_id"], request.name)
+
+@app.get("/api/developer/keys")
+async def list_api_keys(current_user: dict = Depends(get_current_user)):
+    service = DeveloperService(db)
+    return await service.list_api_keys(current_user["user_id"])
+
+@app.post("/api/developer/webhooks")
+async def create_webhook(request: WebhookCreate, current_user: dict = Depends(get_current_user)):
+    service = DeveloperService(db)
+    return await service.register_webhook(current_user["user_id"], request.url, request.events)
+
+@app.get("/api/developer/webhooks")
+async def list_webhooks(current_user: dict = Depends(get_current_user)):
+    service = DeveloperService(db)
+    return await service.list_webhooks(current_user["user_id"])
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
