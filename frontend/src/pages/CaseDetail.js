@@ -182,6 +182,13 @@ export default function CaseDetail() {
           {/* Main Content Area - Left 2 columns */}
           <div className="lg:col-span-2 space-y-6">
             
+            {/* Evidence Score Card (New) */}
+            <EvidenceScore 
+              caseId={caseId} 
+              caseData={caseData} 
+              onUpdate={loadCase} 
+            />
+
             {/* Case Description - Always Visible */}
             <Card className="border-none shadow-sm bg-white">
               <CardContent className="pt-6">
