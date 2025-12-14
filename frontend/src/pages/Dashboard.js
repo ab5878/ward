@@ -114,6 +114,7 @@ export default function Dashboard() {
         // Active coordination implies waiting
         // Or specific states like IN_PROGRESS
         filtered = filtered.filter(c => 
+import { Code } from 'lucide-react';
           c.status === 'IN_PROGRESS' || 
           (c.coordination_status === 'outreach_sent')
         );
