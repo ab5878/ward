@@ -161,6 +161,13 @@ import { Code } from 'lucide-react';
     }
   };
 
+              <Link
+                to="/settings/developer"
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:text-gray-900 transition-all"
+              >
+                <Code className="h-4 w-4" />
+                API
+              </Link>
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-gray-50/50" data-testid="dashboard">
