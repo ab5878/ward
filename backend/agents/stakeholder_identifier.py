@@ -25,17 +25,17 @@ class StakeholderIdentifierAgent(BaseAgent):
                 {"role": "mechanic", "contact_method": "phone", "priority": "high"}
             ],
             "optional": [
-                {"role": "depot_manager", "contact_method": "whatsapp", "priority": "medium"},
+                {"role": "transporter_ops", "contact_method": "whatsapp", "priority": "medium"},
                 {"role": "backup_truck", "contact_method": "sms", "priority": "high"}
             ]
         },
         "port_congestion": {
             "required": [
                 {"role": "port_ops", "contact_method": "phone", "priority": "high"},
-                {"role": "shipping_line", "contact_method": "api", "priority": "high"}
+                {"role": "cfs_manager", "contact_method": "whatsapp", "priority": "high"}
             ],
             "optional": [
-                {"role": "alternate_port", "contact_method": "api", "priority": "medium"}
+                {"role": "shipping_line", "contact_method": "api", "priority": "medium"}
             ]
         },
         "documentation_issue": {
@@ -46,6 +46,21 @@ class StakeholderIdentifierAgent(BaseAgent):
             "optional": [
                 {"role": "documentation_team", "contact_method": "email", "priority": "medium"}
             ]
+        },
+        "transit_delay": {
+            "required": [
+                {"role": "transporter_ops", "contact_method": "whatsapp", "priority": "high"}
+            ],
+            "optional": [
+                {"role": "driver", "contact_method": "phone", "priority": "medium"}
+            ]
+        },
+        "system_outage": {
+            "required": [
+                {"role": "it_support", "contact_method": "email", "priority": "high"},
+                {"role": "cha_association", "contact_method": "whatsapp", "priority": "medium"}
+            ],
+            "optional": []
         }
     }
     
@@ -55,14 +70,6 @@ class StakeholderIdentifierAgent(BaseAgent):
     async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Identify stakeholders based on disruption type and location
-        
-        Input:
-            - disruption_type: str
-            - location: str
-            - case_id: str
-        
-        Output:
-            - stakeholders: List[Dict]
         """
         self.state = AgentState.WORKING
         await self.log("Identifying stakeholders")
@@ -99,60 +106,58 @@ class StakeholderIdentifierAgent(BaseAgent):
         location: str,
         case_id: str
     ) -> List[Dict[str, Any]]:
-        """Fetch actual contact details from database"""
+        """Fetch actual contact details (Mocked with Indian Context)"""
         
         stakeholders = []
         
-        # For demo: Return mock contacts
-        # In production: Query database for actual contacts
-        
-        for stakeholder_type in template["required"]:
-            stakeholder = {
-                "role": stakeholder_type["role"],
-                "contact_method": stakeholder_type["contact_method"],
-                "priority": stakeholder_type["priority"],
-                "required": True,
-                # Mock contact - in prod, fetch from DB
-                "contact": self._get_mock_contact(stakeholder_type["role"], location)
-            }
-            stakeholders.append(stakeholder)
-        
-        for stakeholder_type in template["optional"]:
-            stakeholder = {
-                "role": stakeholder_type["role"],
-                "contact_method": stakeholder_type["contact_method"],
-                "priority": stakeholder_type["priority"],
-                "required": False,
-                "contact": self._get_mock_contact(stakeholder_type["role"], location)
-            }
-            stakeholders.append(stakeholder)
+        for group in ["required", "optional"]:
+            for s_type in template[group]:
+                contact_info = self._get_indian_contact(s_type["role"], location)
+                stakeholders.append({
+                    "role": s_type["role"],
+                    "contact_method": s_type["contact_method"],
+                    "priority": s_type["priority"],
+                    "required": group == "required",
+                    "contact": contact_info
+                })
         
         return stakeholders
     
-    def _get_mock_contact(self, role: str, location: str) -> Dict[str, str]:
-        """Get mock contact info (for demo)"""
-        contacts = {
+    def _get_indian_contact(self, role: str, location: str) -> Dict[str, str]:
+        """Get context-aware Indian contacts"""
+        
+        # Determine region based on location string
+        region = "mumbai" # Default
+        loc_lower = location.lower()
+        if "chennai" in loc_lower or "walayar" in loc_lower or "blr" in loc_lower:
+            region = "south"
+        elif "delhi" in loc_lower or "tughlakabad" in loc_lower or "dadri" in loc_lower:
+            region = "north"
+        elif "mundra" in loc_lower or "gujarat" in loc_lower:
+            region = "west_gujarat"
+            
+        contacts_db = {
             "CHA": {
-                "name": "Jagdish Customs Clearing",
-                "phone": "+91-98765-43210",
-                "whatsapp": "+91-98765-43210",
-                "email": "jagdish@customsclearance.com"
-            },
-            "shipping_line": {
-                "name": "Maersk Line India",
-                "api_endpoint": "https://api.maersk.com/india",
-                "email": "india@maersk.com"
-            },
-            "shipper": {
-                "name": "Raj Electronics Pvt Ltd",
-                "phone": "+91-98765-00000",
-                "whatsapp": "+91-98765-00000",
-                "email": "logistics@rajelectronics.com"
+                "mumbai": {"name": "Jagdish Customs Clearing (JNPT)", "phone": "+91-98200-12345", "whatsapp": "+91-98200-12345"},
+                "south": {"name": "Seahorse Shipping (Chennai)", "phone": "+91-98400-67890", "whatsapp": "+91-98400-67890"},
+                "north": {"name": "Jeena & Co (Delhi)", "phone": "+91-98100-54321", "whatsapp": "+91-98100-54321"},
+                "west_gujarat": {"name": "Tulsi Clearing (Mundra)", "phone": "+91-98250-99887", "whatsapp": "+91-98250-99887"}
             },
             "port_ops": {
-                "name": f"{location} Port Operations",
-                "phone": "+91-22-1234-5678",
-                "sms": "+91-22-1234-5678"
+                "mumbai": {"name": "JNPT Terminal Ops", "phone": "022-2724-1234"},
+                "south": {"name": "Chennai Port Trust", "phone": "044-2536-2201"},
+                "west_gujarat": {"name": "Adani Ports Control", "phone": "02838-255000"}
+            },
+            "transporter_ops": {
+                "default": {"name": "VRL Logistics Ops", "phone": "+91-99999-88888", "whatsapp": "+91-99999-88888"}
+            },
+            "cfs_manager": {
+                "default": {"name": "Gateway Distriparks CFS", "phone": "+91-98765-43210"}
             }
         }
-        return contacts.get(role, {"name": f"Unknown {role}"})
+        
+        # Helper to safely get contact
+        role_group = contacts_db.get(role, {})
+        contact = role_group.get(region, role_group.get("default", {"name": f"Unknown {role}"}))
+        
+        return contact
