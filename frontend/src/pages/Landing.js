@@ -9,10 +9,14 @@ import {
   CheckCircle2, 
   Globe,
   Shield,
-  Activity
+  Activity,
+  Truck,
+  Anchor,
+  FileText
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Landing() {
   return (
@@ -88,7 +92,6 @@ export default function Landing() {
                 {'  '}<span className="text-purple-400">const</span> rca = <span className="text-purple-400">await</span> ward.<span className="text-blue-400">analyze</span>(event);{'\n'}
                 {'  '}<span className="text-purple-400">await</span> ward.<span className="text-blue-400">coordinate</span>(rca.action_plan);{'\n'}
                 {'  '}console.<span className="text-yellow-300">log</span>(<span className="text-green-300">`Resolved in ${'{'}rca.resolution_time{'}'}`</span>);{'\n'}
-                {'  '}
                 {'}'});
               </pre>
             </div>
@@ -101,8 +104,6 @@ export default function Landing() {
           <div className="absolute top-40 -left-40 w-96 h-96 bg-purple-100 rounded-full blur-3xl opacity-50"></div>
         </div>
       </section>
-
-      {/* Social Proof (REMOVED as per user request) */}
 
       {/* Value Props */}
       <section id="features" className="py-24 bg-slate-50/50">
@@ -151,11 +152,54 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Integration Section */}
-      <section className="py-24 bg-slate-900 text-white overflow-hidden relative">
+      {/* Solutions Section */}
+      <section id="solutions" className="py-24 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <Badge variant="outline" className="mb-4 text-blue-600 border-blue-200">Solutions</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+              Tailored for every node in the chain
+            </h2>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <SolutionCard 
+              icon={Truck}
+              title="For Transporters"
+              features={[
+                "Driver voice reporting in Hindi/Tamil",
+                "Automated breakdown coordination",
+                "E-Way bill expiry alerts"
+              ]}
+            />
+            <SolutionCard 
+              icon={Anchor}
+              title="For Freight Forwarders"
+              features={[
+                "Port congestion prediction",
+                "Automated CHA follow-ups",
+                "Document discrepancy detection"
+              ]}
+            />
+            <SolutionCard 
+              icon={FileText}
+              title="For Enterprise Shippers"
+              features={[
+                "Financial risk visibility",
+                "SLA compliance tracking",
+                "ERP (SAP/Oracle) integration"
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Developers Section (Integration) */}
+      <section id="developers" className="py-24 bg-slate-900 text-white overflow-hidden relative">
         <div className="container mx-auto px-6 relative z-10">
           <div className="flex flex-col md:flex-row items-center gap-16">
             <div className="flex-1">
+              <Badge className="mb-6 bg-blue-600 hover:bg-blue-700 border-none">Developers</Badge>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 Plug & Play with your existing stack
               </h2>
@@ -171,9 +215,11 @@ export default function Landing() {
                   </li>
                 ))}
               </ul>
-              <Button variant="outline" className="text-white border-slate-600 hover:bg-slate-800">
-                Read API Documentation
-              </Button>
+              <Link to="/settings/developer">
+                <Button variant="outline" className="text-white border-slate-600 hover:bg-slate-800">
+                  Read API Documentation
+                </Button>
+              </Link>
             </div>
             <div className="flex-1 w-full">
               <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 shadow-2xl">
@@ -202,6 +248,48 @@ export default function Landing() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-24 bg-slate-50/50">
+        <div className="container mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Simple, transparent pricing
+            </h2>
+            <p className="text-lg text-slate-500">
+              Start free, scale as your complexity grows.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <PricingCard 
+              title="Starter"
+              price="$0"
+              description="Perfect for pilots and small fleets."
+              features={["Up to 50 disruptions/mo", "Voice-first reporting", "Basic Email support"]}
+              buttonText="Start Free"
+              highlighted={false}
+            />
+            <PricingCard 
+              title="Growth"
+              price="$499"
+              period="/mo"
+              description="For regional logistics teams."
+              features={["Up to 500 disruptions/mo", "Active Coordination Agents", "Document Intelligence", "API Access"]}
+              buttonText="Start Trial"
+              highlighted={true}
+            />
+            <PricingCard 
+              title="Enterprise"
+              price="Custom"
+              description="For global supply chains."
+              features={["Unlimited disruptions", "Custom Integration (SAP/OTM)", "Dedicated Success Manager", "SLA Guarantees"]}
+              buttonText="Contact Sales"
+              highlighted={false}
+            />
           </div>
         </div>
       </section>
@@ -259,5 +347,61 @@ function FeatureCard({ icon: Icon, title, description }) {
         {description}
       </p>
     </div>
+  );
+}
+
+function SolutionCard({ icon: Icon, title, features }) {
+  return (
+    <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
+      <div className="flex items-center gap-4 mb-6">
+        <div className="p-3 bg-white rounded-lg shadow-sm">
+          <Icon className="h-6 w-6 text-blue-600" />
+        </div>
+        <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+      </div>
+      <ul className="space-y-3">
+        {features.map((feature, i) => (
+          <li key={i} className="flex items-center gap-3 text-sm text-slate-600">
+            <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+            {feature}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function PricingCard({ title, price, period, description, features, buttonText, highlighted }) {
+  return (
+    <Card className={`relative border ${highlighted ? 'border-blue-600 shadow-2xl scale-105 z-10' : 'border-slate-200 shadow-sm'} flex flex-col`}>
+      {highlighted && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+          Most Popular
+        </div>
+      )}
+      <CardHeader className="text-center pb-2">
+        <CardTitle className="text-xl font-bold text-slate-900">{title}</CardTitle>
+        <p className="text-sm text-slate-500 mt-2">{description}</p>
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col">
+        <div className="text-center mb-8">
+          <span className="text-4xl font-extrabold text-slate-900">{price}</span>
+          {period && <span className="text-slate-500">{period}</span>}
+        </div>
+        <ul className="space-y-4 mb-8 flex-1">
+          {features.map((feature, i) => (
+            <li key={i} className="flex items-center gap-3 text-sm text-slate-600">
+              <CheckCircle2 className="h-4 w-4 text-blue-500 flex-shrink-0" />
+              {feature}
+            </li>
+          ))}
+        </ul>
+        <Link to="/register" className="w-full">
+          <Button className={`w-full ${highlighted ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-900 hover:bg-slate-800'}`}>
+            {buttonText}
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
   );
 }
