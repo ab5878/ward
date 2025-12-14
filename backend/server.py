@@ -134,6 +134,7 @@ class Responsibility(BaseModel):
     reason_code: Optional[str] = None
 
 class CreateCase(BaseModel):
+    responsibility: Optional[Responsibility] = None
     description: str = Field(min_length=10)
     disruption_details: DisruptionDetails
     shipment_identifiers: ShipmentIdentifiers
