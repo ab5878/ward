@@ -9,7 +9,8 @@ import {
   Mic, 
   ArrowRight,
   Gavel,
-  CheckCircle2
+  CheckCircle2,
+  Handshake
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -160,44 +161,55 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Pricing Section */}
+      {/* Pricing Section (NEW) */}
       <section id="pricing" className="py-24 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">
-              Pricing based on protection.
+        <div className="container mx-auto px-6 max-w-4xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-slate-900 mb-6">
+              We succeed when you save money.
             </h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Monthly base covers the platform. We take a small percentage only on demurrage/detention charges we help you avoid or recover. 
+              <span className="font-semibold text-slate-900 block mt-2">If we don't save you money, we don't earn.</span>
+            </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <PricingCard 
-              title="Standard Defense"
-              price="$499"
-              period="/mo"
-              description="For regional teams fighting local disputes."
-              features={[
-                "50 Active Cases",
-                "Voice-to-Evidence",
-                "PDF Dispute Exports",
-                "30-day retention"
-              ]}
-              buttonText="Start Pilot"
-              highlighted={false}
-            />
-            <PricingCard 
-              title="Enterprise Audit"
-              price="Custom"
-              period=""
-              description="For global shippers requiring full compliance."
-              features={[
-                "Unlimited Cases",
-                "ERP Integration",
-                "Claims Specialist",
-                "7-year retention"
-              ]}
-              buttonText="Contact Sales"
-              highlighted={true}
-            />
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Pilot */}
+            <Card className="border-slate-200 bg-slate-50">
+              <CardHeader>
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-4 border border-slate-200 text-slate-900">
+                  <Clock className="h-6 w-6" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-slate-900">30-Day Pilot</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg text-slate-700 font-medium mb-2">Free.</p>
+                <p className="text-slate-600">We prove savings in the first month or you walk away. No questions asked.</p>
+              </CardContent>
+            </Card>
+
+            {/* Paid */}
+            <Card className="border-slate-900 bg-slate-900 text-white shadow-xl">
+              <CardHeader>
+                <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mb-4 text-white">
+                  <Handshake className="h-6 w-6" />
+                </div>
+                <CardTitle className="text-2xl font-bold">Standard</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg text-slate-200 font-medium mb-2">Base fee + Success share</p>
+                <p className="text-slate-400">Low monthly platform fee. Performance fee charged only on recovered claims.</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link to="/register">
+              <Button size="lg" className="h-16 px-12 rounded-md text-xl bg-blue-600 hover:bg-blue-700 shadow-lg transition-transform hover:scale-105">
+                Book pilot discussion
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -211,7 +223,7 @@ export default function Landing() {
               <p className="mt-1">Operational Evidence Platform</p>
             </div>
             <div className="flex gap-8">
-              <a href="#" className="hover:text-white transition-colors">Contact</a>
+              <a href="#contact" className="hover:text-white transition-colors">Contact</a>
               <a href="#" className="hover:text-white transition-colors">Legal</a>
             </div>
           </div>
@@ -235,35 +247,5 @@ function StepCard({ number, icon: Icon, title, description }) {
         {description}
       </p>
     </div>
-  );
-}
-
-function PricingCard({ title, price, period, description, features, buttonText, highlighted }) {
-  return (
-    <Card className={`flex flex-col ${highlighted ? 'border-slate-900 shadow-xl' : 'border-slate-200'}`}>
-      <CardHeader className="text-center pb-2 bg-slate-50 border-b border-slate-100">
-        <CardTitle className="text-xl font-bold text-slate-900">{title}</CardTitle>
-        <p className="text-sm text-slate-500 mt-2">{description}</p>
-      </CardHeader>
-      <CardContent className="flex-1 flex flex-col pt-8">
-        <div className="text-center mb-8">
-          <span className="text-4xl font-extrabold text-slate-900">{price}</span>
-          {period && <span className="text-slate-500">{period}</span>}
-        </div>
-        <ul className="space-y-4 mb-8 flex-1 px-8">
-          {features.map((feature, i) => (
-            <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-              <ShieldCheck className="h-4 w-4 text-slate-900 flex-shrink-0" />
-              {feature}
-            </li>
-          ))}
-        </ul>
-        <Link to="/register" className="w-full mt-auto">
-          <Button className={`w-full h-12 text-lg ${highlighted ? 'bg-slate-900 hover:bg-slate-800' : 'bg-white text-slate-900 border border-slate-300 hover:bg-slate-50'}`}>
-            {buttonText}
-          </Button>
-        </Link>
-      </CardContent>
-    </Card>
   );
 }
