@@ -1,46 +1,43 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
+  FileText, 
+  ShieldCheck, 
+  Scale, 
+  Clock, 
+  Download, 
   Mic, 
-  Zap, 
-  Code, 
-  Workflow, 
-  ArrowRight, 
-  CheckCircle2, 
-  Globe,
-  Shield,
-  Activity,
-  Truck,
-  Anchor,
-  FileText
+  ArrowRight,
+  Gavel
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-blue-100">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+      <nav className="sticky top-0 z-50 bg-white border-b border-slate-200">
         <div className="container mx-auto px-6 h-16 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold">W</div>
-            <span className="text-xl font-bold tracking-tight">Ward</span>
+            <div className="bg-slate-900 w-8 h-8 rounded-sm flex items-center justify-center text-white font-serif font-bold">W</div>
+            <span className="text-xl font-bold tracking-tight text-slate-900">Ward</span>
           </div>
           <div className="hidden md:flex gap-8 text-sm font-medium text-slate-600">
-            <a href="#features" className="hover:text-blue-600 transition-colors">Platform</a>
-            <a href="#solutions" className="hover:text-blue-600 transition-colors">Solutions</a>
-            <a href="#developers" className="hover:text-blue-600 transition-colors">Developers</a>
-            <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
+            <a href="#home" className="hover:text-slate-900 transition-colors">Home</a>
+            <a href="#how-it-works" className="hover:text-slate-900 transition-colors">How It Works</a>
+            <a href="#dispute-export" className="hover:text-slate-900 transition-colors">Dispute Export</a>
+            <a href="#pricing" className="hover:text-slate-900 transition-colors">Pricing</a>
+            <a href="#contact" className="hover:text-slate-900 transition-colors">Contact</a>
           </div>
           <div className="flex gap-4">
             <Link to="/login">
-              <Button variant="ghost" className="text-slate-600 hover:text-blue-600">Log in</Button>
+              <Button variant="ghost" className="text-slate-600 hover:text-slate-900">Log in</Button>
             </Link>
             <Link to="/register">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6">
-                Get Started
+              <Button className="bg-slate-900 hover:bg-slate-800 text-white rounded-md px-6">
+                Start Pilot
               </Button>
             </Link>
           </div>
@@ -48,203 +45,134 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden relative">
-        <div className="container mx-auto px-6 relative z-10 text-center">
-          <Badge variant="secondary" className="mb-6 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors px-4 py-1.5 rounded-full text-sm font-medium border border-blue-100">
-            🚀 New: Enterprise Master Data & Financial Risk Analysis
-          </Badge>
-          
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-8 max-w-4xl mx-auto leading-tight">
-            The AI Disruption Layer for <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Modern Logistics</span>
+      <section id="home" className="pt-24 pb-20 md:pt-32 md:pb-28 bg-white border-b border-slate-200">
+        <div className="container mx-auto px-6 max-w-5xl text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 mb-8 leading-tight">
+            Ward prevents demurrage and detention losses by turning chaotic field conversations into audit-grade operational evidence.
           </h1>
           
-          <p className="text-xl text-slate-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Plug Ward into your TMS/ERP to automate disruption management. 
-            From voice-based reporting to AI-coordinated resolution, in minutes.
-          </p>
-          
-          <div className="flex flex-col md:flex-row gap-4 justify-center items-center mb-16">
-            <Link to="/cases/voice">
-              <Button size="lg" className="h-14 px-8 rounded-full text-lg bg-blue-600 hover:bg-blue-700 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
-                Try Voice Demo <Mic className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link to="/dashboard">
-              <Button size="lg" variant="outline" className="h-14 px-8 rounded-full text-lg border-slate-300 text-slate-700 hover:bg-slate-50">
-                View Dashboard <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
-
-          {/* "Code" Snippet / Visual Proof */}
-          <div className="relative max-w-4xl mx-auto rounded-xl shadow-2xl border border-slate-200 bg-slate-900 overflow-hidden text-left transform rotate-1 hover:rotate-0 transition-transform duration-500">
-            <div className="flex items-center gap-2 px-4 py-3 bg-slate-800 border-b border-slate-700">
-              <div className="w-3 h-3 rounded-full bg-red-500"/>
-              <div className="w-3 h-3 rounded-full bg-yellow-500"/>
-              <div className="w-3 h-3 rounded-full bg-green-500"/>
-              <span className="ml-2 text-xs text-slate-400 font-mono">ward-integration.js</span>
-            </div>
-            <div className="p-6 overflow-x-auto">
-              <pre className="font-mono text-sm text-blue-300">
-                <span className="text-purple-400">const</span> ward = <span className="text-yellow-300">require</span>(<span className="text-green-300">'@ward-ai/sdk'</span>);{'\n\n'}
-                <span className="text-slate-400">// 1. Listen for disruptions</span>{'\n'}
-                ward.<span className="text-blue-400">on</span>(<span className="text-green-300">'disruption.detected'</span>, <span className="text-purple-400">async</span> (event) ={'>'} {'{'}{'\n'}
-                {'  '}<span className="text-purple-400">const</span> rca = <span className="text-purple-400">await</span> ward.<span className="text-blue-400">analyze</span>(event);{'\n'}
-                {'  '}<span className="text-purple-400">await</span> ward.<span className="text-blue-400">coordinate</span>(rca.action_plan);{'\n'}
-                {'  '}console.<span className="text-yellow-300">log</span>(<span className="text-green-300">`Resolved in ${'{'}rca.resolution_time{'}'}`</span>);{'\n'}
-                {'}'});
-              </pre>
-            </div>
-          </div>
-        </div>
-        
-        {/* Background Elements */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
-          <div className="absolute top-40 -left-40 w-96 h-96 bg-purple-100 rounded-full blur-3xl opacity-50"></div>
-        </div>
-      </section>
-
-      {/* Value Props */}
-      <section id="features" className="py-24 bg-slate-50/50">
-        <div className="container mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Everything you need to handle chaos
-            </h2>
-            <p className="text-lg text-slate-500">
-              Ward isn't just a dashboard. It's an intelligent layer that sits between your ERP and the chaotic real world.
+          <div className="max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed font-serif">
+              When a shipment gets delayed, everyone scrambles on WhatsApp and calls. Later, finance asks: 
+              <span className="italic font-medium text-slate-800"> ‘Who caused this and can we recover the money?’ </span> 
+              And there’s no proof. Ward captures what drivers and agents say in their own language, timestamps it, structures it, and turns it into defensible evidence — so ops can fix issues faster and finance can stop or recover charges.
             </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <FeatureCard 
-              icon={Mic}
-              title="Voice-First Ingestion"
-              description="Drivers and field ops speak naturally in 10+ Indian languages. Ward transcribes, translates, and structures the data instantly."
-            />
-            <FeatureCard 
-              icon={Workflow}
-              title="Active Coordination"
-              description="Ward doesn't just watch. It acts. Autonomous agents reach out to CHAs, ports, and transporters to unblock shipments."
-            />
-            <FeatureCard 
-              icon={Shield}
-              title="Financial Risk AI"
-              description="Real-time calculation of detention, demurrage, and production loss risks. Prioritize what costs you money."
-            />
-            <FeatureCard 
-              icon={Code}
-              title="Developer API"
-              description="Full REST API and Webhook support. Build custom workflows or integrate deeply into your SAP/Oracle OTM."
-            />
-            <FeatureCard 
-              icon={Activity}
-              title="Institutional Memory"
-              description="Ward remembers every resolution. When problems recur, it suggests the fix that worked last time."
-            />
-            <FeatureCard 
-              icon={Zap}
-              title="Document Intelligence"
-              description="Drag & drop invoices and BLs. Ward's Vision AI detects discrepancies automatically."
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Solutions Section */}
-      <section id="solutions" className="py-24 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <Badge variant="outline" className="mb-4 text-blue-600 border-blue-200">Solutions</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Tailored for every node in the chain
-            </h2>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <SolutionCard 
-              icon={Truck}
-              title="For Transporters"
-              features={[
-                "Driver voice reporting in Hindi/Tamil",
-                "Automated breakdown coordination",
-                "E-Way bill expiry alerts"
-              ]}
-            />
-            <SolutionCard 
-              icon={Anchor}
-              title="For Freight Forwarders"
-              features={[
-                "Port congestion prediction",
-                "Automated CHA follow-ups",
-                "Document discrepancy detection"
-              ]}
-            />
-            <SolutionCard 
-              icon={FileText}
-              title="For Enterprise Shippers"
-              features={[
-                "Financial risk visibility",
-                "SLA compliance tracking",
-                "ERP (SAP/Oracle) integration"
-              ]}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Developers Section (Integration) */}
-      <section id="developers" className="py-24 bg-slate-900 text-white overflow-hidden relative">
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="flex flex-col md:flex-row items-center gap-16">
-            <div className="flex-1">
-              <Badge className="mb-6 bg-blue-600 hover:bg-blue-700 border-none">Developers</Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Plug & Play with your existing stack
-              </h2>
-              <p className="text-lg text-slate-300 mb-8 leading-relaxed">
-                You don't need to rip and replace. Ward works alongside your TMS. 
-                Use our Webhooks to push "Resolved" statuses back to SAP, or pull shipment details via API.
-              </p>
-              <ul className="space-y-4 mb-8">
-                {['Bi-directional sync with OTM/SAP', 'Webhooks for real-time alerts', 'Embeddable UI widgets'].map(item => (
-                  <li key={item} className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-green-400" />
-                    <span className="text-slate-200">{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link to="/settings/developer">
-                <Button variant="outline" className="text-white border-slate-600 hover:bg-slate-800">
-                  Read API Documentation
+            
+            <div className="flex justify-center">
+              <Link to="/register">
+                <Button size="lg" className="h-14 px-8 rounded-md text-lg bg-slate-900 hover:bg-slate-800 shadow-md transition-all hover:translate-y-[-1px]">
+                  Start a 30-day demurrage defense pilot
                 </Button>
               </Link>
             </div>
-            <div className="flex-1 w-full">
-              <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 shadow-2xl">
-                <div className="flex items-center justify-between mb-6">
-                  <span className="font-mono text-sm text-slate-400">Webhook Configuration</span>
-                  <div className="flex gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    <span className="text-xs text-green-400">Live</span>
+          </div>
+        </div>
+      </section>
+
+      {/* The One Job Section */}
+      <section className="py-20 bg-slate-100 border-b border-slate-200">
+        <div className="container mx-auto px-6 max-w-4xl text-center">
+          <div className="inline-block p-3 bg-slate-200 rounded-full mb-6">
+            <Scale className="h-8 w-8 text-slate-700" />
+          </div>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">The One Job Ward Does</h2>
+          <p className="text-2xl md:text-3xl font-serif text-slate-700 leading-relaxed italic">
+            "When something goes wrong in transit, give you proof fast enough to stop the meter and strong enough to win disputes."
+          </p>
+        </div>
+      </section>
+
+      {/* How It Works (Evidence Flow) */}
+      <section id="how-it-works" className="py-24 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <Badge variant="outline" className="mb-4 text-slate-600 border-slate-300">Evidence Flow</Badge>
+            <h2 className="text-3xl font-bold text-slate-900">
+              From Chaos to Claim
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-12 relative">
+            {/* Connecting Line (Desktop) */}
+            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-slate-200 -z-10"></div>
+
+            <StepCard 
+              number="1"
+              icon={Mic}
+              title="Capture Ground Truth"
+              description="Drivers speak in Hindi, Tamil, or Gujarati. Ward records, transcribes, and translates their exact testimony about WHY they are stuck (e.g. 'Gate closed', 'Official absent')."
+            />
+            <StepCard 
+              number="2"
+              icon={Clock}
+              title="Establish Timeline"
+              description="Every input is timestamped and geo-tagged. We map the delay against free time limits to calculate exact financial exposure in real-time."
+            />
+            <StepCard 
+              number="3"
+              icon={Gavel}
+              title="Generate Defense"
+              description="When the invoice arrives, you have a structured dossier proving the delay was not your fault (Force Majeure, Vendor Error)."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Dispute Export Section */}
+      <section id="dispute-export" className="py-24 bg-slate-50 border-y border-slate-200">
+        <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-16">
+          <div className="flex-1">
+            <h2 className="text-3xl font-bold text-slate-900 mb-6">
+              The "Dispute Export" Button
+            </h2>
+            <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+              Don't waste hours digging through emails. Click one button to generate a comprehensive <strong>Delay Statement PDF</strong> containing:
+            </p>
+            <ul className="space-y-4 mb-8">
+              <li className="flex items-start gap-3">
+                <CheckCircle2 className="h-6 w-6 text-slate-700 mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="font-bold text-slate-900">Driver Testimony:</span> Original audio + certified translation.
+                </div>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle2 className="h-6 w-6 text-slate-700 mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="font-bold text-slate-900">Document Audit:</span> Side-by-side comparison of Invoice vs BL mismatches.
+                </div>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle2 className="h-6 w-6 text-slate-700 mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="font-bold text-slate-900">Timeline of Negligence:</span> Detailed log showing exactly when you notified the other party.
+                </div>
+              </li>
+            </ul>
+            <Button variant="outline" className="border-slate-400 text-slate-700 hover:bg-slate-100 hover:text-slate-900">
+              <Download className="mr-2 h-4 w-4" /> Download Sample Dispute PDF
+            </Button>
+          </div>
+          <div className="flex-1 w-full bg-white p-8 rounded-lg shadow-sm border border-slate-200">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <FileText className="h-8 w-8 text-red-700" />
+                  <div>
+                    <h3 className="font-bold text-slate-900">Detention Dispute Claim.pdf</h3>
+                    <p className="text-xs text-slate-500">Generated: Dec 12, 2025</p>
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase text-slate-500 font-bold">Callback URL</label>
-                    <div className="bg-slate-900 p-3 rounded border border-slate-700 font-mono text-sm text-blue-300">
-                      https://api.your-company.com/webhooks/ward
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase text-slate-500 font-bold">Events</label>
-                    <div className="flex gap-2">
-                      <Badge className="bg-blue-900 text-blue-200 hover:bg-blue-800">case.created</Badge>
-                      <Badge className="bg-blue-900 text-blue-200 hover:bg-blue-800">rca.completed</Badge>
-                      <Badge className="bg-blue-900 text-blue-200 hover:bg-blue-800">status.changed</Badge>
-                    </div>
-                  </div>
+                <Badge variant="outline" className="text-red-700 border-red-200 bg-red-50">High Value</Badge>
+              </div>
+              <div className="space-y-3">
+                <div className="h-2 bg-slate-100 rounded w-3/4"></div>
+                <div className="h-2 bg-slate-100 rounded w-full"></div>
+                <div className="h-2 bg-slate-100 rounded w-5/6"></div>
+                <div className="h-32 bg-slate-50 rounded border border-slate-100 p-4 font-mono text-xs text-slate-500 leading-relaxed">
+                  [10:30 AM] Driver Reported: "Gate entry denied." <br/>
+                  [10:35 AM] Alert Sent to Terminal Ops. <br/>
+                  [14:00 AM] Follow-up sent. No response. <br/>
+                  ...
                 </div>
               </div>
             </div>
@@ -253,82 +181,66 @@ export default function Landing() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-slate-50/50">
+      <section id="pricing" className="py-24 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Simple, transparent pricing
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">
+              Invest in Defense
             </h2>
-            <p className="text-lg text-slate-500">
-              Start free, scale as your complexity grows.
+            <p className="text-lg text-slate-600">
+              Pricing based on the value of evidence secured.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <PricingCard 
-              title="Starter"
-              price="$0"
-              description="Perfect for pilots and small fleets."
-              features={["Up to 50 disruptions/mo", "Voice-first reporting", "Basic Email support"]}
-              buttonText="Start Free"
-              highlighted={false}
-            />
-            <PricingCard 
-              title="Growth"
+              title="Standard Defense"
               price="$499"
               period="/mo"
-              description="For regional logistics teams."
-              features={["Up to 500 disruptions/mo", "Active Coordination Agents", "Document Intelligence", "API Access"]}
-              buttonText="Start Trial"
-              highlighted={true}
-            />
-            <PricingCard 
-              title="Enterprise"
-              price="Custom"
-              description="For global supply chains."
-              features={["Unlimited disruptions", "Custom Integration (SAP/OTM)", "Dedicated Success Manager", "SLA Guarantees"]}
-              buttonText="Contact Sales"
+              description="For regional teams fighting local disputes."
+              features={[
+                "Up to 50 active cases/mo",
+                "Voice-to-Evidence transcription",
+                "PDF Dispute Exports",
+                "30-day evidence retention"
+              ]}
+              buttonText="Start Pilot"
               highlighted={false}
             />
+            <PricingCard 
+              title="Enterprise Audit"
+              price="Custom"
+              period=""
+              description="For global shippers requiring full audit compliance."
+              features={[
+                "Unlimited cases",
+                "ERP/TMS Integration",
+                "Dedicated Claims Specialist",
+                "7-year evidence retention (Tax/Legal)"
+              ]}
+              buttonText="Contact Sales"
+              highlighted={true}
+            />
           </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-24">
-        <div className="container mx-auto px-6 text-center max-w-3xl">
-          <h2 className="text-4xl font-bold text-slate-900 mb-6">
-            Ready to take control?
-          </h2>
-          <p className="text-xl text-slate-500 mb-10">
-            Join 500+ logistics managers who use Ward to resolve disruptions 80% faster.
-          </p>
-          <Link to="/register">
-            <Button size="lg" className="h-16 px-10 rounded-full text-xl bg-blue-600 hover:bg-blue-700 shadow-xl transition-transform hover:scale-105">
-              Start Free Pilot
-            </Button>
-          </Link>
-          <p className="mt-6 text-sm text-slate-400">
-            No credit card required • SOC2 Compliant • Enterprise Ready
-          </p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-white border-t border-slate-100">
-        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center opacity-60 text-sm">
-          <div className="flex items-center gap-2 mb-4 md:mb-0">
-            <div className="bg-slate-200 w-6 h-6 rounded flex items-center justify-center text-slate-600 font-bold text-xs">W</div>
-            <span className="font-semibold text-slate-700">Ward v0</span>
+      <footer className="py-12 bg-slate-900 text-slate-400 text-sm">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="mb-4 md:mb-0">
+              <span className="font-bold text-slate-100 text-lg">Ward</span>
+              <p className="mt-1">Operational Evidence Platform</p>
+            </div>
+            <div className="flex gap-8">
+              <a href="#contact" className="hover:text-white transition-colors">Contact</a>
+              <a href="#" className="hover:text-white transition-colors">Legal</a>
+              <a href="#" className="hover:text-white transition-colors">Privacy</a>
+            </div>
           </div>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-blue-600">Privacy</a>
-            <a href="#" className="hover:text-blue-600">Terms</a>
-            <a href="#" className="hover:text-blue-600">API Docs</a>
-            <a href="#" className="hover:text-blue-600">Contact</a>
-          </div>
-          <div className="mt-4 md:mt-0">
-            © 2025 Ward AI Inc.
+          <div className="mt-8 pt-8 border-t border-slate-800 text-center md:text-left">
+            &copy; 2025 Ward AI Inc. All rights reserved.
           </div>
         </div>
       </footer>
@@ -336,68 +248,45 @@ export default function Landing() {
   );
 }
 
-function FeatureCard({ icon: Icon, title, description }) {
+function StepCard({ number, icon: Icon, title, description }) {
   return (
-    <div className="p-8 rounded-2xl bg-white border border-slate-100 hover:border-blue-100 hover:shadow-xl transition-all duration-300 group">
-      <div className="w-12 h-12 bg-slate-50 rounded-xl shadow-sm border border-slate-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-        <Icon className="h-6 w-6 text-blue-600" />
+    <div className="bg-white p-8 rounded-lg border border-slate-200 shadow-sm relative z-10">
+      <div className="w-12 h-12 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-xl mb-6 mx-auto md:mx-0">
+        {number}
       </div>
-      <h3 className="text-xl font-bold text-slate-900 mb-3">{title}</h3>
-      <p className="text-slate-500 leading-relaxed">
+      <div className="mb-4 flex justify-center md:justify-start">
+        <Icon className="h-8 w-8 text-slate-700" />
+      </div>
+      <h3 className="text-xl font-bold text-slate-900 mb-3 text-center md:text-left">{title}</h3>
+      <p className="text-slate-600 leading-relaxed text-center md:text-left">
         {description}
       </p>
     </div>
   );
 }
 
-function SolutionCard({ icon: Icon, title, features }) {
-  return (
-    <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="p-3 bg-white rounded-lg shadow-sm">
-          <Icon className="h-6 w-6 text-blue-600" />
-        </div>
-        <h3 className="text-lg font-bold text-slate-900">{title}</h3>
-      </div>
-      <ul className="space-y-3">
-        {features.map((feature, i) => (
-          <li key={i} className="flex items-center gap-3 text-sm text-slate-600">
-            <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
-            {feature}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 function PricingCard({ title, price, period, description, features, buttonText, highlighted }) {
   return (
-    <Card className={`relative border ${highlighted ? 'border-blue-600 shadow-2xl scale-105 z-10' : 'border-slate-200 shadow-sm'} flex flex-col`}>
-      {highlighted && (
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-          Most Popular
-        </div>
-      )}
-      <CardHeader className="text-center pb-2">
+    <Card className={`flex flex-col ${highlighted ? 'border-slate-900 shadow-lg' : 'border-slate-200'}`}>
+      <CardHeader className="text-center pb-2 bg-slate-50 border-b border-slate-100">
         <CardTitle className="text-xl font-bold text-slate-900">{title}</CardTitle>
         <p className="text-sm text-slate-500 mt-2">{description}</p>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col">
+      <CardContent className="flex-1 flex flex-col pt-8">
         <div className="text-center mb-8">
           <span className="text-4xl font-extrabold text-slate-900">{price}</span>
           {period && <span className="text-slate-500">{period}</span>}
         </div>
-        <ul className="space-y-4 mb-8 flex-1">
+        <ul className="space-y-4 mb-8 flex-1 px-4">
           {features.map((feature, i) => (
-            <li key={i} className="flex items-center gap-3 text-sm text-slate-600">
-              <CheckCircle2 className="h-4 w-4 text-blue-500 flex-shrink-0" />
+            <li key={i} className="flex items-start gap-3 text-sm text-slate-700">
+              <ShieldCheck className="h-5 w-5 text-slate-900 flex-shrink-0" />
               {feature}
             </li>
           ))}
         </ul>
-        <Link to="/register" className="w-full">
-          <Button className={`w-full ${highlighted ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-900 hover:bg-slate-800'}`}>
+        <Link to="/register" className="w-full mt-auto">
+          <Button className={`w-full h-12 text-lg ${highlighted ? 'bg-slate-900 hover:bg-slate-800' : 'bg-white text-slate-900 border border-slate-300 hover:bg-slate-50'}`}>
             {buttonText}
           </Button>
         </Link>
