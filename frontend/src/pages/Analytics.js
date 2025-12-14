@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
-import { ArrowUpRight, Clock, AlertOctagon, CheckCircle, Loader2 } from 'lucide-react';
+import { ArrowUpRight, Clock, AlertOctagon, CheckCircle, Loader2, ShieldCheck } from 'lucide-react';
 import api from '../services/api';
 import { Link } from 'react-router-dom';
 
@@ -65,12 +65,12 @@ export default function AnalyticsDashboard() {
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <KpiCard 
-            title="Total Disruptions" 
-            value={data.kpis.total_disruptions} 
-            icon={AlertOctagon}
-            trend="+12% vs last month"
-            color="text-blue-600"
-            bg="bg-blue-50"
+            title="Avg Time to Evidence" 
+            value={`${data.kpis.avg_ttde_minutes} min`} 
+            icon={ShieldCheck}
+            trend="Target: <60 min"
+            color="text-emerald-600"
+            bg="bg-emerald-50"
           />
           <KpiCard 
             title="Avg Resolution Time" 
@@ -85,8 +85,8 @@ export default function AnalyticsDashboard() {
             value={`${data.kpis.resolution_rate}%`} 
             icon={CheckCircle}
             trend="Steady"
-            color="text-green-600"
-            bg="bg-green-50"
+            color="text-blue-600"
+            bg="bg-blue-50"
           />
           <KpiCard 
             title="Open Cases" 
