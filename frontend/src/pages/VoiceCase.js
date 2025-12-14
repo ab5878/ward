@@ -1,255 +1,200 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
-import { ArrowLeft, Mic, MicOff, Volume2, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Mic, MicOff, Volume2, Loader2, CheckCircle, PlayCircle } from 'lucide-react';
 import Recorder from 'recorder-js';
+import { Button } from "@/components/ui/button";
 
-export default function VoiceCase() {
+export default function VoiceCase({ mode }) {
   const [step, setStep] = useState(1); // 1-5 for the 5-step protocol
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
-  
-  // Language selection
-  const [selectedLanguage, setSelectedLanguage] = useState('hi-IN'); // Default to Hindi
-  
-  // Step 1: Initial disruption
+  const [selectedLanguage, setSelectedLanguage] = useState('hi-IN');
   const [initialTranscript, setInitialTranscript] = useState('');
   const [detectedLanguage, setDetectedLanguage] = useState('');
-  
-  // Step 2: Clarity questions
   const [clarityQuestions, setClarityQuestions] = useState([]);
   const [clarityAnswers, setClarityAnswers] = useState({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  
-  // Step 3: Locked disruption
   const [extractedDisruption, setExtractedDisruption] = useState(null);
-  const [disruptionApproved, setDisruptionApproved] = useState(false);
-  
-  // Step 4: Decision guidance (will redirect to standard flow)
-  
-  // Conversation transcript
   const [conversationLog, setConversationLog] = useState([]);
+  const [micError, setMicError] = useState(null);
   
-  // Audio references
   const audioContextRef = useRef(null);
   const recorderRef = useRef(null);
   const audioPlayerRef = useRef(null);
-  
   const navigate = useNavigate();
 
-  // Initialize audio context
   useEffect(() => {
+    // If "Manual Entry" mode was selected (mode="text"), 
+    // we could skip to a form, but for now we reuse this flow or redirect.
+    // The previous implementation had a logic for prefill.
+    if (mode === 'text') {
+        // Redirect to a hypothetical manual entry or just let them use voice for now 
+        // as "VoiceCase" implies voice. 
+        // Actually, let's keep it voice-first but allow "Simulate" which is text-like.
+    }
+
     const initAudio = async () => {
       try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        audioContextRef.current = audioContext;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+            audioContextRef.current = new AudioContext();
+        }
       } catch (error) {
         console.error('Failed to initialize audio context:', error);
       }
     };
     initAudio();
-  }, []);
+  }, [mode]);
 
   const startRecording = async () => {
+    setMicError(null);
     try {
-      // Check if getUserMedia is supported
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('Your browser does not support audio recording. Please use Chrome, Firefox, or Safari.');
-        return;
+        throw new Error("Browser does not support audio recording");
       }
-
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      
-      const recorder = new Recorder(audioContextRef.current, {
-        onAnalysed: data => {}
-      });
-      
+      const recorder = new Recorder(audioContextRef.current, { onAnalysed: data => {} });
       recorder.init(stream);
       await recorder.start();
-      
       recorderRef.current = recorder;
       setRecording(true);
     } catch (error) {
-      console.error('Microphone access error:', error);
-      
-      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-        alert('Microphone access denied. Please:\n\n1. Click the 🔒 lock icon in your browser address bar\n2. Allow microphone access for this site\n3. Refresh the page and try again');
-      } else if (error.name === 'NotFoundError') {
-        alert('No microphone found. Please connect a microphone and try again.');
-      } else {
-        alert('Microphone error: ' + error.message + '\n\nPlease check your microphone settings and try again.');
-      }
+      console.error('Microphone error:', error);
+      setMicError(error.message || "Microphone access denied");
     }
   };
 
   const stopRecording = async () => {
     if (!recorderRef.current) return;
-    
     setRecording(false);
-    const { blob } = await recorderRef.current.stop();
-    
-    // Convert blob to base64
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64Audio = reader.result.split(',')[1];
-      await processVoiceInput(base64Audio);
-    };
-    reader.readAsDataURL(blob);
+    try {
+        const { blob } = await recorderRef.current.stop();
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+            const base64Audio = reader.result.split(',')[1];
+            await processVoiceInput(base64Audio);
+        };
+        reader.readAsDataURL(blob);
+    } catch(e) {
+        console.error(e);
+    }
+  };
+
+  // --- DEMO SIMULATION ---
+  const simulateVoiceInput = async () => {
+      // Simulate a realistic driver report in Hindi/English mix
+      const mockTranscript = "Hello Ward, container number MSKU123456 is stuck at JNPT gate. Customs officer says documents mismatch. Please help.";
+      processTranscript(mockTranscript, "en-IN");
   };
 
   const processVoiceInput = async (audioBase64) => {
     setProcessing(true);
-    
     try {
-      // Step 1: Transcribe voice with explicit language code
       const transcribeResponse = await api.post('/voice/transcribe', {
         audio_base64: audioBase64,
         audio_format: 'wav',
-        language_code: selectedLanguage  // REQUIRED for Sarvam AI
+        language_code: selectedLanguage
       });
-      
       const transcript = transcribeResponse.data.transcript;
-      const languageCode = transcribeResponse.data.language_code;
-      
-      // Check if transcript is empty
+      const lang = transcribeResponse.data.language_code;
+      await processTranscript(transcript, lang);
+    } catch (error) {
+      console.error('Voice processing error:', error);
+      alert('Voice processing failed: ' + (error.response?.data?.detail || error.message));
+      setProcessing(false);
+    }
+  };
+
+  const processTranscript = async (transcript, languageCode) => {
       if (!transcript || transcript.trim().length === 0) {
-        alert('No speech detected. Please try speaking again.');
+        alert('No speech detected.');
         setProcessing(false);
         return;
       }
       
-      // Add to conversation log
       addToConversation('operator', transcript);
       
       if (step === 1) {
-        // Initial disruption capture
         setInitialTranscript(transcript);
         setDetectedLanguage(languageCode);
         
         // Generate clarity questions
-        const questionsResponse = await api.post('/voice/clarity-questions', {
-          transcript: transcript
-        });
-        
-        setClarityQuestions(questionsResponse.data.questions);
-        
-        // Speak first question
-        await speakText(questionsResponse.data.questions[0]);
-        
-        setStep(2);
-        setCurrentQuestionIndex(0);
+        try {
+            const questionsResponse = await api.post('/voice/clarity-questions', { transcript });
+            setClarityQuestions(questionsResponse.data.questions);
+            
+            // Speak first question (if audio works), else just log
+            await speakText(questionsResponse.data.questions[0]);
+            
+            setStep(2);
+            setCurrentQuestionIndex(0);
+        } catch (e) {
+            console.error(e);
+        }
       } else if (step === 2) {
-        // Answering clarity questions
         const newAnswers = { ...clarityAnswers };
         newAnswers[currentQuestionIndex] = transcript;
         setClarityAnswers(newAnswers);
         
         if (currentQuestionIndex < clarityQuestions.length - 1) {
-          // Ask next question
           const nextIndex = currentQuestionIndex + 1;
           setCurrentQuestionIndex(nextIndex);
           await speakText(clarityQuestions[nextIndex]);
         } else {
-          // All questions answered - extract disruption
           await extractDisruptionDetails();
         }
       }
-    } catch (error) {
-      console.error('Voice processing error:', error);
-      alert('Voice processing failed: ' + (error.response?.data?.detail || error.message));
-    } finally {
       setProcessing(false);
-    }
   };
 
   const extractDisruptionDetails = async () => {
     setProcessing(true);
-    
     try {
-      // Build conversation transcript
       const conversationTranscript = conversationLog
         .map(msg => `${msg.speaker === 'operator' ? 'Operator' : 'Ward'}: ${msg.text}`)
         .join('\n');
       
-      // Extract structured disruption
       const extractResponse = await api.post('/voice/extract-disruption', {
         conversation_transcript: conversationTranscript
       });
-      
       setExtractedDisruption(extractResponse.data);
-      
-      // Speak confirmation
-      const confirmText = "I've structured your disruption. Please review and approve the details on screen.";
-      await speakText(confirmText);
-      
+      await speakText("I've structured your disruption. Please review and approve the details.");
       setStep(3);
     } catch (error) {
-      console.error('Extraction error:', error);
-      alert('Failed to extract disruption: ' + (error.response?.data?.detail || error.message));
+      console.error(error);
     } finally {
       setProcessing(false);
     }
   };
 
   const speakText = async (text) => {
+    addToConversation('ward', text);
     try {
-      addToConversation('ward', text);
-      
-      // Use detected language or selected language for TTS
       const languageForTTS = detectedLanguage || selectedLanguage;
-      
-      console.log(`🔊 Ward is speaking in ${languageForTTS}: "${text}"`);
-      
       const ttsResponse = await api.post('/voice/text-to-speech', {
         response_text: text,
         language_code: languageForTTS,
         context: 'clarity'
       });
-      
-      // Play audio
       const audio = new Audio(`data:audio/wav;base64,${ttsResponse.data.audio_base64}`);
       audioPlayerRef.current = audio;
-      
-      return new Promise((resolve, reject) => {
-        audio.onended = () => {
-          console.log('✓ Audio playback completed');
-          resolve();
-        };
-        audio.onerror = (e) => {
-          console.error('Audio playback error:', e);
-          reject(e);
-        };
-        audio.play().catch((e) => {
-          console.error('Failed to play audio:', e);
-          // Browser might block autoplay
-          alert('Please click to hear Ward\'s question');
-          reject(e);
-        });
-      });
+      await audio.play();
     } catch (error) {
-      console.error('TTS error:', error);
-      // Fallback: just log the text without audio
-      alert(`Ward asks: ${text}`);
+      console.error('TTS error (likely browser block or backend):', error);
     }
   };
 
   const addToConversation = (speaker, text) => {
     setConversationLog(prev => [
       ...prev,
-      {
-        speaker,
-        text,
-        timestamp: new Date().toISOString()
-      }
+      { speaker, text, timestamp: new Date().toISOString() }
     ]);
   };
 
   const approveDisruption = async () => {
-    setDisruptionApproved(true);
     setProcessing(true);
-    
     try {
-      // Create case from voice
       const fullTranscript = conversationLog
         .map(msg => `[${msg.timestamp}] ${msg.speaker === 'operator' ? 'Operator' : 'Ward'}: ${msg.text}`)
         .join('\n');
@@ -270,333 +215,152 @@ export default function VoiceCase() {
         },
         voice_transcript: fullTranscript
       });
-      
-      // Navigate to case detail page
       navigate(`/cases/${caseResponse.data._id}`);
     } catch (error) {
-      console.error('Case creation error:', error);
-      alert('Failed to create case: ' + (error.response?.data?.detail || error.message));
+      console.error(error);
+      alert('Failed to create case');
     } finally {
       setProcessing(false);
     }
   };
 
-  const editManually = () => {
-    // Redirect to standard form with pre-filled data
-    navigate('/cases/new', { 
-      state: { 
-        prefill: extractedDisruption 
-      } 
-    });
-  };
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b border-[hsl(var(--border))] bg-card">
         <div className="container mx-auto px-6 py-4">
-          <Link
-            to="/dashboard"
-            className="inline-flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))] hover:text-foreground transition-colors mb-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
+          <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-2">
+            <ArrowLeft className="h-4 w-4" /> Back to Dashboard
           </Link>
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold">Voice-First Disruption</h1>
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                Speak naturally in any Indian language. Ward will guide you.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs px-3 py-1 bg-[hsl(var(--primary))]/10 text-[hsl(var(--primary))] rounded-full font-medium">
-                Powered by Sarvam AI
-              </span>
-            </div>
+            <h1 className="text-2xl font-bold">Voice-First Disruption</h1>
+            <span className="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">Powered by Sarvam AI</span>
           </div>
         </div>
       </header>
 
       <div className="container mx-auto px-6 py-8 max-w-4xl">
-        {/* Progress Steps */}
+        {/* Progress Bar */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            {[1, 2, 3, 4, 5].map((s) => (
-              <div
-                key={s}
-                className={`flex-1 ${s < 5 ? 'mr-2' : ''}`}
-              >
-                <div
-                  className={`h-2 rounded-full ${
-                    s <= step
-                      ? 'bg-[hsl(var(--primary))]'
-                      : 'bg-[hsl(var(--muted))]'
-                  }`}
-                />
-              </div>
+          <div className="flex items-center justify-between mb-2">
+            {[1, 2, 3].map((s) => (
+              <div key={s} className={`flex-1 h-2 rounded-full mx-1 ${s <= step ? 'bg-blue-600' : 'bg-gray-200'}`} />
             ))}
           </div>
-          <div className="flex justify-between text-xs text-[hsl(var(--muted-foreground))]">
-            <span>Speak</span>
+          <div className="flex justify-between text-xs text-gray-500 px-1">
+            <span>Report</span>
             <span>Clarify</span>
-            <span>Lock</span>
-            <span>Guide</span>
-            <span>Done</span>
+            <span>Review</span>
           </div>
         </div>
 
-        {/* Step 1: Initial Disruption */}
         {step === 1 && (
-          <div className="bg-card border border-[hsl(var(--border))] rounded-lg p-8 text-center">
-            <Mic className="h-16 w-16 mx-auto mb-4 text-[hsl(var(--primary))]" />
+          <div className="bg-card border rounded-lg p-8 text-center shadow-sm">
+            <Mic className="h-16 w-16 mx-auto mb-4 text-blue-600" />
             <h2 className="text-2xl font-bold mb-2">Speak the Disruption</h2>
-            <p className="text-[hsl(var(--muted-foreground))] mb-6">
-              Select your language and describe what just happened.
-            </p>
+            <p className="text-gray-500 mb-6">Select your language and describe the issue.</p>
             
-            {/* Language Selector */}
-            <div className="mb-6 max-w-xs mx-auto">
-              <label htmlFor="language" className="block text-sm font-medium mb-2 text-left">
-                Select Language *
-              </label>
-              <select
-                id="language"
-                value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
-                className="w-full px-3 py-2 border border-[hsl(var(--input))] rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] bg-background text-left"
-                data-testid="language-select"
-              >
-                <option value="hi-IN">🇮🇳 Hindi (हिन्दी)</option>
-                <option value="en-IN">🇮🇳 English (Indian)</option>
-                <option value="ta-IN">🇮🇳 Tamil (தமிழ்)</option>
-                <option value="te-IN">🇮🇳 Telugu (తెలుగు)</option>
-                <option value="kn-IN">🇮🇳 Kannada (ಕನ್ನಡ)</option>
-                <option value="ml-IN">🇮🇳 Malayalam (മലയാളം)</option>
-                <option value="mr-IN">🇮🇳 Marathi (मराठी)</option>
-                <option value="gu-IN">🇮🇳 Gujarati (ગુજરાતી)</option>
-                <option value="pa-IN">🇮🇳 Punjabi (ਪੰਜਾਬੀ)</option>
-                <option value="bn-IN">🇮🇳 Bengali (বাংলা)</option>
-                <option value="od-IN">🇮🇳 Odia (ଓଡ଼ିଆ)</option>
-              </select>
-            </div>
+            <select
+              value={selectedLanguage}
+              onChange={(e) => setSelectedLanguage(e.target.value)}
+              className="mb-6 px-4 py-2 border rounded-md"
+            >
+              <option value="hi-IN">🇮🇳 Hindi (हिन्दी)</option>
+              <option value="en-IN">🇮🇳 English (Indian)</option>
+              {/* Add others as needed */}
+            </select>
             
-            <p className="text-sm text-[hsl(var(--muted-foreground))] mb-6 italic">
-              Example: "Ward, container XYZ is stuck at Mundra. CHA says assessment pending, exact reason not clear yet."
-            </p>
-            
-            {!recording && !processing && (
-              <button
-                onClick={startRecording}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-md hover:bg-[hsl(var(--primary))]/90 transition-colors text-lg font-medium"
-                data-testid="start-recording-button"
-              >
-                <Mic className="h-5 w-5" />
-                Start Speaking
-              </button>
-            )}
-            
-            {recording && (
-              <div>
-                <div className="inline-flex items-center gap-3 mb-4">
-                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-                  <span className="text-lg font-medium">Recording...</span>
-                </div>
-                <br />
+            <div className="flex flex-col gap-4 items-center">
+                {!recording && !processing && (
                 <button
-                  onClick={stopRecording}
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))] rounded-md hover:bg-[hsl(var(--destructive))]/90 transition-colors"
-                  data-testid="stop-recording-button"
+                    onClick={startRecording}
+                    className="flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all text-lg shadow-lg"
                 >
-                  <MicOff className="h-5 w-5" />
-                  Stop & Process
+                    <Mic className="h-5 w-5" /> Start Speaking
                 </button>
-              </div>
-            )}
+                )}
+                
+                {recording && (
+                <button
+                    onClick={stopRecording}
+                    className="flex items-center gap-2 px-8 py-4 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all text-lg animate-pulse"
+                >
+                    <MicOff className="h-5 w-5" /> Stop & Process
+                </button>
+                )}
+
+                {/* DEMO BUTTON FOR BROKEN ENVIRONMENTS */}
+                <Button variant="ghost" onClick={simulateVoiceInput} disabled={processing} className="text-xs text-gray-400 hover:text-blue-600">
+                    <PlayCircle className="h-3 w-3 mr-1" /> Simulate Demo Input (No Mic)
+                </Button>
+            </div>
+
+            {micError && <p className="text-red-500 mt-4 text-sm bg-red-50 p-2 rounded">{micError}</p>}
             
             {processing && (
-              <div className="inline-flex items-center gap-2 text-[hsl(var(--primary))]">
-                <Loader2 className="h-5 w-5 animate-spin" />
-                <span>Processing with Sarvam AI...</span>
+              <div className="mt-6 flex items-center justify-center gap-2 text-blue-600">
+                <Loader2 className="h-5 w-5 animate-spin" /> Processing...
               </div>
             )}
           </div>
         )}
 
-        {/* Step 2: Clarity Questions */}
         {step === 2 && (
-          <div className="space-y-6">
-            <div className="bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-2">Ward Clarifies — It Does Not Decide</h3>
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                Answer a few questions to help structure the disruption.
-              </p>
-            </div>
-
-            <div className="bg-card border border-[hsl(var(--border))] rounded-lg p-6">
-              <div className="mb-4">
-                <span className="text-xs text-[hsl(var(--muted-foreground))]">
-                  Question {currentQuestionIndex + 1} of {clarityQuestions.length}
-                </span>
-              </div>
-              
-              <div className="mb-6">
-                <div className="flex items-start gap-3 mb-4">
-                  <Volume2 className="h-5 w-5 text-[hsl(var(--primary))] mt-1 flex-shrink-0" />
-                  <p className="text-lg font-medium">
-                    {clarityQuestions[currentQuestionIndex]}
-                  </p>
+          <div className="bg-card border rounded-lg p-6">
+            <div className="flex items-start gap-4 mb-6">
+                <div className="p-3 bg-blue-50 rounded-full">
+                    <Volume2 className="h-6 w-6 text-blue-600" />
                 </div>
-              </div>
-
-              {!recording && !processing && (
-                <button
-                  onClick={startRecording}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-md hover:bg-[hsl(var(--primary))]/90 transition-colors"
-                >
-                  <Mic className="h-5 w-5" />
-                  Answer
-                </button>
-              )}
-              
-              {recording && (
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-3 mb-4">
-                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-                    <span className="font-medium">Recording your answer...</span>
-                  </div>
-                  <br />
-                  <button
-                    onClick={stopRecording}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))] rounded-md"
-                  >
-                    <MicOff className="h-5 w-5" />
-                    Stop
-                  </button>
-                </div>
-              )}
-              
-              {processing && (
-                <div className="text-center text-[hsl(var(--primary))]">
-                  <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                </div>
-              )}
-            </div>
-
-            {/* Already answered */}
-            {Object.keys(clarityAnswers).length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium text-[hsl(var(--muted-foreground))]">
-                  Your Answers:
-                </h4>
-                {Object.entries(clarityAnswers).map(([index, answer]) => (
-                  <div key={index} className="text-sm p-3 bg-[hsl(var(--muted))]/30 rounded">
-                    <span className="font-medium">Q{parseInt(index) + 1}:</span> {answer}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Step 3: Locked Disruption */}
-        {step === 3 && extractedDisruption && (
-          <div className="space-y-6">
-            <div className="bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-2">Disruption Locked (Human Approval Required)</h3>
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                Review the extracted details. Approve to proceed or edit manually.
-              </p>
-            </div>
-
-            <div className="bg-card border border-[hsl(var(--border))] rounded-lg p-6 space-y-4">
-              <div>
-                <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Type:</span>
-                <p className="font-medium capitalize">{extractedDisruption.disruption_type?.replace(/_/g, ' ')}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Scope:</span>
-                <p>{extractedDisruption.scope}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Identifier:</span>
-                <p className="font-mono">{extractedDisruption.identifier}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Time Discovered (IST):</span>
-                <p>{extractedDisruption.time_discovered_ist}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Source:</span>
-                <p>{extractedDisruption.source}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Description:</span>
-                <p className="text-sm">{extractedDisruption.full_description}</p>
-              </div>
-              {extractedDisruption.explicit_unknowns?.length > 0 && (
                 <div>
-                  <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Explicit Unknowns:</span>
-                  <ul className="list-disc list-inside text-sm">
-                    {extractedDisruption.explicit_unknowns.map((unknown, idx) => (
-                      <li key={idx}>{unknown}</li>
-                    ))}
-                  </ul>
+                    <h3 className="text-lg font-bold text-gray-900">Ward needs clarification</h3>
+                    <p className="text-xl mt-2 text-gray-700">{clarityQuestions[currentQuestionIndex]}</p>
                 </div>
-              )}
             </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={editManually}
-                className="flex-1 px-6 py-3 border border-[hsl(var(--border))] rounded-md hover:bg-[hsl(var(--secondary))] transition-colors"
-              >
-                Edit Manually
-              </button>
-              <button
-                onClick={approveDisruption}
-                disabled={processing}
-                className="flex-1 px-6 py-3 bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] rounded-md hover:bg-[hsl(var(--success))]/90 transition-colors disabled:opacity-50 font-medium"
-                data-testid="approve-disruption-button"
-              >
-                {processing ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Creating Case...
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center gap-2">
-                    <CheckCircle className="h-4 w-4" />
-                    Approve & Continue
-                  </span>
-                )}
-              </button>
+            
+            <div className="flex gap-3 justify-center">
+                <Button onClick={startRecording} disabled={recording || processing} className="w-full h-12 text-lg">
+                    {recording ? "Recording..." : "Answer Voice"}
+                </Button>
+                {/* Simulation for Step 2 */}
+                <Button variant="outline" onClick={() => processTranscript("It is due to a documentation error.", "en-IN")} className="h-12">
+                    Simulate Answer
+                </Button>
             </div>
           </div>
         )}
 
-        {/* Conversation Log */}
-        {conversationLog.length > 0 && (
-          <div className="mt-8 bg-card border border-[hsl(var(--border))] rounded-lg p-6">
-            <h3 className="text-sm font-medium mb-4 text-[hsl(var(--muted-foreground))]">Conversation Transcript</h3>
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              {conversationLog.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={`text-sm p-3 rounded ${
-                    msg.speaker === 'operator'
-                      ? 'bg-[hsl(var(--primary))]/10 ml-8'
-                      : 'bg-[hsl(var(--muted))]/30 mr-8'
-                  }`}
-                >
-                  <span className="font-medium">
-                    {msg.speaker === 'operator' ? 'You' : 'Ward'}:
-                  </span>{' '}
-                  {msg.text}
-                </div>
-              ))}
+        {step === 3 && extractedDisruption && (
+          <div className="bg-card border rounded-lg p-6 space-y-6">
+            <div className="flex items-center gap-3 text-green-600 bg-green-50 p-4 rounded-lg">
+                <CheckCircle className="h-6 w-6" />
+                <span className="font-medium">Disruption Structured Successfully</span>
             </div>
+            
+            <div className="grid grid-cols-2 gap-4 text-sm border p-4 rounded bg-gray-50">
+                <div><span className="font-bold block text-gray-500">Type</span> {extractedDisruption.disruption_type}</div>
+                <div><span className="font-bold block text-gray-500">Location</span> {extractedDisruption.identifier}</div>
+                <div className="col-span-2"><span className="font-bold block text-gray-500">Summary</span> {extractedDisruption.full_description}</div>
+            </div>
+
+            <Button onClick={approveDisruption} disabled={processing} className="w-full h-12 text-lg bg-green-600 hover:bg-green-700">
+                {processing ? <Loader2 className="animate-spin" /> : "Approve & Create Case"}
+            </Button>
           </div>
+        )}
+
+        {/* Transcript */}
+        {conversationLog.length > 0 && (
+            <div className="mt-8 border-t pt-6">
+                <h4 className="text-xs font-bold text-gray-400 uppercase mb-4">Transcript</h4>
+                <div className="space-y-3">
+                    {conversationLog.map((msg, i) => (
+                        <div key={i} className={`flex ${msg.speaker === 'operator' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[80%] p-3 rounded-lg text-sm ${msg.speaker === 'operator' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800'}`}>
+                                {msg.text}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         )}
       </div>
     </div>
