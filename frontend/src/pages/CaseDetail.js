@@ -168,6 +168,7 @@ export default function CaseDetail() {
                 currentOwner={caseData.decision_owner_email}
                 onAssigned={loadCase}
               />
+              <ShareCase caseId={caseId} />
               <CommunicationTool />
             </div>
           </div>
