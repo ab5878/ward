@@ -9,6 +9,7 @@ import CaseDetail from './pages/CaseDetail';
 import VoiceCase from './pages/VoiceCase';
 import AnalyticsDashboard from './pages/Analytics';
 import DeveloperSettings from './pages/Developer';
+import AlignmentCheck from './pages/AlignmentCheck';
 import { Toaster } from "@/components/ui/sonner"
 
 const ProtectedRoute = ({ children }) => {
@@ -33,6 +34,7 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/internal/alignment" element={<AlignmentCheck />} />
           <Route 
             path="/dashboard" 
             element={
