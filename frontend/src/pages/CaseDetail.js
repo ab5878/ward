@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
 import { ArrowLeft, Loader2, AlertTriangle, Plus, LayoutList, Brain, History, FileText, Send } from 'lucide-react';
+import EvidenceScore from '../components/EvidenceScore';
 import CommunicationTool from '../components/CommunicationTool';
 import ShareCase from '../components/ShareCase';
 import { TimelineEvent } from '../components/TimelineEvent';
