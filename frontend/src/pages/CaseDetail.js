@@ -171,6 +171,12 @@ export default function CaseDetail() {
                 currentOwner={caseData.decision_owner_email}
                 onAssigned={loadCase}
               />
+              <DisputeButton 
+                caseId={caseId}
+                status={caseData.status}
+                financialImpact={caseData.financial_impact}
+                evidenceScore={caseData.evidence_score}
+              />
               <ShareCase caseId={caseId} />
               <CommunicationTool />
             </div>
