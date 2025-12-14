@@ -13,7 +13,7 @@ import FinancialImpactCard from '../components/FinancialImpactCard';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Textarea } from '../components/ui/textarea';
 import { Button } from '../components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectTrigger,
