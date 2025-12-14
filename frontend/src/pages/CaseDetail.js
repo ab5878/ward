@@ -9,6 +9,7 @@ import { OwnershipAssigner } from '../components/OwnershipAssigner';
 import ActiveCoordination from '../components/ActiveCoordination';
 import SimilarCases from '../components/SimilarCases';
 import DocumentManager from '../components/DocumentManager';
+import FinancialImpactCard from '../components/FinancialImpactCard';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Textarea } from '../components/ui/textarea';
 import { Button } from '../components/ui/button';
