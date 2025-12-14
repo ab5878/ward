@@ -20,6 +20,12 @@ from sarvam_service import sarvam_service
 from voice_assistant import voice_assistant
 from rca_engine import RCAEngine
 from coordination_manager import CoordinationManager
+from master_data_service import MasterDataService
+from integration_service import integration_service
+from similarity_engine import SimilarityEngine
+from analytics_service import AnalyticsService
+from fastapi import UploadFile, File
+from document_processor import document_processor
 import aiofiles
 import base64
 
@@ -120,6 +126,7 @@ class StructuredContext(BaseModel):
     location_code: Optional[str] = None
     vendor_id: Optional[str] = None
     reason_code: Optional[str] = None
+
 class CreateCase(BaseModel):
     description: str = Field(min_length=10)
     disruption_details: DisruptionDetails
@@ -334,6 +341,12 @@ async def create_case(case_data: CreateCase, current_user: dict = Depends(get_cu
         "created_at": now,
         "updated_at": now
     }
+    
+    # Add optional financial and structured context if provided
+    if case_data.financial_impact:
+        case["financial_impact"] = case_data.financial_impact.dict()
+    if case_data.structured_context:
+        case["structured_context"] = case_data.structured_context.dict()
     
     result = await db.cases.insert_one(case)
     case_id = str(result.inserted_id)
@@ -1247,22 +1260,30 @@ async def execute_action_plan(case_id: str, request: ExecutePlanRequest, current
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to execute plan: {str(e)}")
 
-
 # ============================================================================
-# ANALYTICS ENDPOINTS
-# ============================================================================
-
-
-# ============================================================================
-# INSTITUTIONAL MEMORY ENDPOINTS
+# MASTER DATA ENDPOINTS
 # ============================================================================
 
+@app.post("/api/admin/seed-master-data")
+async def seed_master_data(current_user: dict = Depends(get_current_user)):
+    """
+    Seed the database with standardized logistics master data.
+    """
+    service = MasterDataService(db)
+    await service.seed_master_data()
+    return {"status": "Master data seeded"}
+
+@app.get("/api/master/lookup")
+async def lookup_entity(query: str, current_user: dict = Depends(get_current_user)):
+    """
+    Find structured entities (Port, Carrier) from a text query.
+    """
+    service = MasterDataService(db)
+    return await service.lookup_entity(query)
 
 # ============================================================================
 # INTEGRATION ENDPOINTS
 # ============================================================================
-
-from integration_service import integration_service
 
 class CommunicationRequest(BaseModel):
     channel: str = "sms" # or email
@@ -1294,7 +1315,9 @@ async def send_communication(request: CommunicationRequest, current_user: dict =
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-from similarity_engine import SimilarityEngine
+# ============================================================================
+# INSTITUTIONAL MEMORY ENDPOINTS
+# ============================================================================
 
 @app.get("/api/cases/{case_id}/similar")
 async def get_similar_cases(case_id: str, current_user: dict = Depends(get_current_user)):
@@ -1308,7 +1331,9 @@ async def get_similar_cases(case_id: str, current_user: dict = Depends(get_curre
     engine = SimilarityEngine(db)
     return await engine.find_similar_cases(case)
 
-from analytics_service import AnalyticsService
+# ============================================================================
+# ANALYTICS ENDPOINTS
+# ============================================================================
 
 @app.get("/api/analytics/dashboard")
 async def get_analytics_dashboard(days: int = 30, current_user: dict = Depends(get_current_user)):
@@ -1318,14 +1343,9 @@ async def get_analytics_dashboard(days: int = 30, current_user: dict = Depends(g
     service = AnalyticsService(db)
     return await service.get_dashboard_metrics(days)
 
-# Health check
-
 # ============================================================================
 # DOCUMENT INTELLIGENCE ENDPOINTS
 # ============================================================================
-
-from fastapi import UploadFile, File
-from document_processor import document_processor
 
 @app.post("/api/cases/{case_id}/documents/analyze")
 async def analyze_document(
