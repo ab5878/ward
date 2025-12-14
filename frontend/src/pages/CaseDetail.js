@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
 import { ArrowLeft, Loader2, AlertTriangle, Plus, LayoutList, Brain, History, FileText, Send } from 'lucide-react';
 import EvidenceScore from '../components/EvidenceScore';
+import ResponsibilityCard from '../components/ResponsibilityCard';
 import CommunicationTool from '../components/CommunicationTool';
 import ShareCase from '../components/ShareCase';
 import { TimelineEvent } from '../components/TimelineEvent';
