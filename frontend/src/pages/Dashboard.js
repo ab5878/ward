@@ -5,7 +5,7 @@ import api from '../services/api';
 import { 
   Plus, LogOut, AlertTriangle, Mic, 
   LayoutList, Clock, AlertCircle, CheckCircle2, 
-  Search, Filter
+  Search, Filter, Code
 } from 'lucide-react';
 import { DisruptionRow } from '../components/DisruptionRow';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
@@ -114,7 +114,6 @@ export default function Dashboard() {
         // Active coordination implies waiting
         // Or specific states like IN_PROGRESS
         filtered = filtered.filter(c => 
-import { Code } from 'lucide-react';
           c.status === 'IN_PROGRESS' || 
           (c.coordination_status === 'outreach_sent')
         );
@@ -161,13 +160,6 @@ import { Code } from 'lucide-react';
     }
   };
 
-              <Link
-                to="/settings/developer"
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:text-gray-900 transition-all"
-              >
-                <Code className="h-4 w-4" />
-                API
-              </Link>
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-gray-50/50" data-testid="dashboard">
@@ -219,6 +211,13 @@ import { Code } from 'lucide-react';
               </p>
             </div>
             <div className="flex gap-3">
+              <Link
+                to="/settings/developer"
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:text-gray-900 transition-all"
+              >
+                <Code className="h-4 w-4" />
+                API
+              </Link>
               <Link
                 to="/dashboard/analytics"
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:text-gray-900 transition-all"
