@@ -108,6 +108,18 @@ class DisruptionDetails(BaseModel):
     time_discovered_ist: str = Field(min_length=5)  # IST time
     source: str = Field(min_length=3)  # call, WhatsApp, CHA, transporter, etc.
 
+class FinancialImpact(BaseModel):
+    amount: float
+    currency: str = "INR"
+    category: str = Field(description="demurrage, detention, production_loss, penalty")
+    estimated_daily_increase: Optional[float] = 0.0
+
+class StructuredContext(BaseModel):
+    """Links to Master Data"""
+    carrier_code: Optional[str] = None
+    location_code: Optional[str] = None
+    vendor_id: Optional[str] = None
+    reason_code: Optional[str] = None
 class CreateCase(BaseModel):
     description: str = Field(min_length=10)
     disruption_details: DisruptionDetails
