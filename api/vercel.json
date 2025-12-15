@@ -1,2 +1,8 @@
-{}
+{
+  "functions": {
+    "**/*.py": {
+      "runtime": "python3.12"
+    }
+  }
+}
 
