@@ -13,16 +13,26 @@ class EvidenceService:
         """
         Calculate Evidence Completeness Score (0-100) and update the case.
         """
-        from bson import ObjectId
-        
-        case = await self.db.cases.find_one({"_id": ObjectId(case_id)})
+        case = await self.db.cases.find_one({"_id": case_id})
         if not case:
             return None
 
         # Fetch related data
-        docs_count = await self.db.documents.count_documents({"case_id": case_id})
-        timeline_cursor = self.db.timeline_events.find({"case_id": case_id})
-        timeline = await timeline_cursor.to_list(length=100)
+        try:
+            docs_cursor = await self.db.documents.find({"case_id": case_id})
+            docs_list = await docs_cursor.to_list(length=100)
+            docs_count = len(docs_list) if docs_list else 0
+        except Exception as e:
+            print(f"Warning: Failed to fetch documents: {e}")
+            docs_count = 0
+        
+        try:
+            timeline_cursor = await self.db.timeline_events.find({"case_id": case_id})
+            timeline = await timeline_cursor.to_list(length=100)
+            timeline = timeline if timeline else []
+        except Exception as e:
+            print(f"Warning: Failed to fetch timeline: {e}")
+            timeline = []
 
         score = 0
         breakdown = []
@@ -67,10 +77,13 @@ class EvidenceService:
 
         # 5. Counterparty Identified (+15)
         # Check if we have a 'stakeholder' or 'carrier' linked
+        structured_context = case.get("structured_context") or {}
+        if not isinstance(structured_context, dict):
+            structured_context = {}
         has_counterparty = (
-            case.get("structured_context", {}).get("carrier_code") or 
-            case.get("structured_context", {}).get("vendor_id") or
-            len(case.get("stakeholders", [])) > 0
+            structured_context.get("carrier_code") or 
+            structured_context.get("vendor_id") or
+            len(case.get("stakeholders", []) or []) > 0
         )
         if has_counterparty:
             score += 15
@@ -93,24 +106,29 @@ class EvidenceService:
         # Cap at 100
         score = min(score, 100)
 
+        # 7. Check for Evidence Readiness (70% Threshold)
+        # If score >= 70 and not previously marked, timestamp it.
+        update_dict = {}
+        if score >= 70 and not case.get("evidence_ready_at"):
+            update_dict["evidence_ready_at"] = datetime.now(timezone.utc)
+
         # Update DB
         evidence_data = {
             "score": score,
             "breakdown": breakdown,
             "missing_actions": missing_actions,
-        # 7. Check for Evidence Readiness (70% Threshold)
-        # If score >= 70 and not previously marked, timestamp it.
-        if score >= 70 and not case.get("evidence_ready_at"):
-            await self.db.cases.update_one(
-                {"_id": ObjectId(case_id)},
-                {"$set": {"evidence_ready_at": datetime.now(timezone.utc)}}
-            )
-            "last_calculated": datetime.now(timezone.utc)
+            "last_calculated": datetime.now(timezone.utc).isoformat()
         }
+        
+        update_dict["evidence_score"] = evidence_data
 
-        await self.db.cases.update_one(
-            {"_id": ObjectId(case_id)},
-            {"$set": {"evidence_score": evidence_data}}
-        )
+        try:
+            await self.db.cases.update_one(
+                {"_id": case_id},
+                {"$set": update_dict}
+            )
+        except Exception as e:
+            print(f"Warning: Failed to update evidence score in DB: {e}")
+            # Still return the calculated score even if update fails
 
         return evidence_data
