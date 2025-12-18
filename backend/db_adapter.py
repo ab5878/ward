@@ -55,6 +55,18 @@ class SupabaseAdapter:
         """Create connection pool"""
         # For serverless, use minimal pool size
         # Disable prepared statements for pgbouncer compatibility
+        
+        # Debug: Print connection info (without password)
+        try:
+            parsed = urlparse(self.connection_string)
+            safe_url = f"{parsed.scheme}://{parsed.username}:***@{parsed.hostname}:{parsed.port or 5432}/{parsed.path.lstrip('/')}"
+            print(f"Attempting to connect to: {safe_url}")
+        except:
+            print("Could not parse connection string for debugging")
+        
+        if not self.connection_string:
+            raise RuntimeError("SUPABASE_DB_URL environment variable is not set!")
+        
         try:
             # Try with SSL first (Supabase requires SSL)
             self.pool = await asyncpg.create_pool(
@@ -80,6 +92,8 @@ class SupabaseAdapter:
                 print("Connected to Supabase PostgreSQL (no SSL)")
             except Exception as e:
                 print(f"Database connection failed: {e}")
+                print(f"Connection string host: {parsed.hostname if 'parsed' in dir() else 'unknown'}")
+                print(f"Connection string port: {parsed.port if 'parsed' in dir() else 'unknown'}")
                 raise
     
     async def close(self):

@@ -60,6 +60,23 @@ USE_SUPABASE = bool(SUPABASE_DB_URL)
 MONGO_URL = os.getenv("MONGO_URL")
 DB_NAME = os.getenv("DB_NAME")
 
+# Debug: Log environment variable status at startup
+print(f"🔧 Environment Check:")
+print(f"   SUPABASE_DB_URL set: {bool(SUPABASE_DB_URL)}")
+print(f"   USE_SUPABASE: {USE_SUPABASE}")
+if SUPABASE_DB_URL:
+    # Parse and log safe URL (without password)
+    try:
+        from urllib.parse import urlparse
+        _parsed = urlparse(SUPABASE_DB_URL)
+        print(f"   DB Host: {_parsed.hostname}")
+        print(f"   DB Port: {_parsed.port or 5432}")
+        print(f"   DB User: {_parsed.username}")
+    except Exception as e:
+        print(f"   Could not parse DB URL: {e}")
+else:
+    print(f"   ⚠️ SUPABASE_DB_URL not set! Check Vercel environment variables.")
+
 JWT_SECRET = os.getenv("JWT_SECRET", "ward-v0-secret-key-change-in-production")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
