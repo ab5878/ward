@@ -31,6 +31,7 @@ import { ScrollArea } from '../components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useAuth } from '../contexts/AuthContext';
 import { toIST, getDayLabel } from '../utils/datetime';
+import MobileBottomNav from '../components/MobileBottomNav';
 
 export default function CaseDetail() {
   const { caseId } = useParams();
@@ -53,10 +54,14 @@ export default function CaseDetail() {
   const loadCase = async () => {
     try {
       const response = await api.get(`/cases/${caseId}`);
-      setCaseData(response.data.case);
-      setTimeline(response.data.timeline || []);
+      setCaseData(response.data?.case || null);
+      setTimeline(response.data?.timeline || []);
     } catch (error) {
       console.error('Failed to load case:', error);
+      const errorMessage = error.response?.data?.detail || 'Failed to load case. Please try again.';
+      toast.error(errorMessage);
+      setCaseData(null);
+      setTimeline([]);
     } finally {
       setLoading(false);
     }
@@ -433,6 +438,8 @@ export default function CaseDetail() {
 
         </div>
       </div>
+      <MobileBottomNav />
+      <div className="h-16 md:hidden"></div> {/* Spacer for mobile nav */}
     </div>
   );
 }

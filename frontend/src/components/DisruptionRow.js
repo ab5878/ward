@@ -6,6 +6,16 @@ import { Phone, MessageSquareText, Server, UserCircle } from 'lucide-react';
 import { toIST } from '../utils/datetime';
 
 export const DisruptionRow = ({ disruption, onSelect }) => {
+  if (!disruption) {
+    return null;
+  }
+
+  const caseId = disruption._id || disruption.id;
+  if (!caseId) {
+    console.warn("DisruptionRow: Missing case ID", disruption);
+    return null;
+  }
+
   const SourceIcon = disruption.last_event?.source_type === 'voice' 
     ? Phone 
     : disruption.last_event?.source_type === 'system' 
@@ -17,19 +27,19 @@ export const DisruptionRow = ({ disruption, onSelect }) => {
 
   return (
     <tr
-      data-testid={`disruption-row-${disruption._id}`}
+      data-testid={`disruption-row-${caseId}`}
       className="group hover:bg-secondary/60 transition-colors"
     >
       <td className="px-4 py-3 whitespace-nowrap">
-        <span className="state-badge" data-state={disruption.status}>
-          {disruption.status.replace('_', ' ')}
+        <span className="state-badge" data-state={disruption.status || 'UNKNOWN'}>
+          {(disruption.status || 'UNKNOWN').replace(/_/g, ' ')}
         </span>
       </td>
       <td className="px-4 py-3">
         <div className="font-medium text-foreground/90">
-          {disruption.description.length > 60
+          {disruption.description && disruption.description.length > 60
             ? disruption.description.substring(0, 60) + '...'
-            : disruption.description}
+            : disruption.description || 'No description'}
         </div>
       </td>
       <td className="px-4 py-3 whitespace-nowrap">
@@ -64,7 +74,7 @@ export const DisruptionRow = ({ disruption, onSelect }) => {
               data-testid="row-open-button"
               size="sm"
               variant="outline"
-              onClick={() => onSelect(disruption._id)}
+              onClick={() => onSelect(caseId)}
             >
               Open
             </Button>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
@@ -21,6 +21,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TooltipProvider } from '../components/ui/tooltip';
 import { toast } from 'sonner';
+import MobileBottomNav from '../components/MobileBottomNav';
 
 // Simplified Smart Views for Supply Chain "Exception Management"
 const SMART_VIEWS = [
@@ -52,7 +53,6 @@ const SMART_VIEWS = [
 
 export default function Dashboard() {
   const [cases, setCases] = useState([]);
-  const [filteredCases, setFilteredCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState('needs_attention');
   const [searchQuery, setSearchQuery] = useState('');
@@ -63,16 +63,58 @@ export default function Dashboard() {
     loadCases();
   }, []);
 
-  useEffect(() => {
-    filterCases();
-  }, [cases, activeView, searchQuery]);
+  const filteredCases = useMemo(() => {
+    let filtered = cases || [];
+
+    // 1. Search Filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(c => 
+        c?.description?.toLowerCase().includes(q) ||
+        c?.disruption_details?.identifier?.toLowerCase().includes(q) ||
+        c?.disruption_details?.disruption_type?.toLowerCase().includes(q)
+      );
+    }
+
+    // 2. Smart View Filters
+    switch (activeView) {
+      case 'needs_attention':
+        filtered = filtered.filter(c => 
+          (c?.status === 'DECISION_REQUIRED' && c?.decision_owner_email === user?.email) ||
+          c?.status === 'REPORTED' ||
+          c?.status === 'CLARIFIED'
+        );
+        break;
+      
+      case 'awaiting_stakeholders':
+        filtered = filtered.filter(c => 
+          c?.status === 'IN_PROGRESS' || 
+          (c?.coordination_status === 'outreach_sent')
+        );
+        break;
+
+      case 'resolved':
+        filtered = filtered.filter(c => c?.status === 'RESOLVED');
+        break;
+
+      case 'all_active':
+      default:
+        filtered = filtered.filter(c => c?.status !== 'RESOLVED');
+        break;
+    }
+
+    return filtered;
+  }, [cases, activeView, searchQuery, user?.email]);
 
   const loadCases = async () => {
     try {
       const response = await api.get('/cases');
-      setCases(response.data);
+      setCases(response.data || []);
     } catch (error) {
       console.error('Failed to load cases:', error);
+      const errorMessage = error.response?.data?.detail || 'Failed to load cases. Please try again.';
+      toast.error(errorMessage);
+      setCases([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
@@ -108,54 +150,14 @@ export default function Dashboard() {
           toast.success("Demo case created!");
           loadCases(); // Reload
       } catch (e) {
-          toast.error("Failed to generate data");
+          const errorMessage = e.response?.data?.detail || "Failed to generate demo case. Please try again.";
+          toast.error(errorMessage);
+          console.error("Failed to generate demo data:", e);
       } finally {
           setLoading(false);
       }
   };
 
-  const filterCases = () => {
-    let filtered = cases;
-
-    // 1. Search Filter
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      filtered = filtered.filter(c => 
-        c.description.toLowerCase().includes(q) ||
-        c.disruption_details?.identifier?.toLowerCase().includes(q) ||
-        c.disruption_details?.disruption_type?.toLowerCase().includes(q)
-      );
-    }
-
-    // 2. Smart View Filters
-    switch (activeView) {
-      case 'needs_attention':
-        filtered = filtered.filter(c => 
-          (c.status === 'DECISION_REQUIRED' && c.decision_owner_email === user?.email) ||
-          c.status === 'REPORTED' ||
-          c.status === 'CLARIFIED'
-        );
-        break;
-      
-      case 'awaiting_stakeholders':
-        filtered = filtered.filter(c => 
-          c.status === 'IN_PROGRESS' || 
-          (c.coordination_status === 'outreach_sent')
-        );
-        break;
-
-      case 'resolved':
-        filtered = filtered.filter(c => c.status === 'RESOLVED');
-        break;
-
-      case 'all_active':
-      default:
-        filtered = filtered.filter(c => c.status !== 'RESOLVED');
-        break;
-    }
-
-    setFilteredCases(filtered);
-  };
 
   const handleSelectCase = (caseId) => {
     navigate(`/cases/${caseId}`);
@@ -289,13 +291,20 @@ export default function Dashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredCases.map((disruption) => (
-                        <DisruptionRow
-                          key={disruption._id}
-                          disruption={disruption}
-                          onSelect={handleSelectCase}
-                        />
-                      ))}
+                      {filteredCases.map((disruption) => {
+                        const caseId = disruption?._id || disruption?.id;
+                        if (!caseId) {
+                          console.warn("Case missing ID:", disruption);
+                          return null;
+                        }
+                        return (
+                          <DisruptionRow
+                            key={caseId}
+                            disruption={disruption}
+                            onSelect={handleSelectCase}
+                          />
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </div>
@@ -304,6 +313,8 @@ export default function Dashboard() {
           </Card>
         </div>
       </div>
+      <MobileBottomNav />
+      <div className="h-16 md:hidden"></div> {/* Spacer for mobile nav */}
     </TooltipProvider>
   );
 }

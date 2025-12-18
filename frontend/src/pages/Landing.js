@@ -15,6 +15,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import HomepageHero from '../components/HomepageHero';
+import WhoWardIsForSection from '../components/WhoWardIsForSection';
+import ProductV0Section from '../components/ProductV0Section';
+import FromChaosToPacketSection from '../components/FromChaosToPacketSection';
 
 export default function Landing() {
   return (
@@ -27,9 +31,10 @@ export default function Landing() {
             <span className="text-xl font-bold tracking-tight text-slate-900">Ward</span>
           </div>
           <div className="hidden md:flex gap-8 text-sm font-medium text-slate-600">
-            <a href="#home" className="hover:text-slate-900 transition-colors">Home</a>
-            <a href="#how-it-works" className="hover:text-slate-900 transition-colors">How It Works</a>
-            <a href="#pricing" className="hover:text-slate-900 transition-colors">Pricing</a>
+            <Link to="/" className="hover:text-slate-900 transition-colors">Home</Link>
+            <Link to="/how-it-works" className="hover:text-slate-900 transition-colors">How It Works</Link>
+            <Link to="/why-ward" className="hover:text-slate-900 transition-colors">Why Ward</Link>
+            <Link to="/contact" className="hover:text-slate-900 transition-colors">Contact</Link>
           </div>
           <div className="flex gap-4">
             <Link to="/login">
@@ -44,53 +49,30 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section id="home" className="pt-24 pb-20 md:pt-32 md:pb-28 bg-white border-b border-slate-200">
-        <div className="container mx-auto px-6 max-w-5xl text-center">
-          <Badge variant="outline" className="mb-6 border-slate-300 text-slate-600 font-medium px-3 py-1 rounded-full uppercase tracking-wide text-xs">
-            Operational Evidence Platform
-          </Badge>
-          
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 mb-6 leading-tight">
-            Stop paying for delays <br/> you didn't cause.
-          </h1>
-          
-          <div className="max-w-2xl mx-auto">
-            <p className="text-xl text-slate-600 mb-10 leading-relaxed font-light">
-              Ward turns chaotic driver calls and WhatsApps into <strong>audit-grade evidence</strong>. 
-              Prove exactly what happened, stop the meter, and win the dispute.
-            </p>
-            
-            <div className="flex justify-center gap-4">
-              <Link to="/register">
-                <Button size="lg" className="h-14 px-8 rounded-md text-lg bg-slate-900 hover:bg-slate-800 shadow-xl transition-all hover:translate-y-[-2px]">
-                  Start Defense Pilot
-                </Button>
-              </Link>
-              <a href="#how-it-works">
-                <Button size="lg" variant="outline" className="h-14 px-8 rounded-md text-lg border-slate-300 hover:bg-slate-50 text-slate-700">
-                  How it works
-                </Button>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Section - Using new HomepageHero component */}
+      <HomepageHero />
 
-      {/* The One Job Section */}
-      <section className="py-20 bg-slate-100 border-b border-slate-200">
-        <div className="container mx-auto px-6 max-w-4xl text-center">
-          <h2 className="text-3xl font-bold text-slate-900 mb-6">The One Job Ward Does</h2>
-          <p className="text-2xl md:text-3xl font-serif text-slate-700 leading-relaxed italic">
-            "Give you proof fast enough to stop the charges and strong enough to win the argument."
-          </p>
-        </div>
-      </section>
+      {/* Who Ward is For Section */}
+      <WhoWardIsForSection />
 
-      {/* How It Works (Evidence Flow) */}
+      {/* Product v0 Section */}
+      <ProductV0Section />
+
+      {/* From Chaos to Packet Section */}
+      <FromChaosToPacketSection />
+
+      {/* How It Works (Evidence Flow) - Simplified */}
       <section id="how-it-works" className="py-24 bg-white">
         <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-12 relative">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              How it works
+            </h2>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              Three steps from chaos to dispute packet
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-12 relative max-w-5xl mx-auto">
             {/* Connecting Line (Desktop) */}
             <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-slate-100 -z-10"></div>
 
@@ -110,53 +92,52 @@ export default function Landing() {
               number="3"
               icon={Gavel}
               title="Defend"
-              description="Generate a PDF dossier instantly to prove the delay wasn't your fault."
+              description="Generate a dispute packet instantly to prove the delay wasn't your fault."
             />
+          </div>
+          <div className="text-center mt-12">
+            <Link to="/how-it-works">
+              <Button variant="outline" className="border-slate-300">
+                See detailed workflow
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Dispute Export Section */}
+      {/* Dispute Export Section - Simplified */}
       <section id="dispute-export" className="py-24 bg-slate-50 border-y border-slate-200">
-        <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-16">
-          <div className="flex-1">
-            <h2 className="text-3xl font-bold text-slate-900 mb-6">
-              Click to Dispute.
+        <div className="container mx-auto px-6 max-w-4xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Click to Dispute
             </h2>
-            <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-              Don't dig through emails. Generate a <strong>Delay Statement</strong> instantly.
+            <p className="text-lg text-slate-600 mb-8">
+              Don't dig through emails. Generate a dispute packet instantly.
             </p>
-            <ul className="space-y-4 mb-8">
-              <li className="flex items-center gap-3 font-medium text-slate-800">
-                <CheckCircle2 className="h-5 w-5 text-slate-900" />
-                Original Driver Audio & Translation
-              </li>
-              <li className="flex items-center gap-3 font-medium text-slate-800">
-                <CheckCircle2 className="h-5 w-5 text-slate-900" />
-                Document Mismatch Audit
-              </li>
-              <li className="flex items-center gap-3 font-medium text-slate-800">
-                <CheckCircle2 className="h-5 w-5 text-slate-900" />
-                Certified Timestamp Log
-              </li>
-            </ul>
           </div>
-          <div className="flex-1 w-full bg-white p-8 rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
-              <div className="flex items-center gap-3">
-                <FileText className="h-10 w-10 text-red-700" />
-                <div>
-                  <h3 className="font-bold text-slate-900 text-lg">Dispute_Claim_#123.pdf</h3>
-                  <p className="text-xs text-slate-500">Ready to send</p>
-                </div>
-              </div>
-              <Button size="sm" variant="outline">Download</Button>
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <div className="text-center p-6 bg-white rounded-lg border border-slate-200">
+              <CheckCircle2 className="h-8 w-8 text-slate-900 mx-auto mb-3" />
+              <p className="font-medium text-slate-900">Driver Audio & Translation</p>
             </div>
-            <div className="space-y-2 opacity-50">
-              <div className="h-2 bg-slate-200 rounded w-full"></div>
-              <div className="h-2 bg-slate-200 rounded w-5/6"></div>
-              <div className="h-2 bg-slate-200 rounded w-4/6"></div>
+            <div className="text-center p-6 bg-white rounded-lg border border-slate-200">
+              <CheckCircle2 className="h-8 w-8 text-slate-900 mx-auto mb-3" />
+              <p className="font-medium text-slate-900">Document Audit</p>
             </div>
+            <div className="text-center p-6 bg-white rounded-lg border border-slate-200">
+              <CheckCircle2 className="h-8 w-8 text-slate-900 mx-auto mb-3" />
+              <p className="font-medium text-slate-900">Certified Timestamp Log</p>
+            </div>
+          </div>
+          <div className="text-center">
+            <Link to="/how-it-works">
+              <Button variant="outline" className="border-slate-300">
+                See how dispute packets work
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -223,8 +204,8 @@ export default function Landing() {
               <p className="mt-1">Operational Evidence Platform</p>
             </div>
             <div className="flex gap-8">
-              <a href="#contact" className="hover:text-white transition-colors">Contact</a>
-              <a href="#" className="hover:text-white transition-colors">Legal</a>
+              <Link to="/contact" className="hover:text-white transition-colors">Contact</Link>
+              <Link to="/why-ward" className="hover:text-white transition-colors">Why Ward</Link>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-slate-800">

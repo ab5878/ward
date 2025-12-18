@@ -15,9 +15,12 @@ export default function AnalyticsDashboard() {
       try {
         const response = await api.get('/analytics/dashboard?days=30');
         setData(response.data);
+        setError(null);
       } catch (error) {
         console.error("Failed to load analytics", error);
-        setError("Failed to load analytics data.");
+        const errorMessage = error.response?.data?.detail || "Failed to load analytics data.";
+        setError(errorMessage);
+        setData(null);
       } finally {
         setLoading(false);
       }

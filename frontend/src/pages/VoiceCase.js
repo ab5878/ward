@@ -4,6 +4,7 @@ import api from '../services/api';
 import { ArrowLeft, Mic, MicOff, Volume2, Loader2, CheckCircle, PlayCircle } from 'lucide-react';
 import Recorder from 'recorder-js';
 import { Button } from "@/components/ui/button";
+import VoiceRecorder from '../components/VoiceRecorder';
 
 export default function VoiceCase({ mode }) {
   const [step, setStep] = useState(1); // 1-5 for the 5-step protocol
@@ -270,12 +271,21 @@ export default function VoiceCase({ mode }) {
             </select>
             
             <div className="flex flex-col gap-4 items-center">
+                {/* Use VoiceRecorder component for better UX */}
+                <VoiceRecorder
+                    onRecordingComplete={async (audioData) => {
+                        await processVoiceInput(audioData.audio_base64);
+                    }}
+                    language={selectedLanguage}
+                />
+                
+                {/* Fallback: Original recording buttons */}
                 {!recording && !processing && (
                 <button
                     onClick={startRecording}
                     className="flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all text-lg shadow-lg"
                 >
-                    <Mic className="h-5 w-5" /> Start Speaking
+                    <Mic className="h-5 w-5" /> Start Speaking (Legacy)
                 </button>
                 )}
                 
